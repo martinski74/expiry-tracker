@@ -1,0 +1,218 @@
+{
+  "app_name": "ExpiryTracker",
+  "personality": "1 iOS-Native Clean structure with 8 Hand-Drawn / Journal organic warmth",
+  "personality_one_liner": "A calm, reliable, and warmly organized space for managing life's important dates without the stress of clinical utility apps.",
+  "theme": {
+    "light": {
+      "surface": "#FCFAF8",
+      "onSurface": "#38312E",
+      "surfaceSecondary": "#FFFFFF",
+      "onSurfaceSecondary": "#544A46",
+      "surfaceTertiary": "#F3EFEA",
+      "onSurfaceTertiary": "#6D615C",
+      "surfaceInverse": "#38312E",
+      "onSurfaceInverse": "#FCFAF8",
+      "brand": "#E07A5F",
+      "brandPrimary": "#E07A5F",
+      "onBrandPrimary": "#FFFFFF",
+      "brandSecondary": "#F4A261",
+      "onBrandSecondary": "#38312E",
+      "brandTertiary": "#F9E6D8",
+      "onBrandTertiary": "#A5523C",
+      "success": "#829C7F",
+      "onSuccess": "#FFFFFF",
+      "warning": "#E4B363",
+      "onWarning": "#38312E",
+      "error": "#D46F6F",
+      "onError": "#FFFFFF",
+      "info": "#7CA1A6",
+      "onInfo": "#FFFFFF",
+      "border": "#E8E2DD",
+      "borderStrong": "#D1C7C0",
+      "divider": "#E8E2DD"
+    },
+    "dark": {
+      "surface": "#1F1B1A",
+      "onSurface": "#EBE5E0",
+      "surfaceSecondary": "#2B2524",
+      "onSurfaceSecondary": "#D1C7C0",
+      "surfaceTertiary": "#362E2D",
+      "onSurfaceTertiary": "#AFA39D",
+      "surfaceInverse": "#FCFAF8",
+      "onSurfaceInverse": "#1F1B1A",
+      "brand": "#E07A5F",
+      "brandPrimary": "#E88C73",
+      "onBrandPrimary": "#1F1B1A",
+      "brandSecondary": "#F6B782",
+      "onBrandSecondary": "#1F1B1A",
+      "brandTertiary": "#4D3A32",
+      "onBrandTertiary": "#F6C1B1",
+      "success": "#91B28D",
+      "onSuccess": "#1F1B1A",
+      "warning": "#F0C987",
+      "onWarning": "#1F1B1A",
+      "error": "#E28585",
+      "onError": "#1F1B1A",
+      "info": "#8BB6BC",
+      "onInfo": "#1F1B1A",
+      "border": "#362E2D",
+      "borderStrong": "#4D4340",
+      "divider": "#362E2D"
+    }
+  },
+  "typography": {
+    "displayFontFamily": "Nunito",
+    "textFontFamily": "Nunito",
+    "scale": {
+      "sm": 14,
+      "base": 16,
+      "lg": 18,
+      "xl": 22,
+      "2xl": 28
+    }
+  },
+  "spacing": {
+    "rule": "Handle spacing correctly dont have extra spaces where its not required, handle padding and margin corectly and subtle for buttons and components",
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "2xl": 32,
+    "3xl": 48
+  },
+  "radius_tokens": {
+    "sm": 6,
+    "md": 12,
+    "lg": 20,
+    "pill": 999
+  },
+  "shadow_tier": 1,
+  "navigation": "bottom_tabs",
+  "icon_set": "Phosphor",
+  "glassmorphism": {
+    "enabled": true,
+    "do's": [
+      "Bottom tab bar background",
+      "Sticky header backgrounds over scrolling content",
+      "Pinned filter chip rows over scrolling list",
+      "FAB background base over tinted surface",
+      "Bottom sheet headers"
+    ],
+    "dont's": [
+      "Cards",
+      "List rows",
+      "Form inputs",
+      "Buttons (except specific glass stylings)"
+    ]
+  },
+  "haptics": {
+    "enabled": true,
+    "NO_TOLERANCE": "always have switcher in settings or profile page",
+    "library": "expo-haptics",
+    "events": {
+      "tab_switch": "selection",
+      "toggle_switch_flip": "selection",
+      "segmented_control_change": "selection",
+      "filter_chip_select": "selection",
+      "slider_drag_end": "selection",
+      "primary_cta_tap": "impact_medium",
+      "submission_success": "notification_success",
+      "submission_error": "notification_error",
+      "pull_to_refresh_trigger": "impact_light",
+      "long_press_confirm": "impact_heavy"
+    },
+    "wiring": "Haptic calls live inside these components (Button primary, TabBar item, SegmentedControl, FilterChip, switch, slider) they fire automatically on use. Dev agent does NOT wire haptics ad-hoc per screen. Wrap every haptic call in a triggerHaptic util that checks a global setting (default ON for iOS, OFF for Android)."
+  },
+  "platform_libraries": {
+    "tabs": {
+      "ios": "NativeTabs (from expo-router/unstable-native-tabs)",
+      "android": "Tabs (from expo-router)"
+    },
+    "glass": {
+      "ios": "expo-glass-effect",
+      "android": "expo-blur",
+      "low_end_android_fallback": "solid surfaceSecondary"
+    },
+    "image": "expo-image",
+    "gradient": "expo-linear-gradient",
+    "blur": "expo-blur",
+    "haptics": "expo-haptics",
+    "safe_area": "react-native-safe-area-context",
+    "bottom_sheet": "@gorhom/bottom-sheet",
+    "animation": "react-native-reanimated",
+    "gesture": "react-native-gesture-handler",
+    "icons": "@expo/vector-icons"
+  },
+  "screens": [
+    {
+      "name": "Dashboard (Home)",
+      "purpose": "A clear overview of all tracked documents sorted by urgency, allowing immediate access to upcoming expirations.",
+      "states": {
+        "loading": "Full-screen skeleton matching the card list shape with top filter chip row rendered stably.",
+        "empty": "Warm terracotta-themed illustration of a neat desk, inviting the user to add their first document. Display with primary 'Add Document' CTA.",
+        "error": "Readable text 'Failed to load documents' with a Retry button, filling full screen."
+      }
+    },
+    {
+      "name": "Add/Edit Document",
+      "purpose": "A focused form for data entry (title, dates, category, photo) ensuring accurate expiry scheduling.",
+      "states": {
+        "loading": "Skeleton form fields (if editing).",
+        "empty": "N/A - Data entry screen",
+        "error": "Display toast/bottom sheet on submission error."
+      }
+    },
+    {
+      "name": "Categories",
+      "purpose": "Manage predefined (Documents, Insurance, Warranties, Other) and custom categories.",
+      "states": {
+        "loading": "Skeleton list of category tiles.",
+        "empty": "Illustration of an empty box/file with message 'No custom categories yet'.",
+        "error": "Retry state to reload categories."
+      }
+    },
+    {
+      "name": "Settings",
+      "purpose": "Configure bilingual preferences (EN/BG), default reminder days, and global haptics toggle.",
+      "states": {
+        "loading": "Skeleton of settings rows.",
+        "empty": "N/A",
+        "error": "N/A"
+      }
+    }
+  ],
+  "chip_row": {
+    "description": "Top filter/category chip rows are chrome, not content.",
+    "rules": [
+      "Fixed chip height 36pt max.",
+      "Fixed row height 56pt.",
+      "Horizontal scroll only (no flexWrap, no flex: 1, no space-between).",
+      "Sits outside the scrollable list as a sibling in the sticky header stack.",
+      "Renders identically across Loading/Empty/Error/Loaded states."
+    ]
+  },
+  "images": {
+    "empty_state_documents": {
+      "light": "https://static.prod-images.emergentagent.com/jobs/db37db30-127b-414f-92c0-57b21f69a8b8/images/0b3fd86df9a0d55cfa6641a05d1eb6c16da0ec45f4855adec61cf8d400e74a2f.png",
+      "dark": "https://static.prod-images.emergentagent.com/jobs/db37db30-127b-414f-92c0-57b21f69a8b8/images/c5a63f21c0b8b28d6ec44802fef8d6f09ed6c1ea2c15b6043455f3480d729d4a.png",
+      "alt": "Minimalist hand-drawn illustration of neat documents and a small plant in warm tones"
+    },
+    "empty_state_categories": {
+      "light": "https://images.unsplash.com/photo-1554325103-6985922f9a41?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwxfHx3YXJtJTIwb3JnYW5pemVkJTIwZGVzayUyMHBhcGVyfGVufDB8fHx8MTc3OTI3MTI3Nnww&ixlib=rb-4.1.0&q=85",
+      "dark": "https://images.unsplash.com/photo-1554325103-6985922f9a41?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwxfHx3YXJtJTIwb3JnYW5pemVkJTIwZGVzayUyMHBhcGVyfGVufDB8fHx8MTc3OTI3MTI3Nnww&ixlib=rb-4.1.0&q=85",
+      "alt": "Clean warm minimal organized desk space"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Strictly follow the color palette avoiding all forms of blue/purple. Ensure warm earth tones are applied consistently across backgrounds and components.",
+    "Implement the 'Nunito' font across the app. This font natively supports Cyrillic characters ensuring perfect rendering for the requested EN/BG bilingual feature.",
+    "Bilingual support is critical. Ensure a translation dictionary is created and wrap text strings accordingly. The Settings tab must include an EN/BG toggle.",
+    "Implement a global Haptics toggle in Settings. Wrap expo-haptics calls in a utility that respects this setting. Default it to ON for iOS, OFF for Android.",
+    "The FAB (Floating Action Button) on the Dashboard MUST be positioned at the bottom right, overlaid on top of content.",
+    "Include a horizontal scrolling chip row above the Dashboard list to filter urgency (All, Expiring Soon, Expired). Must adhere to ZERO TOLERANCE chip row rules (fixed 56pt container, 36pt chips, sits outside the ScrollView in the sticky header).",
+    "List cards on Dashboard must show: category icon (inside a tinted rounded square), document title, expiration date, and a styled urgency badge.",
+    "Use proper zIndex and structural hierarchy. Alert messages are banned; use Toasts, custom Bottom Sheets, or inline states. Never let modals get occluded by tab bars.",
+    "Every screen with a primary CTA (like 'Save Document' in Add/Edit) must use a sticky CTA pattern pinned to the bottom above the safe area, allowing content to scroll smoothly beneath."
+  ]
+}
