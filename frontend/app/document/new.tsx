@@ -12,14 +12,13 @@ import {
 import { Stack, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTheme } from "../../src/theme/ThemeProvider";
 import { useI18n } from "../../src/i18n/I18nProvider";
 import { spacing, fontSize, radius } from "../../src/theme/colors";
 import { getAllCategories, Category } from "../../src/db/categories";
 import { addDocument } from "../../src/db/documents";
-import { formatExpiryDate } from "../../src/utils/urgency";
 import { PhotoPicker } from "../../src/components/PhotoPicker";
+import { DateField } from "../../src/components/DateField";
 import {
   ensurePermission,
   scheduleForDocument,
@@ -62,8 +61,6 @@ export default function NewDocumentScreen() {
   const [reminderDays, setReminderDays] = useState<number[]>(DEFAULT_REMINDERS);
   const [reminderInitialised, setReminderInitialised] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [showExpiryPicker, setShowExpiryPicker] = useState(false);
-  const [showIssuePicker, setShowIssuePicker] = useState(false);
   const [errors, setErrors] = useState<{ title?: string; expiry?: string }>({});
   const [saving, setSaving] = useState(false);
 
@@ -221,55 +218,31 @@ export default function NewDocumentScreen() {
           error={errors.expiry}
           colors={colors}
         >
-          <DateRow
+          <DateField
             value={expiryDate}
+            onChange={(d) => {
+              setExpiryDate(d);
+              if (d && errors.expiry)
+                setErrors((e) => ({ ...e, expiry: undefined }));
+            }}
             placeholder={t("form.pickDate")}
-            colors={colors}
             locale={locale}
             error={!!errors.expiry}
-            onPress={() => setShowExpiryPicker(true)}
-            onClear={() => setExpiryDate(null)}
             clearLabel={t("form.clear")}
             testID="field-expiry"
           />
-          {showExpiryPicker && (
-            <DateTimePicker
-              value={expiryDate ?? new Date()}
-              mode="date"
-              onChange={(_, d) => {
-                setShowExpiryPicker(Platform.OS === "ios");
-                if (d) {
-                  setExpiryDate(d);
-                  if (errors.expiry)
-                    setErrors((e) => ({ ...e, expiry: undefined }));
-                }
-              }}
-            />
-          )}
         </Field>
 
         {/* Issue date */}
         <Field label={t("form.fieldIssueDate")} colors={colors}>
-          <DateRow
+          <DateField
             value={issueDate}
+            onChange={setIssueDate}
             placeholder={t("form.pickDate")}
-            colors={colors}
             locale={locale}
-            onPress={() => setShowIssuePicker(true)}
-            onClear={() => setIssueDate(null)}
             clearLabel={t("form.clear")}
             testID="field-issue"
           />
-          {showIssuePicker && (
-            <DateTimePicker
-              value={issueDate ?? new Date()}
-              mode="date"
-              onChange={(_, d) => {
-                setShowIssuePicker(Platform.OS === "ios");
-                if (d) setIssueDate(d);
-              }}
-            />
-          )}
         </Field>
 
         {/* Notes */}
@@ -618,3 +591,4 @@ const styles = StyleSheet.create({
   },
   saveTxt: { fontSize: fontSize.lg, fontWeight: "800" },
 });
+
