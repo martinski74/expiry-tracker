@@ -139,6 +139,18 @@ export const translations = {
       delete: "Изтрий",
       deleteConfirm: "Натиснете отново за изтриване",
       notFound: "Документът не е намерен",
+      fieldPhoto: "Снимка (по избор)",
+      addPhoto: "Добави снимка",
+      takePhoto: "Снимай с камера",
+      pickFromGallery: "От галерията",
+      removePhoto: "Премахни снимката",
+      replacePhoto: "Замени",
+      permissionTitle: "Нужно е разрешение",
+      permissionMessageCamera:
+        "Позволете достъп до камерата, за да снимате документа.",
+      permissionMessageLibrary:
+        "Позволете достъп до галерията, за да изберете снимка.",
+      openSettings: "Отвори настройките",
     },
     categories: {
       title: "Категории",

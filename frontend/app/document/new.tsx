@@ -19,6 +19,7 @@ import { spacing, fontSize, radius } from "../../src/theme/colors";
 import { getAllCategories, Category } from "../../src/db/categories";
 import { addDocument } from "../../src/db/documents";
 import { formatExpiryDate } from "../../src/utils/urgency";
+import { PhotoPicker } from "../../src/components/PhotoPicker";
 
 const PREDEFINED_KEYS = ["documents", "insurance", "warranties", "other"];
 
@@ -40,6 +41,7 @@ export default function NewDocumentScreen() {
   const [expiryDate, setExpiryDate] = useState<Date | null>(null);
   const [issueDate, setIssueDate] = useState<Date | null>(null);
   const [notes, setNotes] = useState("");
+  const [imageUri, setImageUri] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [showExpiryPicker, setShowExpiryPicker] = useState(false);
   const [showIssuePicker, setShowIssuePicker] = useState(false);
@@ -76,6 +78,7 @@ export default function NewDocumentScreen() {
         expiry_date: toISODate(expiryDate!),
         issue_date: issueDate ? toISODate(issueDate) : null,
         notes: notes.trim() || null,
+        image_uri: imageUri,
       });
       router.back();
     } catch (e) {
@@ -242,6 +245,11 @@ export default function NewDocumentScreen() {
               },
             ]}
           />
+        </Field>
+
+        {/* Photo */}
+        <Field label={t("form.fieldPhoto")} colors={colors}>
+          <PhotoPicker value={imageUri} onChange={setImageUri} />
         </Field>
       </ScrollView>
 

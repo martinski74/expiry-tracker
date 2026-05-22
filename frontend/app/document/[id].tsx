@@ -24,6 +24,7 @@ import {
   deleteDocument,
 } from "../../src/db/documents";
 import { formatExpiryDate } from "../../src/utils/urgency";
+import { PhotoPicker } from "../../src/components/PhotoPicker";
 
 const PREDEFINED_KEYS = ["documents", "insurance", "warranties", "other"];
 
@@ -49,6 +50,7 @@ export default function EditDocumentScreen() {
   const [expiryDate, setExpiryDate] = useState<Date | null>(null);
   const [issueDate, setIssueDate] = useState<Date | null>(null);
   const [notes, setNotes] = useState("");
+  const [imageUri, setImageUri] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [showExpiryPicker, setShowExpiryPicker] = useState(false);
   const [showIssuePicker, setShowIssuePicker] = useState(false);
@@ -71,6 +73,7 @@ export default function EditDocumentScreen() {
       setExpiryDate(new Date(doc.expiry_date));
       setIssueDate(doc.issue_date ? new Date(doc.issue_date) : null);
       setNotes(doc.notes ?? "");
+      setImageUri(doc.image_uri ?? null);
       setLoaded(true);
     })();
   }, [id]);
@@ -326,6 +329,11 @@ export default function EditDocumentScreen() {
               },
             ]}
           />
+        </Field>
+
+        {/* Photo */}
+        <Field label={t("form.fieldPhoto")} colors={colors}>
+          <PhotoPicker value={imageUri} onChange={setImageUri} />
         </Field>
 
         {/* Delete button */}
