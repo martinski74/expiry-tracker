@@ -24,6 +24,7 @@ import {
   ensurePermission,
   scheduleForDocument,
 } from "../../src/notifications/scheduler";
+import { STORAGE_KEYS, useStoredValue } from "../../src/hooks/useStoredValue";
 
 const DEFAULT_REMINDERS = [30, 7, 1];
 const REMINDER_OPTIONS: Array<{ days: number; key: string }> = [
@@ -54,7 +55,12 @@ export default function NewDocumentScreen() {
   const [issueDate, setIssueDate] = useState<Date | null>(null);
   const [notes, setNotes] = useState("");
   const [imageUri, setImageUri] = useState<string | null>(null);
+  const [storedDefaults] = useStoredValue<number[]>(
+    STORAGE_KEYS.defaultReminders,
+    DEFAULT_REMINDERS
+  );
   const [reminderDays, setReminderDays] = useState<number[]>(DEFAULT_REMINDERS);
+  const [reminderInitialised, setReminderInitialised] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [showExpiryPicker, setShowExpiryPicker] = useState(false);
   const [showIssuePicker, setShowIssuePicker] = useState(false);
@@ -67,6 +73,14 @@ export default function NewDocumentScreen() {
       setCategories(rows);
     })();
   }, []);
+
+  // Initialise reminder defaults from Settings the first time storedDefaults loads.
+  useEffect(() => {
+    if (!reminderInitialised && storedDefaults) {
+      setReminderDays(storedDefaults);
+      setReminderInitialised(true);
+    }
+  }, [storedDefaults, reminderInitialised]);
 
   const labelForCategory = (c: Category) =>
     c.is_predefined && PREDEFINED_KEYS.includes(c.name)

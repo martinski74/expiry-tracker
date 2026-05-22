@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -6,25 +6,53 @@ import {
   Pressable,
   ScrollView,
 } from "react-native";
+import { useFocusEffect } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../src/theme/ThemeProvider";
 import { useI18n } from "../../src/i18n/I18nProvider";
 import { spacing, fontSize, radius } from "../../src/theme/colors";
 import { Locale } from "../../src/i18n/translations";
+import { getAllDocuments } from "../../src/db/documents";
+import { daysUntil } from "../../src/utils/urgency";
+import { STORAGE_KEYS, useStoredValue } from "../../src/hooks/useStoredValue";
+
+const REMINDER_OPTIONS: Array<{ days: number; key: string }> = [
+  { days: 30, key: "30" },
+  { days: 14, key: "14" },
+  { days: 7, key: "7" },
+  { days: 1, key: "1" },
+];
 
 export default function SettingsScreen() {
   const { colors } = useTheme();
   const { t, locale, setLocale } = useI18n();
   const insets = useSafeAreaInsets();
+  const [stats, setStats] = useState({ total: 0, expiring: 0, expired: 0 });
+  const [defaults, setDefaults] = useStoredValue<number[]>(
+    STORAGE_KEYS.defaultReminders,
+    [30, 7, 1]
+  );
 
-  const LangButton = ({
-    value,
-    label,
-  }: {
-    value: Locale;
-    label: string;
-  }) => {
+  const loadStats = useCallback(async () => {
+    const docs = await getAllDocuments();
+    let expiring = 0;
+    let expired = 0;
+    for (const d of docs) {
+      const days = daysUntil(d.expiry_date);
+      if (days < 0) expired++;
+      else if (days <= 30) expiring++;
+    }
+    setStats({ total: docs.length, expiring, expired });
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadStats();
+    }, [loadStats])
+  );
+
+  const LangButton = ({ value, label }: { value: Locale; label: string }) => {
     const active = locale === value;
     return (
       <Pressable
@@ -33,9 +61,7 @@ export default function SettingsScreen() {
         style={({ pressed }) => [
           styles.langBtn,
           {
-            backgroundColor: active
-              ? colors.brandPrimary
-              : colors.surfaceSecondary,
+            backgroundColor: active ? colors.brandPrimary : colors.surfaceSecondary,
             borderColor: active ? colors.brandPrimary : colors.border,
             opacity: pressed ? 0.85 : 1,
           },
@@ -54,9 +80,31 @@ export default function SettingsScreen() {
     );
   };
 
+  const StatCell = ({
+    value,
+    label,
+    color,
+    testID,
+  }: {
+    value: number;
+    label: string;
+    color: string;
+    testID: string;
+  }) => (
+    <View style={styles.statCell} testID={testID}>
+      <Text style={[styles.statValue, { color }]}>{value}</Text>
+      <Text style={[styles.statLabel, { color: colors.onSurfaceTertiary }]}>
+        {label}
+      </Text>
+    </View>
+  );
+
   return (
     <View
-      style={[styles.container, { backgroundColor: colors.surface, paddingTop: insets.top + spacing.lg }]}
+      style={[
+        styles.container,
+        { backgroundColor: colors.surface, paddingTop: insets.top + spacing.lg },
+      ]}
       testID="settings-screen"
     >
       <View style={styles.header}>
@@ -69,9 +117,52 @@ export default function SettingsScreen() {
       </View>
 
       <ScrollView
-        contentContainerStyle={{ padding: spacing.xl, paddingBottom: 120 }}
+        contentContainerStyle={{
+          padding: spacing.xl,
+          paddingBottom: insets.bottom + 120,
+        }}
         showsVerticalScrollIndicator={false}
       >
+        {/* Stats card */}
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+          ]}
+          testID="settings-stats"
+        >
+          <View style={styles.cardHead}>
+            <View style={[styles.iconWrap, { backgroundColor: colors.brandTertiary }]}>
+              <Ionicons name="stats-chart-outline" size={20} color={colors.brandPrimary} />
+            </View>
+            <Text style={[styles.cardTitle, { color: colors.onSurface }]}>
+              {t("settings.stats")}
+            </Text>
+          </View>
+          <View style={styles.statsRow}>
+            <StatCell
+              value={stats.total}
+              label={t("settings.statsTotal")}
+              color={colors.onSurface}
+              testID="stat-total"
+            />
+            <View style={[styles.statDivider, { backgroundColor: colors.divider }]} />
+            <StatCell
+              value={stats.expiring}
+              label={t("settings.statsExpiring")}
+              color={colors.brandPrimary}
+              testID="stat-expiring"
+            />
+            <View style={[styles.statDivider, { backgroundColor: colors.divider }]} />
+            <StatCell
+              value={stats.expired}
+              label={t("settings.statsExpired")}
+              color={colors.error}
+              testID="stat-expired"
+            />
+          </View>
+        </View>
+
         {/* Language */}
         <View
           style={[
@@ -80,17 +171,8 @@ export default function SettingsScreen() {
           ]}
         >
           <View style={styles.cardHead}>
-            <View
-              style={[
-                styles.iconWrap,
-                { backgroundColor: colors.brandTertiary },
-              ]}
-            >
-              <Ionicons
-                name="language-outline"
-                size={20}
-                color={colors.brandPrimary}
-              />
+            <View style={[styles.iconWrap, { backgroundColor: colors.brandTertiary }]}>
+              <Ionicons name="language-outline" size={20} color={colors.brandPrimary} />
             </View>
             <Text style={[styles.cardTitle, { color: colors.onSurface }]}>
               {t("settings.language")}
@@ -102,7 +184,7 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* Notifications (placeholder, will be wired in Step 8) */}
+        {/* Default reminders */}
         <View
           style={[
             styles.card,
@@ -110,12 +192,7 @@ export default function SettingsScreen() {
           ]}
         >
           <View style={styles.cardHead}>
-            <View
-              style={[
-                styles.iconWrap,
-                { backgroundColor: colors.brandTertiary },
-              ]}
-            >
+            <View style={[styles.iconWrap, { backgroundColor: colors.brandTertiary }]}>
               <Ionicons
                 name="notifications-outline"
                 size={20}
@@ -123,11 +200,58 @@ export default function SettingsScreen() {
               />
             </View>
             <Text style={[styles.cardTitle, { color: colors.onSurface }]}>
-              {t("settings.notifications")}
+              {t("settings.defaultReminders")}
             </Text>
           </View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ gap: spacing.sm, paddingVertical: 2 }}
+          >
+            {REMINDER_OPTIONS.map((opt) => {
+              const active = defaults.includes(opt.days);
+              return (
+                <Pressable
+                  key={opt.key}
+                  testID={`default-reminder-${opt.days}`}
+                  onPress={() =>
+                    setDefaults(
+                      active
+                        ? defaults.filter((d) => d !== opt.days)
+                        : [...defaults, opt.days].sort((a, b) => b - a)
+                    )
+                  }
+                  style={({ pressed }) => [
+                    styles.chip,
+                    {
+                      backgroundColor: active
+                        ? colors.brandPrimary
+                        : colors.surfaceTertiary,
+                      borderColor: active ? colors.brandPrimary : colors.border,
+                      opacity: pressed ? 0.85 : 1,
+                    },
+                  ]}
+                >
+                  <Ionicons
+                    name={active ? "checkmark-circle" : "notifications-outline"}
+                    size={16}
+                    color={active ? colors.onBrandPrimary : colors.onSurfaceTertiary}
+                  />
+                  <Text
+                    style={{
+                      color: active ? colors.onBrandPrimary : colors.onSurface,
+                      fontWeight: "700",
+                      fontSize: fontSize.sm,
+                    }}
+                  >
+                    {t(`form.reminderDays_${opt.key}`)}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
           <Text style={[styles.cardHint, { color: colors.onSurfaceTertiary }]}>
-            {t("common.comingSoon")}
+            {t("settings.defaultRemindersHint")}
           </Text>
         </View>
 
@@ -139,12 +263,7 @@ export default function SettingsScreen() {
           ]}
         >
           <View style={styles.cardHead}>
-            <View
-              style={[
-                styles.iconWrap,
-                { backgroundColor: colors.brandTertiary },
-              ]}
-            >
+            <View style={[styles.iconWrap, { backgroundColor: colors.brandTertiary }]}>
               <Ionicons
                 name="information-circle-outline"
                 size={20}
@@ -163,6 +282,16 @@ export default function SettingsScreen() {
               1.0.0
             </Text>
           </View>
+          <Text
+            style={{
+              color: colors.onSurfaceTertiary,
+              fontSize: fontSize.sm,
+              fontStyle: "italic",
+              marginTop: spacing.sm,
+            }}
+          >
+            {t("settings.madeWith")}
+          </Text>
         </View>
       </ScrollView>
     </View>
@@ -201,24 +330,44 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginRight: spacing.md,
   },
-  cardTitle: {
-    fontSize: fontSize.lg,
-    fontWeight: "700",
-  },
+  cardTitle: { fontSize: fontSize.lg, fontWeight: "700" },
   cardHint: {
     fontSize: fontSize.sm,
     fontWeight: "500",
+    marginTop: spacing.sm,
   },
-  langRow: {
-    flexDirection: "row",
-    gap: spacing.md,
-  },
+  langRow: { flexDirection: "row", gap: spacing.md },
   langBtn: {
     flex: 1,
     paddingVertical: spacing.md,
     borderRadius: radius.md,
     borderWidth: 1,
     alignItems: "center",
+  },
+  statsRow: {
+    flexDirection: "row",
+    alignItems: "stretch",
+  },
+  statCell: { flex: 1, alignItems: "center", paddingVertical: spacing.sm },
+  statValue: { fontSize: 32, fontWeight: "800", letterSpacing: -1 },
+  statLabel: {
+    fontSize: 11,
+    fontWeight: "600",
+    marginTop: 2,
+    textAlign: "center",
+    textTransform: "uppercase",
+    letterSpacing: 0.4,
+  },
+  statDivider: { width: 1, marginVertical: spacing.sm },
+  chip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    height: 38,
   },
   aboutRow: {
     flexDirection: "row",
