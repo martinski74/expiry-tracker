@@ -151,6 +151,18 @@ export const translations = {
       permissionMessageLibrary:
         "Позволете достъп до галерията, за да изберете снимка.",
       openSettings: "Отвори настройките",
+      fieldReminders: "Напомни ми",
+      reminderDays_30: "30 дни преди",
+      reminderDays_14: "14 дни преди",
+      reminderDays_7: "1 седмица преди",
+      reminderDays_1: "1 ден преди",
+      reminderHint: "Ще получите известия в тези дни преди изтичането",
+      notifPermissionMessage:
+        "Позволете известия, за да получавате напомняния преди изтичане.",
+      notifTitleSoon: "{title} изтича скоро",
+      notifBodyDays: "Изтича след {n} дни · докоснете за преглед",
+      notifBodyTomorrow: "Изтича утре · докоснете за преглед",
+      notifBodyToday: "Изтича днес · докоснете за преглед",
     },
     categories: {
       title: "Категории",

@@ -20,6 +20,18 @@ import { getAllCategories, Category } from "../../src/db/categories";
 import { addDocument } from "../../src/db/documents";
 import { formatExpiryDate } from "../../src/utils/urgency";
 import { PhotoPicker } from "../../src/components/PhotoPicker";
+import {
+  ensurePermission,
+  scheduleForDocument,
+} from "../../src/notifications/scheduler";
+
+const DEFAULT_REMINDERS = [30, 7, 1];
+const REMINDER_OPTIONS: Array<{ days: number; key: string }> = [
+  { days: 30, key: "30" },
+  { days: 14, key: "14" },
+  { days: 7, key: "7" },
+  { days: 1, key: "1" },
+];
 
 const PREDEFINED_KEYS = ["documents", "insurance", "warranties", "other"];
 
@@ -42,6 +54,7 @@ export default function NewDocumentScreen() {
   const [issueDate, setIssueDate] = useState<Date | null>(null);
   const [notes, setNotes] = useState("");
   const [imageUri, setImageUri] = useState<string | null>(null);
+  const [reminderDays, setReminderDays] = useState<number[]>(DEFAULT_REMINDERS);
   const [categories, setCategories] = useState<Category[]>([]);
   const [showExpiryPicker, setShowExpiryPicker] = useState(false);
   const [showIssuePicker, setShowIssuePicker] = useState(false);
@@ -72,14 +85,34 @@ export default function NewDocumentScreen() {
     if (!validate() || saving) return;
     setSaving(true);
     try {
-      await addDocument({
+      const newId = await addDocument({
         title: title.trim(),
         category_id: categoryId,
         expiry_date: toISODate(expiryDate!),
         issue_date: issueDate ? toISODate(issueDate) : null,
         notes: notes.trim() || null,
         image_uri: imageUri,
+        notify_days_before: reminderDays,
       });
+
+      if (reminderDays.length > 0) {
+        const perm = await ensurePermission();
+        if (perm.granted) {
+          await scheduleForDocument({
+            docId: newId,
+            title: title.trim(),
+            expiryISO: toISODate(expiryDate!),
+            reminderDays,
+            notifTitleTemplate: t("form.notifTitleSoon"),
+            bodyTemplates: {
+              today: t("form.notifBodyToday"),
+              tomorrow: t("form.notifBodyTomorrow"),
+              daysTemplate: t("form.notifBodyDays"),
+            },
+          });
+        }
+      }
+
       router.back();
     } catch (e) {
       console.error("[Save] failed:", e);
@@ -250,6 +283,69 @@ export default function NewDocumentScreen() {
         {/* Photo */}
         <Field label={t("form.fieldPhoto")} colors={colors}>
           <PhotoPicker value={imageUri} onChange={setImageUri} />
+        </Field>
+
+        {/* Reminders */}
+        <Field label={t("form.fieldReminders")} colors={colors}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ gap: spacing.sm, paddingVertical: 2 }}
+          >
+            {REMINDER_OPTIONS.map((opt) => {
+              const active = reminderDays.includes(opt.days);
+              return (
+                <Pressable
+                  key={opt.key}
+                  testID={`reminder-${opt.days}`}
+                  onPress={() =>
+                    setReminderDays((curr) =>
+                      curr.includes(opt.days)
+                        ? curr.filter((d) => d !== opt.days)
+                        : [...curr, opt.days].sort((a, b) => b - a)
+                    )
+                  }
+                  style={({ pressed }) => [
+                    styles.catChip,
+                    {
+                      backgroundColor: active
+                        ? colors.brandPrimary
+                        : colors.surfaceSecondary,
+                      borderColor: active
+                        ? colors.brandPrimary
+                        : colors.border,
+                      opacity: pressed ? 0.85 : 1,
+                    },
+                  ]}
+                >
+                  <Ionicons
+                    name={active ? "checkmark-circle" : "notifications-outline"}
+                    size={16}
+                    color={active ? colors.onBrandPrimary : colors.onSurfaceTertiary}
+                  />
+                  <Text
+                    style={{
+                      color: active ? colors.onBrandPrimary : colors.onSurface,
+                      fontWeight: "700",
+                      fontSize: fontSize.sm,
+                    }}
+                  >
+                    {t(`form.reminderDays_${opt.key}`)}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+          <Text
+            style={{
+              color: colors.onSurfaceTertiary,
+              fontSize: 12,
+              marginTop: spacing.sm,
+              fontWeight: "500",
+            }}
+          >
+            {t("form.reminderHint")}
+          </Text>
         </Field>
       </ScrollView>
 
