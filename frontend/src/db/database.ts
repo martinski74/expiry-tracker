@@ -3,24 +3,37 @@ import * as SQLite from "expo-sqlite";
 const DB_NAME = "expiry_tracker.db";
 
 let _db: SQLite.SQLiteDatabase | null = null;
+let _initPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
 /**
- * Open (or reuse) the local SQLite database.
- * Safe to call multiple times — returns the same instance.
+ * Open the local SQLite database AND ensure tables exist + are seeded.
+ * Safe to call from anywhere — the first call performs the work, subsequent
+ * calls await the same promise and return the same instance.
+ *
+ * This makes all CRUD ops self-initializing — callers don't need to worry
+ * about race conditions between `initDatabase()` and the first query.
  */
 export async function getDb(): Promise<SQLite.SQLiteDatabase> {
   if (_db) return _db;
-  _db = await SQLite.openDatabaseAsync(DB_NAME);
-  return _db;
+  if (_initPromise) return _initPromise;
+  _initPromise = (async () => {
+    const db = await SQLite.openDatabaseAsync(DB_NAME);
+    await runMigrations(db);
+    _db = db;
+    return db;
+  })();
+  return _initPromise;
 }
 
 /**
- * Create tables if they don't exist and seed predefined categories
- * on first launch. Idempotent — safe to call on every app start.
+ * Public alias — calling initDatabase() simply triggers getDb() once.
+ * Kept for backward compatibility with DbProvider.
  */
 export async function initDatabase(): Promise<void> {
-  const db = await getDb();
+  await getDb();
+}
 
+async function runMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
   // Use WAL for better concurrency / performance
   await db.execAsync(`PRAGMA journal_mode = WAL;`);
   await db.execAsync(`PRAGMA foreign_keys = ON;`);
@@ -61,7 +74,7 @@ export async function initDatabase(): Promise<void> {
     `CREATE INDEX IF NOT EXISTS idx_documents_category ON documents(category_id);`
   );
 
-  await seedPredefinedCategories();
+  await seedPredefinedCategories(db);
 }
 
 /**
@@ -69,8 +82,9 @@ export async function initDatabase(): Promise<void> {
  * Uses i18n keys (e.g. "documents") for the `name` field — the UI
  * translates predefined names via the dictionary.
  */
-async function seedPredefinedCategories(): Promise<void> {
-  const db = await getDb();
+async function seedPredefinedCategories(
+  db: SQLite.SQLiteDatabase
+): Promise<void> {
   const row = (await db.getFirstAsync(
     `SELECT COUNT(*) as count FROM categories WHERE is_predefined = 1;`
   )) as { count: number } | null;
@@ -100,5 +114,7 @@ export async function resetDatabase(): Promise<void> {
   const db = await getDb();
   await db.execAsync(`DROP TABLE IF EXISTS documents;`);
   await db.execAsync(`DROP TABLE IF EXISTS categories;`);
+  _db = null;
+  _initPromise = null;
   await initDatabase();
 }

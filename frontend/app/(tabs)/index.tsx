@@ -8,6 +8,7 @@ import {
   ScrollView,
   FlatList,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -33,11 +34,18 @@ export default function HomeScreen() {
   const router = useRouter();
   const [docs, setDocs] = useState<DocumentRow[] | null>(null);
   const [filter, setFilter] = useState<FilterKey>("all");
+  const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
     const rows = await getAllDocuments();
     setDocs(rows);
   }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await load();
+    setRefreshing(false);
+  }, [load]);
 
   useFocusEffect(
     useCallback(() => {
@@ -82,18 +90,31 @@ export default function HomeScreen() {
           },
         ]}
       >
-        <View
-          style={[
-            styles.cardIcon,
-            { backgroundColor: (item.category_color || colors.brandPrimary) + "22" },
-          ]}
-        >
-          <Ionicons
-            name={(item.category_icon as any) || "document-text-outline"}
-            size={22}
-            color={item.category_color || colors.brandPrimary}
+        {item.image_uri ? (
+          <Image
+            source={{ uri: item.image_uri }}
+            style={[
+              styles.cardThumb,
+              { borderColor: (item.category_color || colors.brandPrimary) + "55" },
+            ]}
           />
-        </View>
+        ) : (
+          <View
+            style={[
+              styles.cardIcon,
+              {
+                backgroundColor:
+                  (item.category_color || colors.brandPrimary) + "22",
+              },
+            ]}
+          >
+            <Ionicons
+              name={(item.category_icon as any) || "document-text-outline"}
+              size={22}
+              color={item.category_color || colors.brandPrimary}
+            />
+          </View>
+        )}
         <View style={{ flex: 1, marginRight: spacing.sm }}>
           <Text
             numberOfLines={1}
@@ -180,6 +201,28 @@ export default function HomeScreen() {
           <Text style={[styles.emptyDesc, { color: colors.onSurfaceTertiary }]}>
             {t("home.emptyDescription")}
           </Text>
+          <Pressable
+            testID="empty-cta"
+            onPress={() => router.push("/document/new")}
+            style={({ pressed }) => [
+              styles.emptyCta,
+              {
+                backgroundColor: colors.brandPrimary,
+                opacity: pressed ? 0.9 : 1,
+              },
+            ]}
+          >
+            <Ionicons name="add" size={18} color={colors.onBrandPrimary} />
+            <Text
+              style={{
+                color: colors.onBrandPrimary,
+                fontWeight: "800",
+                fontSize: fontSize.base,
+              }}
+            >
+              {t("home.addButton")}
+            </Text>
+          </Pressable>
         </View>
       );
     }
@@ -330,6 +373,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   emptyImg: { width: 220, height: 220, marginBottom: spacing.lg },
+  emptyCta: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    borderRadius: radius.pill,
+    marginTop: spacing.xl,
+  },
   emptyTitle: {
     fontSize: fontSize.xl,
     fontWeight: "700",
