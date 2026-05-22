@@ -1,88 +1,146 @@
-import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import React, { useCallback, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
+import { useFocusEffect } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../src/theme/ThemeProvider";
 import { useI18n } from "../../src/i18n/I18nProvider";
 import { spacing, fontSize, radius } from "../../src/theme/colors";
+import { getAllCategories, Category } from "../../src/db/categories";
 
-const PREDEFINED = [
-  { key: "documents", icon: "document-text-outline" as const, tint: "#F9E6D8", tintDark: "#4D3A32" },
-  { key: "insurance", icon: "shield-checkmark-outline" as const, tint: "#E6EFE5", tintDark: "#2F3D2E" },
-  { key: "warranties", icon: "construct-outline" as const, tint: "#FBEFD6", tintDark: "#4A3F26" },
-  { key: "other", icon: "ellipsis-horizontal-outline" as const, tint: "#EDE6E1", tintDark: "#3A322E" },
-];
+const PREDEFINED_KEYS = ["documents", "insurance", "warranties", "other"];
+
+function hexWithAlpha(hex: string, alpha: number): string {
+  // simple #RRGGBB → rgba()
+  const m = hex.replace("#", "");
+  const r = parseInt(m.substring(0, 2), 16);
+  const g = parseInt(m.substring(2, 4), 16);
+  const b = parseInt(m.substring(4, 6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
 
 export default function CategoriesScreen() {
   const { colors, isDark } = useTheme();
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
+  const [cats, setCats] = useState<Category[] | null>(null);
+
+  const load = useCallback(async () => {
+    const rows = await getAllCategories();
+    setCats(rows);
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load])
+  );
+
+  const labelFor = (c: Category): string => {
+    if (c.is_predefined && PREDEFINED_KEYS.includes(c.name)) {
+      return t(`categories.predefined.${c.name}`);
+    }
+    return c.name;
+  };
 
   return (
     <View
-      style={[styles.container, { backgroundColor: colors.surface, paddingTop: insets.top + spacing.lg }]}
+      style={[
+        styles.container,
+        { backgroundColor: colors.surface, paddingTop: insets.top + spacing.lg },
+      ]}
       testID="categories-screen"
     >
       <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.onSurface }]} testID="categories-title">
+        <Text
+          style={[styles.title, { color: colors.onSurface }]}
+          testID="categories-title"
+        >
           {t("categories.title")}
         </Text>
-        <Text style={[styles.subtitle, { color: colors.onSurfaceTertiary }]}>
+        <Text
+          style={[styles.subtitle, { color: colors.onSurfaceTertiary }]}
+        >
           {t("categories.subtitle")}
         </Text>
       </View>
 
-      <ScrollView
-        contentContainerStyle={{ padding: spacing.xl, paddingBottom: 120 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {PREDEFINED.map((cat) => (
-          <View
-            key={cat.key}
-            style={[
-              styles.row,
-              {
-                backgroundColor: colors.surfaceSecondary,
-                borderColor: colors.border,
-              },
-            ]}
-            testID={`category-row-${cat.key}`}
-          >
+      {cats === null ? (
+        <View style={styles.loadingWrap}>
+          <ActivityIndicator size="large" color={colors.brandPrimary} />
+        </View>
+      ) : (
+        <ScrollView
+          contentContainerStyle={{ padding: spacing.xl, paddingBottom: 120 }}
+          showsVerticalScrollIndicator={false}
+        >
+          {cats.map((cat) => (
             <View
+              key={cat.id}
               style={[
-                styles.iconWrap,
-                { backgroundColor: isDark ? cat.tintDark : cat.tint },
+                styles.row,
+                {
+                  backgroundColor: colors.surfaceSecondary,
+                  borderColor: colors.border,
+                },
               ]}
+              testID={`category-row-${cat.id}`}
             >
+              <View
+                style={[
+                  styles.iconWrap,
+                  {
+                    backgroundColor: hexWithAlpha(
+                      cat.color,
+                      isDark ? 0.22 : 0.14
+                    ),
+                  },
+                ]}
+              >
+                <Ionicons
+                  name={cat.icon as any}
+                  size={22}
+                  color={cat.color}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={[styles.rowTitle, { color: colors.onSurface }]}
+                >
+                  {labelFor(cat)}
+                </Text>
+                <Text
+                  style={[
+                    styles.rowMeta,
+                    { color: colors.onSurfaceTertiary },
+                  ]}
+                >
+                  {cat.document_count ?? 0} ·{" "}
+                  {cat.is_predefined ? t("common.comingSoon") : "custom"}
+                </Text>
+              </View>
               <Ionicons
-                name={cat.icon}
-                size={22}
-                color={colors.brandPrimary}
+                name="chevron-forward"
+                size={20}
+                color={colors.onSurfaceTertiary}
               />
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.rowTitle, { color: colors.onSurface }]}>
-                {t(`categories.predefined.${cat.key}`)}
-              </Text>
-              <Text style={[styles.rowMeta, { color: colors.onSurfaceTertiary }]}>
-                0 {t("home.title").toLowerCase()}
-              </Text>
-            </View>
-            <Ionicons
-              name="chevron-forward"
-              size={20}
-              color={colors.onSurfaceTertiary}
-            />
-          </View>
-        ))}
+          ))}
 
-        <Text
-          style={[styles.hint, { color: colors.onSurfaceTertiary }]}
-          testID="categories-coming-soon"
-        >
-          {t("common.comingSoon")} · {t("categories.addButton")}
-        </Text>
-      </ScrollView>
+          <Text
+            style={[styles.hint, { color: colors.onSurfaceTertiary }]}
+            testID="categories-coming-soon"
+          >
+            {t("common.comingSoon")} · {t("categories.addButton")}
+          </Text>
+        </ScrollView>
+      )}
     </View>
   );
 }
@@ -100,6 +158,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
     fontWeight: "500",
   },
+  loadingWrap: { flex: 1, alignItems: "center", justifyContent: "center" },
   row: {
     flexDirection: "row",
     alignItems: "center",

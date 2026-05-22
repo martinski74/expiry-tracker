@@ -16,9 +16,9 @@ A mobile app (iOS + Android) to track expiration dates of personal documents, gu
 | Step | Feature | Status |
 |---|---|---|
 | 1 | Foundation: tabs, i18n (EN/BG), theme, placeholder screens | ✅ Done |
-| 2 | SQLite DB + seed predefined categories | ⏳ |
-| 3 | Home: list documents with status badges | ⏳ |
-| 4 | Add document form (title, category, date, notes) | ⏳ |
+| 2 | SQLite DB + seed predefined categories | ✅ Done |
+| 3 | Home: list documents with status badges | ✅ Done |
+| 4 | Add document form (title, category, date, notes) | ✅ Done |
 | 5 | Edit / Delete document | ⏳ |
 | 6 | Custom categories | ⏳ |
 | 7 | Photo attachments | ⏳ |

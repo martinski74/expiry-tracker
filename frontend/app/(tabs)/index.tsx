@@ -1,28 +1,228 @@
-import React from "react";
-import { View, Text, StyleSheet, Pressable, Image } from "react-native";
+import React, { useCallback, useMemo, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Image,
+  ScrollView,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../src/theme/ThemeProvider";
 import { useI18n } from "../../src/i18n/I18nProvider";
 import { spacing, fontSize, radius } from "../../src/theme/colors";
+import { getAllDocuments, DocumentRow } from "../../src/db/documents";
+import {
+  getUrgency,
+  urgencyColors,
+  formatExpiryDate,
+} from "../../src/utils/urgency";
+
+type FilterKey = "all" | "soon" | "expired";
+
+const PREDEFINED_KEYS = ["documents", "insurance", "warranties", "other"];
 
 export default function HomeScreen() {
   const { colors, isDark } = useTheme();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const [docs, setDocs] = useState<DocumentRow[] | null>(null);
+  const [filter, setFilter] = useState<FilterKey>("all");
+
+  const load = useCallback(async () => {
+    const rows = await getAllDocuments();
+    setDocs(rows);
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load])
+  );
+
+  const filtered = useMemo(() => {
+    if (!docs) return [];
+    if (filter === "all") return docs;
+    return docs.filter((d) => {
+      const u = getUrgency(d.expiry_date, t);
+      if (filter === "expired") return u.level === "expired";
+      if (filter === "soon")
+        return u.level === "soon" || u.level === "warning";
+      return true;
+    });
+  }, [docs, filter, t]);
 
   const heroImg = isDark
     ? "https://static.prod-images.emergentagent.com/jobs/db37db30-127b-414f-92c0-57b21f69a8b8/images/c5a63f21c0b8b28d6ec44802fef8d6f09ed6c1ea2c15b6043455f3480d729d4a.png"
     : "https://static.prod-images.emergentagent.com/jobs/db37db30-127b-414f-92c0-57b21f69a8b8/images/0b3fd86df9a0d55cfa6641a05d1eb6c16da0ec45f4855adec61cf8d400e74a2f.png";
 
+  const renderCard = (item: DocumentRow) => {
+    const u = getUrgency(item.expiry_date, t);
+    const ub = urgencyColors(u.level, colors);
+    const catLabel =
+      item.category_name && PREDEFINED_KEYS.includes(item.category_name)
+        ? t(`categories.predefined.${item.category_name}`)
+        : item.category_name ?? t("common.uncategorized");
+    return (
+      <View
+        key={item.id}
+        testID={`doc-card-${item.id}`}
+        style={[
+          styles.card,
+          { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+        ]}
+      >
+        <View
+          style={[
+            styles.cardIcon,
+            { backgroundColor: (item.category_color || colors.brandPrimary) + "22" },
+          ]}
+        >
+          <Ionicons
+            name={(item.category_icon as any) || "document-text-outline"}
+            size={22}
+            color={item.category_color || colors.brandPrimary}
+          />
+        </View>
+        <View style={{ flex: 1, marginRight: spacing.sm }}>
+          <Text
+            numberOfLines={1}
+            style={[styles.cardTitle, { color: colors.onSurface }]}
+          >
+            {item.title}
+          </Text>
+          <Text
+            numberOfLines={1}
+            style={[styles.cardMeta, { color: colors.onSurfaceTertiary }]}
+          >
+            {catLabel} · {formatExpiryDate(item.expiry_date, locale)}
+          </Text>
+        </View>
+        <View style={[styles.badge, { backgroundColor: ub.bg }]}>
+          <Text style={[styles.badgeText, { color: ub.fg }]} numberOfLines={1}>
+            {u.label}
+          </Text>
+        </View>
+      </View>
+    );
+  };
+
+  const Chips = (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.chipsRow}
+    >
+      {(
+        [
+          { key: "all", label: t("home.filterAll") },
+          { key: "soon", label: t("home.filterExpiringSoon") },
+          { key: "expired", label: t("home.filterExpired") },
+        ] as { key: FilterKey; label: string }[]
+      ).map((c) => {
+        const active = filter === c.key;
+        return (
+          <Pressable
+            key={c.key}
+            testID={`filter-${c.key}`}
+            onPress={() => setFilter(c.key)}
+            style={({ pressed }) => [
+              styles.chip,
+              {
+                backgroundColor: active
+                  ? colors.brandPrimary
+                  : colors.surfaceSecondary,
+                borderColor: active ? colors.brandPrimary : colors.border,
+                opacity: pressed ? 0.85 : 1,
+              },
+            ]}
+          >
+            <Text
+              style={{
+                color: active ? colors.onBrandPrimary : colors.onSurface,
+                fontWeight: "700",
+                fontSize: fontSize.sm,
+              }}
+            >
+              {c.label}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </ScrollView>
+  );
+
+  const renderBody = () => {
+    if (docs === null) {
+      return (
+        <View style={styles.center}>
+          <ActivityIndicator size="large" color={colors.brandPrimary} />
+        </View>
+      );
+    }
+    if (docs.length === 0) {
+      return (
+        <View style={styles.emptyWrap} testID="home-empty-state">
+          <Image source={{ uri: heroImg }} style={styles.emptyImg} resizeMode="contain" />
+          <Text style={[styles.emptyTitle, { color: colors.onSurface }]}>
+            {t("home.emptyTitle")}
+          </Text>
+          <Text style={[styles.emptyDesc, { color: colors.onSurfaceTertiary }]}>
+            {t("home.emptyDescription")}
+          </Text>
+        </View>
+      );
+    }
+    if (filtered.length === 0) {
+      return (
+        <View style={styles.emptyWrap} testID="home-empty-filtered">
+          <Ionicons
+            name="filter-outline"
+            size={48}
+            color={colors.onSurfaceTertiary}
+          />
+          <Text style={[styles.emptyTitle, { color: colors.onSurface, marginTop: spacing.lg }]}>
+            {t("home.emptyFilteredTitle")}
+          </Text>
+          <Text style={[styles.emptyDesc, { color: colors.onSurfaceTertiary }]}>
+            {t("home.emptyFilteredDescription")}
+          </Text>
+        </View>
+      );
+    }
+    return (
+      <FlatList
+        data={filtered}
+        keyExtractor={(d) => String(d.id)}
+        renderItem={({ item }) => renderCard(item)}
+        contentContainerStyle={{
+          paddingHorizontal: spacing.xl,
+          paddingBottom: insets.bottom + 140,
+          paddingTop: spacing.sm,
+        }}
+        showsVerticalScrollIndicator={false}
+      />
+    );
+  };
+
   return (
     <View
-      style={[styles.container, { backgroundColor: colors.surface, paddingTop: insets.top + spacing.lg }]}
+      style={[
+        styles.container,
+        { backgroundColor: colors.surface, paddingTop: insets.top + spacing.lg },
+      ]}
       testID="home-screen"
     >
-      {/* Header */}
       <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.onSurface }]} testID="home-title">
+        <Text
+          style={[styles.title, { color: colors.onSurface }]}
+          testID="home-title"
+        >
           {t("home.title")}
         </Text>
         <Text style={[styles.subtitle, { color: colors.onSurfaceTertiary }]}>
@@ -30,29 +230,20 @@ export default function HomeScreen() {
         </Text>
       </View>
 
-      {/* Empty state */}
-      <View style={styles.emptyWrap} testID="home-empty-state">
-        <Image source={{ uri: heroImg }} style={styles.emptyImg} resizeMode="contain" />
-        <Text style={[styles.emptyTitle, { color: colors.onSurface }]}>
-          {t("home.emptyTitle")}
-        </Text>
-        <Text style={[styles.emptyDesc, { color: colors.onSurfaceTertiary }]}>
-          {t("home.emptyDescription")}
-        </Text>
-      </View>
+      <View style={styles.chipContainer}>{Chips}</View>
 
-      {/* FAB (placeholder — wired up in Step 4) */}
+      <View style={{ flex: 1 }}>{renderBody()}</View>
+
+      {/* FAB (Step 4 wires this to /document/new) */}
       <Pressable
         testID="home-fab"
         accessibilityLabel={t("home.addButton")}
-        onPress={() => {
-          // Step 4 will navigate to /document/new
-        }}
+        onPress={() => router.push("/document/new")}
         style={({ pressed }) => [
           styles.fab,
           {
             backgroundColor: colors.brandPrimary,
-            bottom: insets.bottom + (96),
+            bottom: insets.bottom + 96,
             opacity: pressed ? 0.9 : 1,
             shadowColor: colors.onSurface,
           },
@@ -66,10 +257,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.lg,
-  },
+  header: { paddingHorizontal: spacing.xl, paddingBottom: spacing.md },
   title: {
     fontSize: fontSize["2xl"],
     fontWeight: "800",
@@ -80,17 +268,63 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
     fontWeight: "500",
   },
+  chipContainer: { height: 56, justifyContent: "center" },
+  chipsRow: {
+    paddingHorizontal: spacing.xl,
+    gap: spacing.sm,
+    alignItems: "center",
+  },
+  chip: {
+    height: 36,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: spacing.md,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    marginBottom: spacing.md,
+  },
+  cardIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.md,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: spacing.md,
+  },
+  cardTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: "700",
+  },
+  cardMeta: {
+    fontSize: fontSize.sm,
+    marginTop: 2,
+    fontWeight: "500",
+  },
+  badge: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderRadius: radius.pill,
+    maxWidth: 130,
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  center: { flex: 1, alignItems: "center", justifyContent: "center" },
   emptyWrap: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: spacing.xl,
   },
-  emptyImg: {
-    width: 220,
-    height: 220,
-    marginBottom: spacing.lg,
-  },
+  emptyImg: { width: 220, height: 220, marginBottom: spacing.lg },
   emptyTitle: {
     fontSize: fontSize.xl,
     fontWeight: "700",
