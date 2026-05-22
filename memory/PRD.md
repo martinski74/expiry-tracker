@@ -22,7 +22,7 @@ A mobile app (iOS + Android) to track expiration dates of personal documents, gu
 | 5 | Edit / Delete document | ✅ Done |
 | 6 | Custom categories | ✅ Done |
 | 7 | Photo attachments | ✅ Done |
-| 8 | Local notifications (reminders) | ⏳ |
+| 8 | Local notifications (reminders) | ✅ Done |
 | 9 | Settings polish (default reminder days) | ⏳ |
 | 10 | Final UX polish | ⏳ |
 
