@@ -21,6 +21,10 @@ export default function RootLayout() {
                   name="document/new"
                   options={{ presentation: "modal", headerShown: true }}
                 />
+                <Stack.Screen
+                  name="document/[id]"
+                  options={{ headerShown: true }}
+                />
               </Stack>
             </DbProvider>
           </I18nProvider>

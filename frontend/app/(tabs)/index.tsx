@@ -69,12 +69,17 @@ export default function HomeScreen() {
         ? t(`categories.predefined.${item.category_name}`)
         : item.category_name ?? t("common.uncategorized");
     return (
-      <View
+      <Pressable
         key={item.id}
         testID={`doc-card-${item.id}`}
-        style={[
+        onPress={() => router.push(`/document/${item.id}`)}
+        style={({ pressed }) => [
           styles.card,
-          { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+          {
+            backgroundColor: colors.surfaceSecondary,
+            borderColor: colors.border,
+            opacity: pressed ? 0.85 : 1,
+          },
         ]}
       >
         <View
@@ -108,7 +113,7 @@ export default function HomeScreen() {
             {u.label}
           </Text>
         </View>
-      </View>
+      </Pressable>
     );
   };
 

@@ -36,6 +36,9 @@ export const translations = {
       titleRequired: "Title is required",
       expiryRequired: "Expiry date is required",
       clear: "Clear",
+      delete: "Delete",
+      deleteConfirm: "Tap again to delete",
+      notFound: "Document not found",
     },
     categories: {
       title: "Categories",
@@ -120,6 +123,9 @@ export const translations = {
       titleRequired: "Заглавието е задължително",
       expiryRequired: "Датата на изтичане е задължителна",
       clear: "Изчисти",
+      delete: "Изтрий",
+      deleteConfirm: "Натиснете отново за изтриване",
+      notFound: "Документът не е намерен",
     },
     categories: {
       title: "Категории",
