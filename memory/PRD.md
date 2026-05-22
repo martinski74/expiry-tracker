@@ -20,7 +20,7 @@ A mobile app (iOS + Android) to track expiration dates of personal documents, gu
 | 3 | Home: list documents with status badges | ✅ Done |
 | 4 | Add document form (title, category, date, notes) | ✅ Done |
 | 5 | Edit / Delete document | ✅ Done |
-| 6 | Custom categories | ⏳ |
+| 6 | Custom categories | ✅ Done |
 | 7 | Photo attachments | ⏳ |
 | 8 | Local notifications (reminders) | ⏳ |
 | 9 | Settings polish (default reminder days) | ⏳ |
