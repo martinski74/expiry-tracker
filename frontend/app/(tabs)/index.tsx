@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { Image } from "expo-image";
 import {
   View,
   Text,
@@ -10,6 +9,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   TextInput,
+  Image,
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

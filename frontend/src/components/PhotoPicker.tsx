@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Image } from "expo-image";
 import {
   View,
   Text,
   StyleSheet,
   Pressable,
   Linking,
+  Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";

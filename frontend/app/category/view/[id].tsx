@@ -7,12 +7,12 @@ import {
   FlatList,
   ActivityIndicator,
   RefreshControl,
+  Image,
 } from "react-native";
-import { useLocalSearchParams, useRouter, Stack } from "expo-router";
+import { useLocalSearchParams, useRouter, Stack, useFocusEffect } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInDown, FadeOut, Layout } from "react-native-reanimated";
-import { Image } from "expo-image";
 import { useTheme } from "../../../src/theme/ThemeProvider";
 import { useI18n } from "../../../src/i18n/I18nProvider";
 import { spacing, fontSize, radius } from "../../../src/theme/colors";
@@ -48,9 +48,11 @@ export default function CategoryFilteredScreen() {
     setCategory(c);
   }, [id]);
 
-  React.useEffect(() => {
-    load();
-  }, [load]);
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load])
+  );
 
   const onRefresh = useCallback(async () => {
     triggerHaptic("light");
