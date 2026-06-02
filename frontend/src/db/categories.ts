@@ -8,21 +8,21 @@ export type Category = {
   is_predefined: 0 | 1;
   created_at: string;
   document_count?: number; // populated by joins when needed
+  expired_count?: number;
+  urgent_count?: number;
 };
 
 /** All categories sorted: predefined first, then custom by created_at. */
 export async function getAllCategories(): Promise<Category[]> {
   const db = await getDb();
+  // Using subqueries to get counts for different statuses
   const rows = (await db.getAllAsync(
     `SELECT
        c.id, c.name, c.icon, c.color, c.is_predefined, c.created_at,
-       COALESCE(d.cnt, 0) as document_count
+       (SELECT COUNT(*) FROM documents WHERE category_id = c.id) as document_count,
+       (SELECT COUNT(*) FROM documents WHERE category_id = c.id AND expiry_date < date('now')) as expired_count,
+       (SELECT COUNT(*) FROM documents WHERE category_id = c.id AND expiry_date >= date('now') AND expiry_date <= date('now', '+7 days')) as urgent_count
      FROM categories c
-     LEFT JOIN (
-       SELECT category_id, COUNT(*) as cnt
-       FROM documents
-       GROUP BY category_id
-     ) d ON d.category_id = c.id
      ORDER BY c.is_predefined DESC, c.created_at ASC;`
   )) as Category[];
   return rows;
@@ -51,6 +51,21 @@ export async function addCustomCategory(input: {
     [input.name.trim(), input.icon, input.color, now]
   );
   return res.lastInsertRowId as number;
+}
+
+export async function updateCategory(
+  id: number,
+  input: {
+    name: string;
+    icon: string;
+    color: string;
+  }
+): Promise<void> {
+  const db = await getDb();
+  await db.runAsync(
+    `UPDATE categories SET name = ?, icon = ?, color = ? WHERE id = ? AND is_predefined = 0;`,
+    [input.name.trim(), input.icon, input.color, id]
+  );
 }
 
 export async function deleteCategory(id: number): Promise<void> {

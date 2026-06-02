@@ -27,7 +27,6 @@ export const translations = {
       fieldTitlePlaceholder: "e.g. Passport",
       fieldCategory: "Category",
       fieldExpiryDate: "Expiry date",
-      fieldIssueDate: "Issue date (optional)",
       fieldNotes: "Notes (optional)",
       fieldNotesPlaceholder: "Anything to remember…",
       pickDate: "Pick a date",
@@ -116,6 +115,7 @@ export const translations = {
       back: "Back",
       comingSoon: "Coming soon",
       uncategorized: "Uncategorized",
+      searchPlaceholder: "Search documents...",
     },
     urgency: {
       expired: "Expired",
@@ -156,7 +156,6 @@ export const translations = {
       fieldTitlePlaceholder: "напр. Паспорт",
       fieldCategory: "Категория",
       fieldExpiryDate: "Дата на изтичане",
-      fieldIssueDate: "Дата на издаване (по избор)",
       fieldNotes: "Бележки (по избор)",
       fieldNotesPlaceholder: "Нещо за запомняне…",
       pickDate: "Избери дата",
@@ -248,6 +247,7 @@ export const translations = {
       back: "Назад",
       comingSoon: "Очаквайте скоро",
       uncategorized: "Без категория",
+      searchPlaceholder: "Търсене на документи...",
     },
     urgency: {
       expired: "Изтекъл",

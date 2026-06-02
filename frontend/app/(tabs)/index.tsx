@@ -1,18 +1,20 @@
 import React, { useCallback, useMemo, useState } from "react";
+import { Image } from "expo-image";
 import {
   View,
   Text,
   StyleSheet,
   Pressable,
-  Image,
   ScrollView,
   FlatList,
   ActivityIndicator,
   RefreshControl,
+  TextInput,
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import Animated, { FadeInDown, FadeOut, Layout } from "react-native-reanimated";
 import { useTheme } from "../../src/theme/ThemeProvider";
 import { useI18n } from "../../src/i18n/I18nProvider";
 import { spacing, fontSize, radius } from "../../src/theme/colors";
@@ -22,6 +24,8 @@ import {
   urgencyColors,
   formatExpiryDate,
 } from "../../src/utils/urgency";
+import { triggerHaptic } from "../../src/utils/haptics";
+import { fontFamilyForWeight } from "../../src/theme/fonts";
 
 type FilterKey = "all" | "soon" | "expired";
 
@@ -34,6 +38,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const [docs, setDocs] = useState<DocumentRow[] | null>(null);
   const [filter, setFilter] = useState<FilterKey>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
@@ -42,6 +47,7 @@ export default function HomeScreen() {
   }, []);
 
   const onRefresh = useCallback(async () => {
+    triggerHaptic("light");
     setRefreshing(true);
     await load();
     setRefreshing(false);
@@ -55,21 +61,37 @@ export default function HomeScreen() {
 
   const filtered = useMemo(() => {
     if (!docs) return [];
-    if (filter === "all") return docs;
-    return docs.filter((d) => {
-      const u = getUrgency(d.expiry_date, t);
-      if (filter === "expired") return u.level === "expired";
-      if (filter === "soon")
-        return u.level === "soon" || u.level === "warning";
-      return true;
-    });
-  }, [docs, filter, t]);
+    let list = docs;
+
+    // Apply urgency filter
+    if (filter !== "all") {
+      list = list.filter((d) => {
+        const u = getUrgency(d.expiry_date, t);
+        if (filter === "expired") return u.level === "expired";
+        if (filter === "soon")
+          return u.level === "soon" || u.level === "warning";
+        return true;
+      });
+    }
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter(
+        (d) =>
+          d.title.toLowerCase().includes(q) ||
+          (d.notes && d.notes.toLowerCase().includes(q))
+      );
+    }
+
+    return list;
+  }, [docs, filter, searchQuery, t]);
 
   const heroImg = isDark
     ? "https://static.prod-images.emergentagent.com/jobs/db37db30-127b-414f-92c0-57b21f69a8b8/images/c5a63f21c0b8b28d6ec44802fef8d6f09ed6c1ea2c15b6043455f3480d729d4a.png"
     : "https://static.prod-images.emergentagent.com/jobs/db37db30-127b-414f-92c0-57b21f69a8b8/images/0b3fd86df9a0d55cfa6641a05d1eb6c16da0ec45f4855adec61cf8d400e74a2f.png";
 
-  const renderCard = (item: DocumentRow) => {
+  const renderCard = (item: DocumentRow, index: number) => {
     const u = getUrgency(item.expiry_date, t);
     const ub = urgencyColors(u.level, colors);
     const catLabel =
@@ -77,64 +99,70 @@ export default function HomeScreen() {
         ? t(`categories.predefined.${item.category_name}`)
         : item.category_name ?? t("common.uncategorized");
     return (
-      <Pressable
+      <Animated.View
         key={item.id}
-        testID={`doc-card-${item.id}`}
-        onPress={() => router.push(`/document/${item.id}`)}
-        style={({ pressed }) => [
-          styles.card,
-          {
-            backgroundColor: colors.surfaceSecondary,
-            borderColor: colors.border,
-            opacity: pressed ? 0.85 : 1,
-          },
-        ]}
+        entering={FadeInDown.delay(index * 50).duration(400)}
+        exiting={FadeOut.duration(300)}
+        layout={Layout.springify()}
       >
-        {item.image_uri ? (
-          <Image
-            source={{ uri: item.image_uri }}
-            style={[
-              styles.cardThumb,
-              { borderColor: (item.category_color || colors.brandPrimary) + "55" },
-            ]}
-          />
-        ) : (
-          <View
-            style={[
-              styles.cardIcon,
-              {
-                backgroundColor:
-                  (item.category_color || colors.brandPrimary) + "22",
-              },
-            ]}
-          >
-            <Ionicons
-              name={(item.category_icon as any) || "document-text-outline"}
-              size={22}
-              color={item.category_color || colors.brandPrimary}
+        <Pressable
+          testID={`doc-card-${item.id}`}
+          onPress={() => router.push(`/document/${item.id}`)}
+          style={({ pressed }) => [
+            styles.card,
+            {
+              backgroundColor: colors.surfaceSecondary,
+              borderColor: colors.border,
+              opacity: pressed ? 0.85 : 1,
+            },
+          ]}
+        >
+          {item.image_uri ? (
+            <Image
+              source={{ uri: item.image_uri }}
+              style={[
+                styles.cardThumb,
+                { borderColor: (item.category_color || colors.brandPrimary) + "55" },
+              ]}
             />
+          ) : (
+            <View
+              style={[
+                styles.cardIcon,
+                {
+                  backgroundColor:
+                    (item.category_color || colors.brandPrimary) + "22",
+                },
+              ]}
+            >
+              <Ionicons
+                name={(item.category_icon as any) || "document-text-outline"}
+                size={22}
+                color={item.category_color || colors.brandPrimary}
+              />
+            </View>
+          )}
+          <View style={{ flex: 1, marginRight: spacing.sm }}>
+            <Text
+              numberOfLines={1}
+              style={[styles.cardTitle, { color: colors.onSurface }]}
+            >
+              {item.title}
+            </Text>
+            <Text
+              numberOfLines={1}
+              style={[styles.cardMeta, { color: colors.onSurfaceTertiary }]}
+            >
+              {catLabel} · {formatExpiryDate(item.expiry_date, locale)}
+            </Text>
           </View>
-        )}
-        <View style={{ flex: 1, marginRight: spacing.sm }}>
-          <Text
-            numberOfLines={1}
-            style={[styles.cardTitle, { color: colors.onSurface }]}
-          >
-            {item.title}
-          </Text>
-          <Text
-            numberOfLines={1}
-            style={[styles.cardMeta, { color: colors.onSurfaceTertiary }]}
-          >
-            {catLabel} · {formatExpiryDate(item.expiry_date, locale)}
-          </Text>
-        </View>
-        <View style={[styles.badge, { backgroundColor: ub.bg }]}>
-          <Text style={[styles.badgeText, { color: ub.fg }]} numberOfLines={1}>
-            {u.label}
-          </Text>
-        </View>
-      </Pressable>
+          <View style={[styles.badge, { backgroundColor: ub.bg }]}>
+            <Text style={[styles.badgeText, { color: ub.fg }]} numberOfLines={1}>
+              {u.label}
+            </Text>
+          </View>
+        </Pressable>
+      </Animated.View>
     );
   };
 
@@ -156,7 +184,10 @@ export default function HomeScreen() {
           <Pressable
             key={c.key}
             testID={`filter-${c.key}`}
-            onPress={() => setFilter(c.key)}
+            onPress={() => {
+              triggerHaptic("selection");
+              setFilter(c.key);
+            }}
             style={({ pressed }) => [
               styles.chip,
               {
@@ -247,7 +278,15 @@ export default function HomeScreen() {
       <FlatList
         data={filtered}
         keyExtractor={(d) => String(d.id)}
-        renderItem={({ item }) => renderCard(item)}
+        renderItem={({ item, index }) => renderCard(item, index)}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.brandPrimary}
+            colors={[colors.brandPrimary]}
+          />
+        }
         contentContainerStyle={{
           paddingHorizontal: spacing.xl,
           paddingBottom: insets.bottom + 140,
@@ -276,6 +315,23 @@ export default function HomeScreen() {
         <Text style={[styles.subtitle, { color: colors.onSurfaceTertiary }]}>
           {t("home.subtitle")}
         </Text>
+
+        <View style={[styles.searchContainer, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
+          <Ionicons name="search-outline" size={20} color={colors.onSurfaceTertiary} />
+          <TextInput
+            testID="home-search-input"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder={t("common.searchPlaceholder") || "Search documents..."}
+            placeholderTextColor={colors.onSurfaceTertiary}
+            style={[styles.searchInput, { color: colors.onSurface }]}
+          />
+          {searchQuery.length > 0 && (
+            <Pressable onPress={() => setSearchQuery("")}>
+              <Ionicons name="close-circle" size={18} color={colors.onSurfaceTertiary} />
+            </Pressable>
+          )}
+        </View>
       </View>
 
       <View style={styles.chipContainer}>{Chips}</View>
@@ -286,7 +342,10 @@ export default function HomeScreen() {
       <Pressable
         testID="home-fab"
         accessibilityLabel={t("home.addButton")}
-        onPress={() => router.push("/document/new")}
+        onPress={() => {
+          triggerHaptic("medium");
+          router.push("/document/new");
+        }}
         style={({ pressed }) => [
           styles.fab,
           {
@@ -309,11 +368,28 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize["2xl"],
     fontWeight: "800",
+    fontFamily: fontFamilyForWeight("800"),
     letterSpacing: -0.5,
   },
   subtitle: {
     fontSize: fontSize.base,
     marginTop: spacing.xs,
+    fontWeight: "500",
+    fontFamily: fontFamilyForWeight("500"),
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: spacing.md,
+    height: 44,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    marginTop: spacing.lg,
+    gap: spacing.sm,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: fontSize.base,
     fontWeight: "500",
   },
   chipContainer: { height: 56, justifyContent: "center" },
@@ -345,6 +421,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: spacing.md,
+  },
+  cardThumb: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.md,
+    marginRight: spacing.md,
+    borderWidth: 1,
   },
   cardTitle: {
     fontSize: fontSize.lg,

@@ -5,6 +5,8 @@ import {
   StyleSheet,
   Pressable,
   ScrollView,
+  Switch,
+  Platform,
 } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,6 +18,12 @@ import { Locale } from "../../src/i18n/translations";
 import { getAllDocuments } from "../../src/db/documents";
 import { daysUntil } from "../../src/utils/urgency";
 import { STORAGE_KEYS, useStoredValue } from "../../src/hooks/useStoredValue";
+import {
+  getDefaultHapticsEnabled,
+  syncHapticsCache,
+} from "../../src/preferences/hapticsPreference";
+import { triggerHaptic } from "../../src/utils/haptics";
+import { fontFamilyForWeight } from "../../src/theme/fonts";
 
 const REMINDER_OPTIONS: Array<{ days: number; key: string }> = [
   { days: 30, key: "30" },
@@ -33,6 +41,16 @@ export default function SettingsScreen() {
     STORAGE_KEYS.defaultReminders,
     [30, 7, 1]
   );
+  const [hapticsOn, setHapticsOn] = useStoredValue<boolean>(
+    STORAGE_KEYS.hapticsEnabled,
+    getDefaultHapticsEnabled()
+  );
+
+  const handleHapticsToggle = async (value: boolean) => {
+    triggerHaptic("selection");
+    syncHapticsCache(value);
+    await setHapticsOn(value);
+  };
 
   const loadStats = useCallback(async () => {
     const docs = await getAllDocuments();
@@ -52,12 +70,19 @@ export default function SettingsScreen() {
     }, [loadStats])
   );
 
+  React.useEffect(() => {
+    syncHapticsCache(hapticsOn);
+  }, [hapticsOn]);
+
   const LangButton = ({ value, label }: { value: Locale; label: string }) => {
     const active = locale === value;
     return (
       <Pressable
         testID={`lang-btn-${value}`}
-        onPress={() => setLocale(value)}
+        onPress={() => {
+          triggerHaptic("selection");
+          setLocale(value);
+        }}
         style={({ pressed }) => [
           styles.langBtn,
           {
@@ -184,6 +209,40 @@ export default function SettingsScreen() {
           </View>
         </View>
 
+        {/* Haptics */}
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+          ]}
+          testID="settings-haptics"
+        >
+          <View style={styles.hapticsRow}>
+            <View style={styles.hapticsLabel}>
+              <View style={[styles.iconWrap, { backgroundColor: colors.brandTertiary }]}>
+                <Ionicons
+                  name="phone-portrait-outline"
+                  size={20}
+                  color={colors.brandPrimary}
+                />
+              </View>
+              <Text style={[styles.cardTitle, { color: colors.onSurface }]}>
+                {t("settings.haptics")}
+              </Text>
+            </View>
+            <Switch
+              testID="haptics-switch"
+              value={hapticsOn}
+              onValueChange={handleHapticsToggle}
+              trackColor={{
+                false: colors.surfaceTertiary,
+                true: colors.brandPrimary,
+              }}
+              thumbColor={Platform.OS === "android" ? colors.onBrandPrimary : undefined}
+            />
+          </View>
+        </View>
+
         {/* Default reminders */}
         <View
           style={[
@@ -214,13 +273,14 @@ export default function SettingsScreen() {
                 <Pressable
                   key={opt.key}
                   testID={`default-reminder-${opt.days}`}
-                  onPress={() =>
+                  onPress={() => {
+                    triggerHaptic("selection");
                     setDefaults(
                       active
                         ? defaults.filter((d) => d !== opt.days)
                         : [...defaults, opt.days].sort((a, b) => b - a)
-                    )
-                  }
+                    );
+                  }}
                   style={({ pressed }) => [
                     styles.chip,
                     {
@@ -304,12 +364,24 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize["2xl"],
     fontWeight: "800",
+    fontFamily: fontFamilyForWeight("800"),
     letterSpacing: -0.5,
   },
   subtitle: {
     fontSize: fontSize.base,
     marginTop: spacing.xs,
     fontWeight: "500",
+    fontFamily: fontFamilyForWeight("500"),
+  },
+  hapticsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  hapticsLabel: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
   },
   card: {
     borderRadius: radius.lg,
@@ -330,7 +402,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginRight: spacing.md,
   },
-  cardTitle: { fontSize: fontSize.lg, fontWeight: "700" },
+  cardTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: "700",
+    fontFamily: fontFamilyForWeight("700"),
+  },
   cardHint: {
     fontSize: fontSize.sm,
     fontWeight: "500",

@@ -24,7 +24,7 @@ A mobile app (iOS + Android) to track expiration dates of personal documents, gu
 | 7 | Photo attachments | ✅ Done |
 | 8 | Local notifications (reminders) | ✅ Done |
 | 9 | Settings polish (default reminder days) | ✅ Done |
-| 10 | Final UX polish | ⏳ |
+| 10 | Final UX polish | ✅ Done |
 
 ## Data Model (planned)
 - `documents`: id, title, category_id, expiry_date, issue_date, notes, image_uri, notify_days_before, created_at, updated_at

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
+import { Image } from "expo-image";
 import {
   View,
   Text,
   StyleSheet,
   Pressable,
-  Image,
   Linking,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";

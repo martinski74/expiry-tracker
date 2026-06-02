@@ -49,4 +49,5 @@ export function useStoredValue<T>(
 
 export const STORAGE_KEYS = {
   defaultReminders: "@expiry_tracker/default_reminders",
+  hapticsEnabled: "@expiry_tracker/haptics_enabled",
 };

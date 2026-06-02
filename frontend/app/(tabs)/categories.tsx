@@ -18,6 +18,7 @@ import {
   deleteCategory,
   Category,
 } from "../../src/db/categories";
+import { triggerHaptic } from "../../src/utils/haptics";
 
 const PREDEFINED_KEYS = ["documents", "insurance", "warranties", "other"];
 
@@ -75,6 +76,46 @@ export default function CategoriesScreen() {
     await load();
   };
 
+  const renderEmptyState = () => (
+    <View style={styles.emptyWrap} testID="categories-empty-state">
+      <Ionicons
+        name="grid-outline"
+        size={64}
+        color={colors.onSurfaceTertiary}
+      />
+      <Text style={[styles.emptyTitle, { color: colors.onSurface }]}>
+        {t("categories.emptyTitle")}
+      </Text>
+      <Text style={[styles.emptyDesc, { color: colors.onSurfaceTertiary }]}>
+        {t("categories.emptyDescription")}
+      </Text>
+      <Pressable
+        onPress={() => {
+          triggerHaptic("medium");
+          router.push("/category/new");
+        }}
+        style={({ pressed }) => [
+          styles.emptyCta,
+          {
+            backgroundColor: colors.brandPrimary,
+            opacity: pressed ? 0.9 : 1,
+          },
+        ]}
+      >
+        <Ionicons name="add" size={18} color={colors.onBrandPrimary} />
+        <Text
+          style={{
+            color: colors.onBrandPrimary,
+            fontWeight: "800",
+            fontSize: fontSize.base,
+          }}
+        >
+          {t("categories.addButton")}
+        </Text>
+      </Pressable>
+    </View>
+  );
+
   return (
     <View
       style={[
@@ -99,6 +140,8 @@ export default function CategoriesScreen() {
         <View style={styles.loadingWrap}>
           <ActivityIndicator size="large" color={colors.brandPrimary} />
         </View>
+      ) : cats.length === 0 ? (
+        renderEmptyState()
       ) : (
         <ScrollView
           contentContainerStyle={{
@@ -109,10 +152,16 @@ export default function CategoriesScreen() {
         >
           {cats.map((cat) => {
             const isPending = pendingDeleteId === cat.id;
+            const hasExpired = (cat.expired_count ?? 0) > 0;
+            const hasUrgent = (cat.urgent_count ?? 0) > 0;
+
             return (
               <Pressable
                 key={cat.id}
                 testID={`category-row-${cat.id}`}
+                onPress={() => {
+                  router.push(`/category/view/${cat.id}`);
+                }}
                 onLongPress={() => handleLongPress(cat)}
                 delayLongPress={400}
                 style={({ pressed }) => [
@@ -150,6 +199,30 @@ export default function CategoriesScreen() {
                     >
                       {labelFor(cat)}
                     </Text>
+                    {hasExpired && (
+                      <View
+                        style={[
+                          styles.statusBadge,
+                          { backgroundColor: colors.error },
+                        ]}
+                      >
+                        <Text style={styles.statusBadgeText}>
+                          {cat.expired_count}
+                        </Text>
+                      </View>
+                    )}
+                    {hasUrgent && (
+                      <View
+                        style={[
+                          styles.statusBadge,
+                          { backgroundColor: colors.brandPrimary },
+                        ]}
+                      >
+                        <Text style={styles.statusBadgeText}>
+                          {cat.urgent_count}
+                        </Text>
+                      </View>
+                    )}
                     {!cat.is_predefined && (
                       <View
                         style={[
@@ -216,7 +289,10 @@ export default function CategoriesScreen() {
       <Pressable
         testID="categories-fab"
         accessibilityLabel={t("categories.addButton")}
-        onPress={() => router.push("/category/new")}
+        onPress={() => {
+          triggerHaptic("medium");
+          router.push("/category/new");
+        }}
         style={({ pressed }) => [
           styles.fab,
           {
@@ -278,6 +354,19 @@ const styles = StyleSheet.create({
     marginTop: 2,
     fontWeight: "500",
   },
+  statusBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: radius.pill,
+    minWidth: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  statusBadgeText: {
+    fontSize: 10,
+    fontWeight: "800",
+    color: "#fff",
+  },
   customBadge: {
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
@@ -310,5 +399,33 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 6 },
     elevation: 6,
+  },
+  emptyWrap: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: spacing.xl,
+  },
+  emptyTitle: {
+    fontSize: fontSize.xl,
+    fontWeight: "700",
+    textAlign: "center",
+    marginTop: spacing.lg,
+    marginBottom: spacing.sm,
+  },
+  emptyDesc: {
+    fontSize: fontSize.base,
+    textAlign: "center",
+    lineHeight: 22,
+    maxWidth: 320,
+  },
+  emptyCta: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    borderRadius: radius.pill,
+    marginTop: spacing.xl,
   },
 });

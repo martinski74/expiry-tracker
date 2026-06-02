@@ -9,7 +9,7 @@ import {
   Platform,
   KeyboardAvoidingView,
 } from "react-native";
-import { Stack, useRouter } from "expo-router";
+import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../src/theme/ThemeProvider";
@@ -24,6 +24,8 @@ import {
   scheduleForDocument,
 } from "../../src/notifications/scheduler";
 import { STORAGE_KEYS, useStoredValue } from "../../src/hooks/useStoredValue";
+import { triggerHaptic } from "../../src/utils/haptics";
+import { formatExpiryDate } from "../../src/utils/urgency";
 
 const DEFAULT_REMINDERS = [30, 7, 1];
 const REMINDER_OPTIONS: Array<{ days: number; key: string }> = [
@@ -47,11 +49,13 @@ export default function NewDocumentScreen() {
   const { t, locale } = useI18n();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const params = useLocalSearchParams<{ categoryId?: string }>();
 
   const [title, setTitle] = useState("");
-  const [categoryId, setCategoryId] = useState<number | null>(null);
+  const [categoryId, setCategoryId] = useState<number | null>(
+    params.categoryId ? Number(params.categoryId) : null
+  );
   const [expiryDate, setExpiryDate] = useState<Date | null>(null);
-  const [issueDate, setIssueDate] = useState<Date | null>(null);
   const [notes, setNotes] = useState("");
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [storedDefaults] = useStoredValue<number[]>(
@@ -100,7 +104,6 @@ export default function NewDocumentScreen() {
         title: title.trim(),
         category_id: categoryId,
         expiry_date: toISODate(expiryDate!),
-        issue_date: issueDate ? toISODate(issueDate) : null,
         notes: notes.trim() || null,
         image_uri: imageUri,
         notify_days_before: reminderDays,
@@ -124,9 +127,11 @@ export default function NewDocumentScreen() {
         }
       }
 
+      triggerHaptic("success");
       router.back();
     } catch (e) {
       console.error("[Save] failed:", e);
+      triggerHaptic("error");
       setSaving(false);
     }
   };
@@ -233,18 +238,6 @@ export default function NewDocumentScreen() {
           />
         </Field>
 
-        {/* Issue date */}
-        <Field label={t("form.fieldIssueDate")} colors={colors}>
-          <DateField
-            value={issueDate}
-            onChange={setIssueDate}
-            placeholder={t("form.pickDate")}
-            locale={locale}
-            clearLabel={t("form.clear")}
-            testID="field-issue"
-          />
-        </Field>
-
         {/* Notes */}
         <Field label={t("form.fieldNotes")} colors={colors}>
           <TextInput
@@ -285,13 +278,14 @@ export default function NewDocumentScreen() {
                 <Pressable
                   key={opt.key}
                   testID={`reminder-${opt.days}`}
-                  onPress={() =>
+                  onPress={() => {
+                    triggerHaptic("selection");
                     setReminderDays((curr) =>
                       curr.includes(opt.days)
                         ? curr.filter((d) => d !== opt.days)
                         : [...curr, opt.days].sort((a, b) => b - a)
-                    )
-                  }
+                    );
+                  }}
                   style={({ pressed }) => [
                     styles.catChip,
                     {
@@ -421,10 +415,14 @@ function CatChip({
   tint: string;
   testID: string;
 }) {
+  const handlePress = () => {
+    triggerHaptic("selection");
+    onPress();
+  };
   return (
     <Pressable
       testID={testID}
-      onPress={onPress}
+      onPress={handlePress}
       style={({ pressed }) => [
         styles.catChip,
         {
@@ -449,84 +447,6 @@ function CatChip({
         {label}
       </Text>
     </Pressable>
-  );
-}
-
-function DateRow({
-  value,
-  placeholder,
-  colors,
-  locale,
-  error,
-  onPress,
-  onClear,
-  clearLabel,
-  testID,
-}: {
-  value: Date | null;
-  placeholder: string;
-  colors: any;
-  locale: string;
-  error?: boolean;
-  onPress: () => void;
-  onClear: () => void;
-  clearLabel: string;
-  testID: string;
-}) {
-  return (
-    <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.sm }}>
-      <Pressable
-        testID={testID}
-        onPress={onPress}
-        style={({ pressed }) => [
-          styles.input,
-          {
-            flex: 1,
-            backgroundColor: colors.surfaceSecondary,
-            borderColor: error ? colors.error : colors.border,
-            opacity: pressed ? 0.85 : 1,
-            flexDirection: "row",
-            alignItems: "center",
-            gap: spacing.sm,
-          },
-        ]}
-      >
-        <Ionicons
-          name="calendar-outline"
-          size={18}
-          color={colors.onSurfaceTertiary}
-        />
-        <Text
-          style={{
-            color: value ? colors.onSurface : colors.onSurfaceTertiary,
-            fontSize: fontSize.base,
-            fontWeight: "500",
-          }}
-        >
-          {value ? formatExpiryDate(value.toISOString(), locale) : placeholder}
-        </Text>
-      </Pressable>
-      {value ? (
-        <Pressable
-          testID={`${testID}-clear`}
-          onPress={onClear}
-          style={[
-            styles.clearBtn,
-            { backgroundColor: colors.surfaceTertiary },
-          ]}
-        >
-          <Text
-            style={{
-              color: colors.onSurfaceSecondary,
-              fontWeight: "700",
-              fontSize: 12,
-            }}
-          >
-            {clearLabel}
-          </Text>
-        </Pressable>
-      ) : null}
-    </View>
   );
 }
 
@@ -591,4 +511,3 @@ const styles = StyleSheet.create({
   },
   saveTxt: { fontSize: fontSize.lg, fontWeight: "800" },
 });
-

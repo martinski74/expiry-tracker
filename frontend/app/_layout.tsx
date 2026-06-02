@@ -1,13 +1,35 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import * as SplashScreen from "expo-splash-screen";
 import { I18nProvider } from "../src/i18n/I18nProvider";
 import { ThemeProvider } from "../src/theme/ThemeProvider";
 import { DbProvider } from "../src/db/DbProvider";
+import { applyDefaultFontFamily, useAppFonts } from "../src/theme/fonts";
+import { loadHapticsPreference } from "../src/preferences/hapticsPreference";
+
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
+  const fontsLoaded = useAppFonts();
+
+  useEffect(() => {
+    loadHapticsPreference();
+  }, []);
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      applyDefaultFontFamily();
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>

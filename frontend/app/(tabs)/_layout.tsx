@@ -2,12 +2,34 @@ import React from "react";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Platform } from "react-native";
+import { PlatformPressable } from "@react-navigation/elements";
+import type { BottomTabBarButtonProps } from "@react-navigation/bottom-tabs";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../../src/theme/ThemeProvider";
 import { useI18n } from "../../src/i18n/I18nProvider";
+import { GlassTabBarBackground } from "../../src/components/GlassTabBarBackground";
+import { fontFamilyForWeight } from "../../src/theme/fonts";
+import { triggerHaptic } from "../../src/utils/haptics";
+
+function TabBarButton(props: BottomTabBarButtonProps) {
+  return (
+    <PlatformPressable
+      {...props}
+      onPress={(e) => {
+        triggerHaptic("selection");
+        props.onPress?.(e);
+      }}
+    />
+  );
+}
 
 export default function TabsLayout() {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const { t } = useI18n();
+  const insets = useSafeAreaInsets();
+
+  const tabBarBg =
+    Platform.OS === "ios" ? "transparent" : colors.surfaceSecondary + "F2";
 
   return (
     <Tabs
@@ -15,20 +37,25 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: colors.brandPrimary,
         tabBarInactiveTintColor: colors.onSurfaceTertiary,
+        tabBarBackground: () => <GlassTabBarBackground />,
         tabBarStyle: {
-          backgroundColor: colors.surfaceSecondary,
+          position: "absolute",
+          backgroundColor: tabBarBg,
           borderTopColor: colors.border,
           borderTopWidth: 1,
-          height: Platform.OS === "ios" ? 88 : 64,
+          height: Platform.OS === "ios" ? 88 : 64 + insets.bottom,
           paddingTop: 8,
-          paddingBottom: Platform.OS === "ios" ? 28 : 8,
+          paddingBottom: Platform.OS === "ios" ? 28 : Math.max(insets.bottom, 8),
+          elevation: 0,
         },
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: "600",
+          fontFamily: fontFamilyForWeight("600"),
         },
+        tabBarButton: TabBarButton,
         sceneStyle: {
-          backgroundColor: isDark ? colors.surface : colors.surface,
+          backgroundColor: colors.surface,
         },
       }}
     >
