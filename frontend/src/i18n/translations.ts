@@ -88,6 +88,8 @@ export const translations = {
       longPressHint: "Long-press a custom category to delete",
       deleteConfirm: "Delete category?",
       deleteWarning: "Documents in this category will become uncategorized.",
+      deleteKeepDocs: "Keep documents (uncategorized)",
+      deleteAllDocs: "Delete all documents too",
     },
     settings: {
       title: "Settings",
@@ -219,6 +221,8 @@ export const translations = {
       deleteConfirm: "Изтриване на категория?",
       deleteWarning:
         "Документите от тази категория ще останат без категория.",
+      deleteKeepDocs: "Запази документите (без категория)",
+      deleteAllDocs: "Изтрий и документите",
     },
     settings: {
       title: "Настройки",

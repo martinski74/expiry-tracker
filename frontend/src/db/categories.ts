@@ -76,3 +76,13 @@ export async function deleteCategory(id: number): Promise<void> {
     [id]
   );
 }
+
+/** Delete category AND all documents that belong to it. */
+export async function deleteCategoryAndDocuments(id: number): Promise<void> {
+  const db = await getDb();
+  await db.runAsync(`DELETE FROM documents WHERE category_id = ?;`, [id]);
+  await db.runAsync(
+    `DELETE FROM categories WHERE id = ? AND is_predefined = 0;`,
+    [id]
+  );
+}

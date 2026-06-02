@@ -6,6 +6,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Pressable,
+  Modal,
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,6 +17,7 @@ import { spacing, fontSize, radius } from "../../src/theme/colors";
 import {
   getAllCategories,
   deleteCategory,
+  deleteCategoryAndDocuments,
   Category,
 } from "../../src/db/categories";
 import { triggerHaptic } from "../../src/utils/haptics";
@@ -37,6 +39,7 @@ export default function CategoriesScreen() {
   const insets = useSafeAreaInsets();
   const [cats, setCats] = useState<Category[] | null>(null);
   const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
+  const [dialogCat, setDialogCat] = useState<Category | null>(null);
 
   const load = useCallback(async () => {
     const rows = await getAllCategories();
@@ -64,15 +67,34 @@ export default function CategoriesScreen() {
 
   const handleLongPress = (c: Category) => {
     if (c.is_predefined) return;
+    triggerHaptic("medium");
     setPendingDeleteId(c.id);
     setTimeout(() => {
       setPendingDeleteId((curr) => (curr === c.id ? null : curr));
     }, 4000);
   };
 
-  const handleConfirmDelete = async (c: Category) => {
-    await deleteCategory(c.id);
+  /** User tapped the red Delete pill → open the dialog */
+  const handleDeletePress = (c: Category) => {
+    triggerHaptic("warning");
     setPendingDeleteId(null);
+    setDialogCat(c);
+  };
+
+  /** Dialog: keep docs (uncategorized) */
+  const handleKeepDocs = async () => {
+    if (!dialogCat) return;
+    await deleteCategory(dialogCat.id);
+    setDialogCat(null);
+    await load();
+  };
+
+  /** Dialog: delete docs too */
+  const handleDeleteAll = async () => {
+    if (!dialogCat) return;
+    triggerHaptic("error");
+    await deleteCategoryAndDocuments(dialogCat.id);
+    setDialogCat(null);
     await load();
   };
 
@@ -254,7 +276,7 @@ export default function CategoriesScreen() {
                 {isPending ? (
                   <Pressable
                     testID={`confirm-delete-${cat.id}`}
-                    onPress={() => handleConfirmDelete(cat)}
+                    onPress={() => handleDeletePress(cat)}
                     style={[
                       styles.deletePill,
                       { backgroundColor: colors.error },
@@ -284,6 +306,82 @@ export default function CategoriesScreen() {
           </Text>
         </ScrollView>
       )}
+
+      {/* Delete warning modal */}
+      <Modal
+        visible={dialogCat !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setDialogCat(null)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setDialogCat(null)}
+        >
+          <Pressable
+            style={[
+              styles.modalCard,
+              { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+            ]}
+            onPress={() => {}}
+          >
+            {/* Icon */}
+            <View style={[styles.modalIcon, { backgroundColor: hexWithAlpha(colors.error, 0.12) }]}>
+              <Ionicons name="trash-outline" size={28} color={colors.error} />
+            </View>
+
+            {/* Title */}
+            <Text style={[styles.modalTitle, { color: colors.onSurface }]}>
+              {t("categories.deleteConfirm")}
+            </Text>
+
+            {/* Subtitle */}
+            <Text style={[styles.modalDesc, { color: colors.onSurfaceTertiary }]}>
+              {t("categories.deleteWarning")}
+            </Text>
+
+            {/* Action buttons */}
+            <Pressable
+              testID="modal-keep-docs"
+              onPress={handleKeepDocs}
+              style={({ pressed }) => [
+                styles.modalBtn,
+                { backgroundColor: colors.surface, borderColor: colors.border, opacity: pressed ? 0.8 : 1 },
+              ]}
+            >
+              <Ionicons name="folder-open-outline" size={18} color={colors.onSurface} />
+              <Text style={[styles.modalBtnText, { color: colors.onSurface }]}>
+                {t("categories.deleteKeepDocs")}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              testID="modal-delete-all"
+              onPress={handleDeleteAll}
+              style={({ pressed }) => [
+                styles.modalBtn,
+                { backgroundColor: hexWithAlpha(colors.error, 0.1), borderColor: colors.error, opacity: pressed ? 0.8 : 1 },
+              ]}
+            >
+              <Ionicons name="trash" size={18} color={colors.error} />
+              <Text style={[styles.modalBtnText, { color: colors.error }]}>
+                {t("categories.deleteAllDocs")}
+              </Text>
+            </Pressable>
+
+            {/* Cancel */}
+            <Pressable
+              testID="modal-cancel"
+              onPress={() => setDialogCat(null)}
+              style={({ pressed }) => [styles.modalCancel, { opacity: pressed ? 0.7 : 1 }]}
+            >
+              <Text style={[styles.modalCancelText, { color: colors.onSurfaceTertiary }]}>
+                {t("common.cancel")}
+              </Text>
+            </Pressable>
+          </Pressable>
+        </Pressable>
+      </Modal>
 
       {/* FAB */}
       <Pressable
@@ -427,5 +525,63 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     borderRadius: radius.pill,
     marginTop: spacing.xl,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.55)",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: spacing.xl,
+  },
+  modalCard: {
+    width: "100%",
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    padding: spacing.xl,
+    alignItems: "center",
+  },
+  modalIcon: {
+    width: 60,
+    height: 60,
+    borderRadius: radius.pill,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: spacing.lg,
+  },
+  modalTitle: {
+    fontSize: fontSize.xl,
+    fontWeight: "800",
+    textAlign: "center",
+    marginBottom: spacing.sm,
+  },
+  modalDesc: {
+    fontSize: fontSize.base,
+    textAlign: "center",
+    lineHeight: 22,
+    marginBottom: spacing.xl,
+  },
+  modalBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    width: "100%",
+    padding: spacing.md,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    marginBottom: spacing.sm,
+  },
+  modalBtnText: {
+    fontSize: fontSize.base,
+    fontWeight: "700",
+    flex: 1,
+  },
+  modalCancel: {
+    marginTop: spacing.sm,
+    padding: spacing.md,
+  },
+  modalCancelText: {
+    fontSize: fontSize.base,
+    fontWeight: "600",
+    textAlign: "center",
   },
 });
