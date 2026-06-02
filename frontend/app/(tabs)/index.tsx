@@ -224,7 +224,7 @@ export default function HomeScreen() {
     }
     if (docs.length === 0) {
       return (
-        <View style={styles.emptyWrap} testID="home-empty-state">
+        <View style={[styles.emptyWrap, { paddingBottom: insets.bottom + 80 }]} testID="home-empty-state">
           <Image source={{ uri: heroImg }} style={styles.emptyImg} resizeMode="contain" />
           <Text style={[styles.emptyTitle, { color: colors.onSurface }]}>
             {t("home.emptyTitle")}
@@ -338,26 +338,28 @@ export default function HomeScreen() {
 
       <View style={{ flex: 1 }}>{renderBody()}</View>
 
-      {/* FAB (Step 4 wires this to /document/new) */}
-      <Pressable
-        testID="home-fab"
-        accessibilityLabel={t("home.addButton")}
-        onPress={() => {
-          triggerHaptic("medium");
-          router.push("/document/new");
-        }}
-        style={({ pressed }) => [
-          styles.fab,
-          {
-            backgroundColor: colors.brandPrimary,
-            bottom: insets.bottom + 96,
-            opacity: pressed ? 0.9 : 1,
-            shadowColor: colors.onSurface,
-          },
-        ]}
-      >
-        <Ionicons name="add" size={28} color={colors.onBrandPrimary} />
-      </Pressable>
+      {/* FAB */}
+      {docs && docs.length > 0 && (
+        <Pressable
+          testID="home-fab"
+          accessibilityLabel={t("home.addButton")}
+          onPress={() => {
+            triggerHaptic("medium");
+            router.push("/document/new");
+          }}
+          style={({ pressed }) => [
+            styles.fab,
+            {
+              backgroundColor: colors.brandPrimary,
+              bottom: insets.bottom + 96,
+              opacity: pressed ? 0.9 : 1,
+              shadowColor: colors.onSurface,
+            },
+          ]}
+        >
+          <Ionicons name="add" size={28} color={colors.onBrandPrimary} />
+        </Pressable>
+      )}
     </View>
   );
 }
