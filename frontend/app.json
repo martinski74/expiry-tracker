@@ -10,6 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
+      "newArchEnabled": true,
       "infoPlist": {
         "NSCameraUsageDescription": "Attach a photo of your document",
         "NSPhotoLibraryUsageDescription": "Pick a document photo from your library"
