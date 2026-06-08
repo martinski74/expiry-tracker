@@ -130,7 +130,12 @@ expiry-tracker/
 ---
 
 ## 📱 App Screens
-
+<p align="center">
+  <img src="docs/screenshots/home.png" width="22%" alt="Home Screen" />
+  <img src="docs/screenshots/categories.png" width="22%" alt="Categories Screen" />
+  <img src="docs/screenshots/settings.png" width="22%" alt="Settings Screen" />
+  <img src="docs/screenshots/document.png" width="22%" alt="Document View" />
+</p>
 | Screen | Description |
 |---|---|
 | **Home** | View all documents sorted by urgency. Search, filter by status (All / Expiring Soon / Expired). Pull to refresh. |
