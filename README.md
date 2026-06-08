@@ -132,7 +132,8 @@ expiry-tracker/
 ## 📱 App Screens
 
 | Screen | Description |
-|---|---|
+|---|---|<img width="918" height="2048" alt="documents" src="https://github.com/user-attachments/assets/09eb9cf5-245b-4434-b465-4bce7f5c4221" />
+
 | **Home** | View all documents sorted by urgency. Search, filter by status (All / Expiring Soon / Expired). Pull to refresh. |
 | **Categories** | Browse predefined and custom categories. See document counts and urgency badges. Long-press to delete custom categories. |
 | **Settings** | Switch language, toggle haptic feedback, set default reminder intervals, view stats. |
