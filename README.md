@@ -1,3 +1,4 @@
+<img width="918" height="2048" alt="documents" src="https://github.com/user-attachments/assets/e28e5248-b1c4-49b8-81c7-6a48335fec75" />
 # 📄 Expiry Tracker
 
 A beautiful, premium mobile app for tracking expiration dates of your important documents, insurance policies, warranties, and more. Never miss a renewal deadline again.
@@ -131,10 +132,11 @@ expiry-tracker/
 
 ## 📱 App Screens
 <p align="center">
-  <img src="docs/screenshots/home.png" width="22%" alt="Home Screen" />
-  <img src="docs/screenshots/categories.png" width="22%" alt="Categories Screen" />
-  <img src="docs/screenshots/settings.png" width="22%" alt="Settings Screen" />
-  <img src="docs/screenshots/document.png" width="22%" alt="Document View" />
+<img width="22%" alt="Home Screen" src="https://github.com/user-attachments/assets/a79d221e-084e-48aa-b688-bc69c9a1654a" />
+<img width="22%" alt="Categories Screen" src="https://github.com/user-attachments/assets/fc61bcf8-3347-4356-8497-a1a833210877" />
+<img  width="22%" alt="Settings Screen" src="https://github.com/user-attachments/assets/9395a3da-abd2-4bad-86c6-1c6c297fca7f" />
+<img width="22%" alt="App Icon" src="https://github.com/user-attachments/assets/b9a2f193-68d9-4256-8473-d5da68ddb47f" />
+
 </p>
 | Screen | Description |
 |---|---|
