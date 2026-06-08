@@ -131,13 +131,14 @@ expiry-tracker/
 ---
 
 ## 📱 App Screens
+
 <p align="center">
 <img width="22%" alt="Home Screen" src="https://github.com/user-attachments/assets/a79d221e-084e-48aa-b688-bc69c9a1654a" />
 <img width="22%" alt="Categories Screen" src="https://github.com/user-attachments/assets/fc61bcf8-3347-4356-8497-a1a833210877" />
 <img  width="22%" alt="Settings Screen" src="https://github.com/user-attachments/assets/9395a3da-abd2-4bad-86c6-1c6c297fca7f" />
 <img width="22%" alt="App Icon" src="https://github.com/user-attachments/assets/b9a2f193-68d9-4256-8473-d5da68ddb47f" />
-
 </p>
+
 | Screen | Description |
 |---|---|
 | **Home** | View all documents sorted by urgency. Search, filter by status (All / Expiring Soon / Expired). Pull to refresh. |
