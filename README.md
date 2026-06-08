@@ -1,4 +1,4 @@
-<img width="918" height="2048" alt="documents" src="https://github.com/user-attachments/assets/e28e5248-b1c4-49b8-81c7-6a48335fec75" />
+
 # 📄 Expiry Tracker
 
 A beautiful, premium mobile app for tracking expiration dates of your important documents, insurance policies, warranties, and more. Never miss a renewal deadline again.
