@@ -26,6 +26,8 @@ import {
 import { STORAGE_KEYS, useStoredValue } from "../../src/hooks/useStoredValue";
 import { triggerHaptic } from "../../src/utils/haptics";
 import { formatExpiryDate } from "../../src/utils/urgency";
+import { usePremium } from '../../src/hooks/usePremium';
+import { getAllDocuments } from '../../src/db/documents'
 
 const DEFAULT_REMINDERS = [30, 7, 1];
 const REMINDER_OPTIONS: Array<{ days: number; key: string }> = [
@@ -48,6 +50,7 @@ export default function NewDocumentScreen() {
   const { colors } = useTheme();
   const { t, locale } = useI18n();
   const router = useRouter();
+  const { isPremium } = usePremium();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ categoryId?: string }>();
 
@@ -100,6 +103,13 @@ export default function NewDocumentScreen() {
     if (!validate() || saving) return;
     setSaving(true);
     try {
+      const documentCount = (await getAllDocuments()).length;
+      if (!isPremium && documentCount >= 3) {
+        setSaving(false);
+        // Пренасочваме го към Paywall-а
+        router.push({ pathname: "/premium" });
+        return; // Спираме записа!
+      }
       const newId = await addDocument({
         title: title.trim(),
         category_id: categoryId,
