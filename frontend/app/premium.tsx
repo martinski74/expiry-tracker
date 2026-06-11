@@ -5,10 +5,12 @@ import Purchases, { PurchasesPackage } from 'react-native-purchases';
 import { Image } from 'expo-image';
 import { useColorScheme } from 'react-native';
 import {darkTheme as colors} from '../src/theme/colors'
+import { useI18n } from '../src/i18n/I18nProvider';
 
 
 export default function PremiumScreen() {
   const router = useRouter();
+  const { t } = useI18n();
   const [loading, setLoading] = useState(false);
   const [purchasing, setPurchasing] = useState(false);
   const [premiumPackage, setPremiumPackage] = useState<PurchasesPackage | null>(null);
@@ -49,12 +51,12 @@ export default function PremiumScreen() {
       const { customerInfo } = await Purchases.purchasePackage(premiumPackage);
       
       if (customerInfo.entitlements.active['premium'] !== undefined) {
-        Alert.alert("Успех!", "Благодарим ти! Premium достъпът е активиран.");
+        Alert.alert(t("premium.successTitle"), t("premium.successMessage"));
         router.back(); // Връща потребителя обратно
       }
     } catch (e: any) {
       if (!e.userCancelled) {
-        Alert.alert("Грешка", "Възникна проблем при плащането. Моля опитай пак.");
+        Alert.alert(t("premium.errorTitle"), t("premium.paymentErrorMessage"));
       }
     } finally {
       setPurchasing(false);
@@ -62,21 +64,35 @@ export default function PremiumScreen() {
   };
 
   const handleRestore = async () => {
-    try {
-      setPurchasing(true);
-      const customerInfo = await Purchases.restorePurchases();
-      if (customerInfo.entitlements.active['premium'] !== undefined) {
-        Alert.alert("Възстановено!", "Твоят Premium абонамент беше възстановен успешно.");
-        router.back();
-      } else {
-        Alert.alert("Информация", "Не беше намерен активен абонамент за този профил.");
-      }
-    } catch (e) {
-      Alert.alert("Гreшка", "Неуспешно възстановяване.");
-    } finally {
-      setPurchasing(false);
+  try {
+    setPurchasing(true);
+    const customerInfo = await Purchases.restorePurchases();
+    // По-точна проверка
+    const premiumEntitlement = customerInfo.entitlements.active['premium']; 
+    console.log('Test debugger ',premiumEntitlement);
+    
+    if (premiumEntitlement?.isActive) {
+      Alert.alert(
+        t("premium.restoreSuccessTitle"), 
+        t("premium.restoreSuccessMessage")
+      );
+      router.back();
+    } else {
+      Alert.alert(
+        t("premium.noSubscriptionTitle"), 
+        t("premium.noSubscriptionMessage")
+      );
     }
-  };
+  } catch (error: any) {
+    console.error("Restore Purchases error:", error);
+    Alert.alert(
+      t("premium.errorTitle"), 
+      t("premium.restoreErrorMessage")
+    );
+  } finally {
+    setPurchasing(false);
+  }
+};
 
   if (loading) {
     return (
@@ -94,14 +110,14 @@ export default function PremiumScreen() {
         contentFit="contain" 
         transition={500} // Лека анимация при зареждане
       />
-      <Text style={styles.title}>Unlock Premium Access 🚀</Text>
-      <Text style={styles.subtitle}>Следете неограничен брой документи и получавайте навременни известия без лимити.</Text>
+      <Text style={styles.title}>{t("premium.title")}</Text>
+      <Text style={styles.subtitle}>{t("premium.subtitle")}</Text>
 
       {premiumPackage ? (
         <View style={styles.card}>
-          <Text style={styles.period}>Годишен абонамент</Text>
+          <Text style={styles.period}>{t("premium.annualSubscription")}</Text>
           {/* Динамичната цена от Google Play (напр. "19.99 лв. / година") */}
-          <Text style={styles.price}>{premiumPackage.product.priceString} / година</Text> 
+          <Text style={styles.price}>{premiumPackage.product.priceString} {t("premium.perYear")}</Text> 
           
           <TouchableOpacity 
             style={styles.button} 
@@ -111,20 +127,20 @@ export default function PremiumScreen() {
             {purchasing ? (
               <ActivityIndicator color="#FFF" />
             ) : (
-              <Text style={styles.buttonText}>Активирай Сега</Text>
+              <Text style={styles.buttonText}>{t("premium.activateNow")}</Text>
             )}
           </TouchableOpacity>
         </View>
       ) : (
-        <Text>Няма налична оферта в момента.</Text>
+        <Text>{t("premium.noOffers")}</Text>
       )}
 
       <TouchableOpacity onPress={handleRestore} style={styles.restoreButton} disabled={purchasing}>
-        <Text style={styles.restoreText}>Възстанови покупките (Restore)</Text>
+        <Text style={styles.restoreText}>{t("premium.restorePurchases")}</Text>
       </TouchableOpacity>
       
       <TouchableOpacity onPress={() => router.back()} style={styles.closeButton}>
-        <Text style={styles.closeText}>Затвори</Text>
+        <Text style={styles.closeText}>{t("premium.close")}</Text>
       </TouchableOpacity>
     </View>
   );
