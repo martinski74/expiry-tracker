@@ -148,6 +148,12 @@ export const translations = {
       noOffers: "No offers available at the moment.",
       restorePurchases: "Restore purchases",
       close: "Close",
+      features: {
+        unlimited: "Unlimited documents",
+        notifications: "Advanced notifications",
+        categories: "Custom categories",
+        support: "Support independent development",
+      },
     },
   },
   bg: {
@@ -300,6 +306,12 @@ export const translations = {
       noOffers: "Няма налична оферта в момента.",
       restorePurchases: "Възстанови покупките (Restore)",
       close: "Затвори",
+      features: {
+        unlimited: "Неограничен брой документи",
+        notifications: "Разширени известия",
+        categories: "Персонализирани категории",
+        support: "Подкрепа за независим проект",
+      },
     },
   },
 };
