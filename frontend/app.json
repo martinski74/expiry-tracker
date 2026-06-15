@@ -2,7 +2,7 @@
   "expo": {
     "name": "Expiry Tracker",
     "slug": "expiry-tracker",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "expiry-tracker",
@@ -18,7 +18,6 @@
     },
     "android": {
       "package": "com.martinski74.expirytracker",
-      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#FCFAF8"

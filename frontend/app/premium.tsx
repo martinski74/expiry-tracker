@@ -69,7 +69,6 @@ export default function PremiumScreen() {
     const customerInfo = await Purchases.restorePurchases();
     // По-точна проверка
     const premiumEntitlement = customerInfo.entitlements.active['premium']; 
-    console.log('Test debugger ',premiumEntitlement);
     
     if (premiumEntitlement?.isActive) {
       Alert.alert(
