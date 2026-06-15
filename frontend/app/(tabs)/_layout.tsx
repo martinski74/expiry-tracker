@@ -1,15 +1,18 @@
 import React from "react";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Platform } from "react-native";
+import { Platform, Pressable, StyleSheet, View, Text } from "react-native";
 import { PlatformPressable } from "@react-navigation/elements";
 import type { BottomTabBarButtonProps } from "@react-navigation/bottom-tabs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 import { useTheme } from "../../src/theme/ThemeProvider";
 import { useI18n } from "../../src/i18n/I18nProvider";
 import { GlassTabBarBackground } from "../../src/components/GlassTabBarBackground";
 import { fontFamilyForWeight } from "../../src/theme/fonts";
 import { triggerHaptic } from "../../src/utils/haptics";
+import { usePremium } from '../../src/hooks/usePremium'
+import { fontSize, radius, spacing } from "@/src/theme/colors";
 
 function TabBarButton(props: BottomTabBarButtonProps) {
   return (
@@ -27,11 +30,16 @@ export default function TabsLayout() {
   const { colors } = useTheme();
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const { isPremium } = usePremium();
 
   const tabBarBg =
     Platform.OS === "ios" ? "transparent" : colors.surfaceSecondary + "F2";
 
+  const tabBarHeight = Platform.OS === "ios" ? 88 : 64 + insets.bottom;
+
   return (
+    <View style={{ flex: 1 }}>
     <Tabs
       screenOptions={{
         headerShown: false,
@@ -90,5 +98,52 @@ export default function TabsLayout() {
         }}
       />
     </Tabs>
+
+    {/* Показва се само за non-premium потребители, над tab bar-а */}
+      {!isPremium && (
+        <Pressable
+          onPress={() => {
+            triggerHaptic("medium");
+            router.push("/premium");
+          }}
+          style={({ pressed }) => [
+            styles.premiumButton,
+            {
+              backgroundColor: colors.brandPrimary,
+              top: insets.top + spacing.lg,
+              opacity: pressed ? 0.85 : 1,
+              shadowColor: colors.brandPrimary,
+            },
+          ]}
+        >
+          <Ionicons name="star" size={12} color={colors.onBrandPrimary} />
+          <Text style={[styles.premiumButtonText, { color: colors.onBrandPrimary }]}>
+            Go Premium
+          </Text>
+        </Pressable>
+      )}
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  premiumButton: {
+    position: "absolute",
+    right: spacing.sm,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 8,
+    borderRadius: radius.pill,
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
+  },
+  premiumButtonText: {
+    fontSize: 12,
+    fontWeight: "700",
+    fontFamily: fontFamilyForWeight("700"),
+  },
+});

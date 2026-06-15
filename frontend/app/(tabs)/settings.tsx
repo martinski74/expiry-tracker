@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: radius.lg,
     borderWidth: 1,
-    padding: spacing.lg,
+    padding: spacing.md,
     marginBottom: spacing.lg,
   },
   cardHead: {
@@ -424,10 +424,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "stretch",
   },
-  statCell: { flex: 1, alignItems: "center", paddingVertical: spacing.sm },
-  statValue: { fontSize: 32, fontWeight: "800", letterSpacing: -1 },
+  statCell: { flex: 1, alignItems: "center", paddingVertical: spacing.xs },
+  statValue: { fontSize: 26, fontWeight: "800", letterSpacing: -1 },
   statLabel: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: "600",
     marginTop: 2,
     textAlign: "center",
