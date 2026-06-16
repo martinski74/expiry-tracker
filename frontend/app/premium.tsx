@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   heroImage: {
     width: 100,
     height: 100,
-    borderRadius: radius.xl,
+    borderRadius: radius.md,
     marginBottom: spacing.xl,
   },
   title: { 
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
   card: { 
     width: '100%', 
     padding: spacing.xl, 
-    borderRadius: radius["2xl"], 
+    borderRadius: radius.lg, 
     borderWidth: 1, 
     alignItems: 'center',
     shadowColor: "#000",

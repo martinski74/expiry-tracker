@@ -402,6 +402,9 @@ export default function CategoriesScreen() {
         ]}
       >
         <Ionicons name="add" size={28} color={colors.onBrandPrimary} />
+        <Text style={[styles.fabLabel, { color: colors.onBrandPrimary }]}>
+          {t("categories.addButton")}
+        </Text>
       </Pressable>
     </View>
   );
@@ -488,8 +491,10 @@ const styles = StyleSheet.create({
   fab: {
     position: "absolute",
     right: spacing.xl,
-    width: 60,
-    height: 60,
+    flexDirection: "row",
+    gap: 1,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 8,
     borderRadius: radius.pill,
     alignItems: "center",
     justifyContent: "center",
@@ -497,6 +502,10 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 6 },
     elevation: 6,
+  },
+    fabLabel: {
+    fontSize: fontSize.base,
+    fontWeight: "700",
   },
   emptyWrap: {
     flex: 1,

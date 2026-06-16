@@ -225,7 +225,7 @@ export const translations = {
       emptyTitle: "Още няма потребителски категории",
       emptyDescription:
         "Тук ще се показват предварителните и вашите категории.",
-      addButton: "Добави категория",
+      addButton: "Kатегория",
       predefined: {
         documents: "Документи",
         insurance: "Застраховки",
