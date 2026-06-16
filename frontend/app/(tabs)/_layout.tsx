@@ -118,7 +118,7 @@ export default function TabsLayout() {
         >
           <Ionicons name="star" size={12} color={colors.onBrandPrimary} />
           <Text style={[styles.premiumButtonText, { color: colors.onBrandPrimary }]}>
-            Go Premium
+            {t("common.goPremium")}
           </Text>
         </Pressable>
       )}

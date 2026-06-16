@@ -24,6 +24,7 @@ import {
 } from "../../src/preferences/hapticsPreference";
 import { triggerHaptic } from "../../src/utils/haptics";
 import { fontFamilyForWeight } from "../../src/theme/fonts";
+import Constants from "expo-constants";
 
 const REMINDER_OPTIONS: Array<{ days: number; key: string }> = [
   { days: 30, key: "30" },
@@ -339,7 +340,7 @@ export default function SettingsScreen() {
               {t("settings.version")}
             </Text>
             <Text style={[styles.aboutValue, { color: colors.onSurface }]}>
-              1.0.0
+              {Constants.expoConfig?.version ?? "1.0.0"}
             </Text>
           </View>
           <Text

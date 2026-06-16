@@ -26,6 +26,7 @@ import {
 } from "../../src/utils/urgency";
 import { triggerHaptic } from "../../src/utils/haptics";
 import { fontFamilyForWeight } from "../../src/theme/fonts";
+import { usePremium } from "../../src/hooks/usePremium";
 
 type FilterKey = "all" | "soon" | "expired";
 
@@ -36,6 +37,7 @@ export default function HomeScreen() {
   const { t, locale } = useI18n();
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { isPremium } = usePremium();
   const [docs, setDocs] = useState<DocumentRow[] | null>(null);
   const [filter, setFilter] = useState<FilterKey>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -305,7 +307,7 @@ export default function HomeScreen() {
       ]}
       testID="home-screen"
     >
-      <View style={styles.header}>
+      <View style={[styles.header, !isPremium && { paddingRight: 120 }]}>
         <Text
           style={[styles.title, { color: colors.onSurface }]}
           testID="home-title"
