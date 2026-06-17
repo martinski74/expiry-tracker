@@ -307,7 +307,7 @@ export default function HomeScreen() {
       ]}
       testID="home-screen"
     >
-      <View style={[styles.header, !isPremium && { paddingRight: 120 }]}>
+      <View style={[styles.header, !isPremium && { paddingRight: 110 }]}>
         <Text
           style={[styles.title, { color: colors.onSurface }]}
           testID="home-title"

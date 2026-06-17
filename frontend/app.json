@@ -2,7 +2,7 @@
   "expo": {
     "name": "Expiry Tracker",
     "slug": "expiry-tracker",
-    "version": "1.0.1",
+    "version": "1.2.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "expiry-tracker",
@@ -35,7 +35,6 @@
     },
     "plugins": [
       "expo-router",
-      "expo-version",
       [
         "expo-splash-screen",
         {
