@@ -28,6 +28,7 @@ import { DateField } from "../../src/components/DateField";
 import {
   rescheduleForDocument,
   cancelForDocument,
+  ensurePermission,
 } from "../../src/notifications/scheduler";
 import { triggerHaptic } from "../../src/utils/haptics";
 import { formatExpiryDate } from "../../src/utils/urgency";
@@ -115,15 +116,12 @@ export default function EditDocumentScreen() {
         expiry_date: toISODate(expiryDate!),
         notes: notes.trim() || null,
         image_uri: imageUri,
+        notify_days_before: reminderDays
       });
-
-      // Update notifications if reminders changed
-      const remindersChanged =
-        reminderDays.length !== originalReminders.length ||
-        reminderDays.some((d) => !originalReminders.includes(d));
-
-      if (remindersChanged) {
-        if (reminderDays.length > 0) {
+      // Update notifications to ensure title or expiry date changes are reflected
+      if (reminderDays.length > 0) {
+        const perm = await ensurePermission();
+        if (perm.granted) {
           await rescheduleForDocument({
             docId: id,
             title: title.trim(),
@@ -137,10 +135,10 @@ export default function EditDocumentScreen() {
               daysTemplate: t("form.notifBodyDays"),
             },
           });
-        } else {
-          // User disabled all reminders
-          await cancelForDocument(id, originalReminders);
         }
+      } else if (originalReminders.length > 0) {
+        // User disabled all reminders
+        await cancelForDocument(id, originalReminders);
       }
 
       triggerHaptic("success");
@@ -160,6 +158,7 @@ export default function EditDocumentScreen() {
       return;
     }
     try {
+      await cancelForDocument(id, originalReminders);
       await deleteDocument(id);
       triggerHaptic("success");
       router.back();

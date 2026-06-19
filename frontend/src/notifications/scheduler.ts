@@ -94,8 +94,8 @@ type ScheduleInput = {
 export async function scheduleForDocument(input: ScheduleInput): Promise<void> {
   if (Platform.OS === "web") return;
 
-  const expiry = new Date(input.expiryISO);
-  expiry.setHours(9, 0, 0, 0); // notify at 9am local time
+  const [year, month, day] = input.expiryISO.split("-").map(Number);
+  const expiry = new Date(year, month - 1, day, 8, 0, 0, 0); // notify at 8am local time
 
   const now = new Date();
 

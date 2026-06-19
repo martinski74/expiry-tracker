@@ -288,6 +288,7 @@ export const translations = {
       expiresToday: "Изтича днес",
       expiresTomorrow: "Изтича утре",
       daysLeft: "Остават {n} дни",
+      expiredYesterday: "Изтекъл вчера",
       expiredDaysAgo: "Изтекъл преди {n} дни",
     },
     premium: {
