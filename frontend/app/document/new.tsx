@@ -35,6 +35,7 @@ const REMINDER_OPTIONS: Array<{ days: number; key: string }> = [
   { days: 14, key: "14" },
   { days: 7, key: "7" },
   { days: 1, key: "1" },
+  { days: 0, key: "0" }
 ];
 
 const PREDEFINED_KEYS = ["documents", "insurance", "warranties", "other"];

@@ -5,6 +5,8 @@ import Purchases, { PurchasesPackage } from 'react-native-purchases';
 import { Image } from 'expo-image';
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { LinearGradient } from 'expo-linear-gradient';
+import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '../src/theme/ThemeProvider';
 import { useI18n } from '../src/i18n/I18nProvider';
 import { spacing, fontSize, radius } from '../src/theme/colors';
@@ -94,67 +96,159 @@ export default function PremiumScreen() {
     );
   }
 
-  const FeatureItem = ({ icon, text }: { icon: string; text: string }) => (
+  const renderTitle = () => {
+    const title = t("premium.title");
+    const parts = title.split("Premium");
+    if (parts.length === 2) {
+      return (
+        <Text style={[styles.title, { color: colors.onSurface }]}>
+          {parts[0]}
+          <Text style={{ color: '#FF7E67' }}>Premium</Text>
+          {parts[1]}
+        </Text>
+      );
+    }
+    return <Text style={[styles.title, { color: colors.onSurface }]}>{title}</Text>;
+  };
+
+  const FeatureItem = ({ icon, title, desc }: { icon: string; title: string; desc: string }) => (
     <View style={styles.featureItem}>
-      <View style={[styles.featureIcon, { backgroundColor: colors.brandPrimary + '15' }]}>
-        <Ionicons name={icon as any} size={20} color={colors.brandPrimary} />
+      <View style={[styles.featureIconContainer, { 
+        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(224, 122, 95, 0.06)',
+        borderColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(224, 122, 95, 0.12)'
+      }]}>
+        <Ionicons name={icon as any} size={22} color="#FF7E67" />
       </View>
-      <Text style={[styles.featureText, { color: colors.onSurface }]}>{text}</Text>
+      <View style={styles.featureTextContainer}>
+        <Text style={[styles.featureTitle, { color: colors.onSurface }]}>{title}</Text>
+        <Text style={[styles.featureDesc, { color: colors.onSurfaceTertiary }]}>{desc}</Text>
+      </View>
     </View>
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.surface }]}>
+    <View style={styles.container}>
+      <StatusBar style={isDark ? "light" : "dark"} />
+      
+      {/* Background Gradient */}
+      <LinearGradient
+        colors={isDark ? ['#241D1B', '#141110'] : ['#FFFDFB', '#F3EFEA']}
+        style={StyleSheet.absoluteFillObject}
+      />
+
       {/* Top Close Button */}
       <TouchableOpacity 
         onPress={() => router.back()} 
-        style={[styles.closeIconButton, { top: insets.top + spacing.md }]}
+        style={[
+          styles.closeIconButton, 
+          { 
+            top: insets.top + spacing.sm,
+            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)',
+          }
+        ]}
       >
-        <Ionicons name="close" size={28} color={colors.onSurfaceTertiary} />
+        <Ionicons name="close" size={20} color={colors.onSurface} />
       </TouchableOpacity>
 
       <ScrollView 
-        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 60, paddingBottom: insets.bottom + spacing.xl }]}
+        contentContainerStyle={[
+          styles.scrollContent, 
+          { 
+            paddingTop: insets.top + 50, 
+            paddingBottom: Math.max(insets.bottom + spacing.xl, 40) 
+          }
+        ]}
         showsVerticalScrollIndicator={false}
       >
-        <Image 
-          source={require('../assets/images/icon.png')} // Changed to app icon for better branding
-          style={styles.heroImage} 
-          contentFit="contain" 
-        />
+        {/* Hero Icon Card */}
+        <View style={styles.heroContainer}>
+          <View style={[styles.heroIconWrapper, { 
+            backgroundColor: isDark ? '#1F1B1A' : '#FFFFFF',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.06)' 
+          }]}>
+            <Image 
+              source={require('../assets/images/icon.png')} 
+              style={styles.heroImage} 
+              contentFit="contain" 
+            />
+          </View>
+        </View>
         
-        <Text style={[styles.title, { color: colors.onSurface }]}>{t("premium.title")}</Text>
+        {renderTitle()}
         <Text style={[styles.subtitle, { color: colors.onSurfaceTertiary }]}>{t("premium.subtitle")}</Text>
 
+        {/* Features list */}
         <View style={styles.featuresContainer}>
-          <FeatureItem icon="infinite-outline" text={t("premium.features.unlimited")} />
-          <FeatureItem icon="notifications-outline" text={t("premium.features.notifications")} />
-          <FeatureItem icon="grid-outline" text={t("premium.features.categories")} />
-          <FeatureItem icon="heart-outline" text={t("premium.features.support")} />
+          <FeatureItem 
+            icon="infinite-outline" 
+            title={t("premium.features.unlimited")} 
+            desc={t("premium.features.unlimitedDesc")} 
+          />
+          <FeatureItem 
+            icon="notifications-outline" 
+            title={t("premium.features.notifications")} 
+            desc={t("premium.features.notificationsDesc")} 
+          />
+          <FeatureItem 
+            icon="grid-outline" 
+            title={t("premium.features.categories")} 
+            desc={t("premium.features.categoriesDesc")} 
+          />
+          <FeatureItem 
+            icon="ban-outline" 
+            title={t("premium.features.noAds")} 
+            desc={t("premium.features.noAdsDesc")} 
+          />
         </View>
 
+        {/* Pricing Card */}
         {premiumPackage ? (
-          <View style={[styles.card, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
-            <View style={[styles.badge, { backgroundColor: colors.brandPrimary }]}>
-              <Text style={[styles.badgeText, { color: colors.onBrandPrimary }]}>BEST VALUE</Text>
+          <View style={[styles.card, { 
+            backgroundColor: isDark ? '#231C1B' : '#FFFFFF', 
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.05)' 
+          }]}>
+            {/* Floating Badge */}
+            <View style={styles.badgeContainer}>
+              <LinearGradient
+                colors={['#FF9D7E', '#FF7A5C']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.badgeGradient}
+              >
+                <Text style={styles.badgeText}>★ BEST VALUE</Text>
+              </LinearGradient>
             </View>
             
-            <Text style={[styles.period, { color: colors.onSurfaceTertiary }]}>{t("premium.annualSubscription")}</Text>
+            <Text style={[styles.period, { color: colors.onSurfaceTertiary }]}>
+              {t("premium.annualSubscription").toUpperCase()}
+            </Text>
+            
             <Text style={[styles.price, { color: colors.onSurface }]}>
               {premiumPackage.product.priceString}
-              <Text style={styles.pricePeriod}> {t("premium.perYear")}</Text>
+              <Text style={[styles.pricePeriod, { color: colors.onSurfaceTertiary }]}> {t("premium.perYear")}</Text>
             </Text> 
             
+            {/* CTA Buy Button with Arrow */}
             <TouchableOpacity 
-              style={[styles.buyButton, { backgroundColor: colors.brandPrimary }]} 
+              style={styles.buyButtonContainer} 
               onPress={handlePurchase}
               disabled={purchasing}
             >
-              {purchasing ? (
-                <ActivityIndicator color={colors.onBrandPrimary} />
-              ) : (
-                <Text style={[styles.buyButtonText, { color: colors.onBrandPrimary }]}>{t("premium.activateNow")}</Text>
-              )}
+              <LinearGradient
+                colors={['#FF9D7E', '#FF7A5C']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.buyButtonGradient}
+              >
+                {purchasing ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <View style={styles.buyButtonContent}>
+                    <Text style={styles.buyButtonText}>{t("premium.activateNow")}</Text>
+                    <Ionicons name="arrow-forward" size={18} color="#FFFFFF" style={styles.buyButtonArrow} />
+                  </View>
+                )}
+              </LinearGradient>
             </TouchableOpacity>
           </View>
         ) : (
@@ -163,29 +257,67 @@ export default function PremiumScreen() {
           </View>
         )}
 
+        {/* Restore purchases */}
         <TouchableOpacity onPress={handleRestore} style={styles.restoreButton} disabled={purchasing}>
-          <Text style={[styles.restoreText, { color: colors.brandPrimary }]}>{t("premium.restorePurchases")}</Text>
+          <Ionicons name="refresh" size={16} color="#FF7E67" style={styles.restoreIcon} />
+          <Text style={styles.restoreText}>{t("premium.restorePurchases")}</Text>
         </TouchableOpacity>
+
+        {/* Security / Footer text */}
+        <View style={styles.footerContainer}>
+          <Ionicons name="lock-closed" size={12} color={colors.onSurfaceTertiary} style={styles.footerLockIcon} />
+          <Text style={[styles.footerText, { color: colors.onSurfaceTertiary }]}>
+            {t("premium.securePayment")}  •  {t("premium.cancelAnytime")}
+          </Text>
+        </View>
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  scrollContent: { paddingHorizontal: spacing.xl, alignItems: 'center' },
+  container: { 
+    flex: 1,
+  },
+  center: { 
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center',
+  },
+  scrollContent: { 
+    paddingHorizontal: spacing.xl, 
+    alignItems: 'center',
+  },
   closeIconButton: {
     position: 'absolute',
     right: spacing.xl,
     zIndex: 10,
-    padding: spacing.xs,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroContainer: {
+    marginBottom: spacing.xl,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 15,
+    elevation: 8,
+  },
+  heroIconWrapper: {
+    width: 80,
+    height: 80,
+    borderRadius: 24,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
   },
   heroImage: {
-    width: 100,
-    height: 100,
-    borderRadius: radius.md,
-    marginBottom: spacing.xl,
+    width: '100%',
+    height: '100%',
   },
   title: { 
     fontSize: 28, 
@@ -195,102 +327,156 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   subtitle: { 
-    fontSize: 16, 
+    fontSize: 15, 
     fontFamily: fontFamilyForWeight('500'),
     textAlign: 'center', 
-    marginBottom: spacing["2xl"], 
+    marginBottom: spacing.lg, 
     paddingHorizontal: spacing.md,
     lineHeight: 22,
   },
   featuresContainer: {
     width: '100%',
-    marginBottom: spacing["2xl"],
+    marginBottom: spacing.md,
     gap: spacing.md,
   },
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    width: '100%',
   },
-  featureIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: radius.md,
+  featureIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  featureText: {
+  featureTextContainer: {
+    flex: 1,
+    marginLeft: spacing.md,
+  },
+  featureTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    fontFamily: fontFamilyForWeight('600'),
+    fontWeight: '700',
+    fontFamily: fontFamilyForWeight('700'),
+  },
+  featureDesc: {
+    fontSize: 14,
+    fontFamily: fontFamilyForWeight('400'),
+    marginTop: 2,
+    lineHeight: 18,
   },
   card: { 
     width: '100%', 
     padding: spacing.xl, 
-    borderRadius: radius.lg, 
+    borderRadius: 24, 
     borderWidth: 1, 
     alignItems: 'center',
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
     elevation: 4,
-    marginTop: spacing.md,
+    marginTop: spacing.xl,
+    position: 'relative',
   },
-  badge: {
+  badgeContainer: {
     position: 'absolute',
     top: -12,
+    alignSelf: 'center',
+    zIndex: 5,
+  },
+  badgeGradient: {
     paddingHorizontal: spacing.md,
-    paddingVertical: 4,
+    paddingVertical: 5,
     borderRadius: radius.pill,
   },
   badgeText: {
-    fontSize: 10,
+    color: '#FFFFFF',
+    fontSize: 11,
     fontWeight: '900',
-    letterSpacing: 1,
+    letterSpacing: 0.8,
+    fontFamily: fontFamilyForWeight('900'),
   },
   period: { 
-    fontSize: 14, 
-    fontFamily: fontFamilyForWeight('600'),
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: spacing.xs,
+    fontSize: 13, 
+    fontFamily: fontFamilyForWeight('700'),
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    marginBottom: spacing.sm,
   },
   price: { 
     fontSize: 36, 
     fontFamily: fontFamilyForWeight('800'),
     fontWeight: '800', 
     marginBottom: spacing.xl,
+    textAlign: 'center',
   },
   pricePeriod: {
     fontSize: 18,
     fontWeight: '500',
+    fontFamily: fontFamilyForWeight('500'),
   },
-  buyButton: { 
-    width: '100%', 
-    paddingVertical: 18, 
-    borderRadius: radius.pill, 
-    alignItems: 'center', 
-    shadowColor: "#000",
+  buyButtonContainer: {
+    width: '100%',
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#FF7A5C',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  buyButtonGradient: {
+    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buyButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buyButtonText: { 
+    color: '#FFFFFF',
     fontSize: 18, 
     fontFamily: fontFamilyForWeight('800'),
     fontWeight: '800', 
   },
+  buyButtonArrow: {
+    marginLeft: spacing.sm,
+  },
   restoreButton: { 
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: spacing.xl,
-    padding: spacing.md,
+    padding: spacing.sm,
+  },
+  restoreIcon: {
+    marginRight: 6,
   },
   restoreText: { 
     fontSize: 14,
+    color: '#FF7E67',
     fontFamily: fontFamilyForWeight('600'),
     fontWeight: '600',
     textDecorationLine: 'underline',
+  },
+  footerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.md,
+    opacity: 0.6,
+  },
+  footerLockIcon: {
+    marginRight: 6,
+  },
+  footerText: {
+    fontSize: 12,
+    fontFamily: fontFamilyForWeight('500'),
+    textAlign: 'center',
   },
   noOffersContainer: {
     padding: spacing.xl,
