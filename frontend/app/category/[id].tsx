@@ -39,8 +39,8 @@ const ICON_OPTIONS = [
 ] as const;
 
 const COLOR_OPTIONS = [
-  "#E07A5F",
-  "#F4A261",
+  "#DD5A3A",
+  "#F08A3E",
   "#E4B363",
   "#829C7F",
   "#7CA1A6",

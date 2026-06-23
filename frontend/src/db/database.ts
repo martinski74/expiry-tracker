@@ -93,7 +93,7 @@ async function seedPredefinedCategories(
 
   const now = new Date().toISOString();
   const predefined: Array<{ name: string; icon: string; color: string }> = [
-    { name: "documents", icon: "document-text-outline", color: "#E07A5F" },
+    { name: "documents", icon: "document-text-outline", color: "#DD5A3A" },
     { name: "insurance", icon: "shield-checkmark-outline", color: "#829C7F" },
     { name: "warranties", icon: "construct-outline", color: "#E4B363" },
     { name: "other", icon: "ellipsis-horizontal-outline", color: "#7CA1A6" },

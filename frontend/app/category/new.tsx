@@ -38,8 +38,8 @@ const ICON_OPTIONS = [
 ] as const;
 
 const COLOR_OPTIONS = [
-  "#E07A5F", // terracotta (brand)
-  "#F4A261", // amber
+  "#DD5A3A", // terracotta (brand)
+  "#F08A3E", // amber
   "#E4B363", // warm gold
   "#829C7F", // sage
   "#7CA1A6", // muted teal
