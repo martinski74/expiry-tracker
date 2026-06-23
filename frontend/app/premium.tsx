@@ -18,17 +18,17 @@ export default function PremiumScreen() {
   const { t } = useI18n();
   const { colors, isDark } = useTheme();
   const insets = useSafeAreaInsets();
-  
+
   const [loading, setLoading] = useState(false);
   const [purchasing, setPurchasing] = useState(false);
   const [premiumPackage, setPremiumPackage] = useState<PurchasesPackage | null>(null);
-  
+
   useEffect(() => {
     const fetchOfferings = async () => {
       try {
         setLoading(true);
         const offerings = await Purchases.getOfferings();
-        
+
         if (offerings.current !== null) {
           if (offerings.current.annual !== null) {
             setPremiumPackage(offerings.current.annual);
@@ -53,7 +53,7 @@ export default function PremiumScreen() {
     try {
       setPurchasing(true);
       const { customerInfo } = await Purchases.purchasePackage(premiumPackage);
-      
+
       if (customerInfo.entitlements.active['premium'] !== undefined) {
         Alert.alert(t("premium.successTitle"), t("premium.successMessage"));
         router.back();
@@ -72,8 +72,8 @@ export default function PremiumScreen() {
       setPurchasing(true);
       triggerHaptic("light");
       const customerInfo = await Purchases.restorePurchases();
-      const premiumEntitlement = customerInfo.entitlements.active['premium']; 
-      
+      const premiumEntitlement = customerInfo.entitlements.active['premium'];
+
       if (premiumEntitlement?.isActive) {
         Alert.alert(t("premium.restoreSuccessTitle"), t("premium.restoreSuccessMessage"));
         router.back();
@@ -113,7 +113,7 @@ export default function PremiumScreen() {
 
   const FeatureItem = ({ icon, title, desc }: { icon: string; title: string; desc: string }) => (
     <View style={styles.featureItem}>
-      <View style={[styles.featureIconContainer, { 
+      <View style={[styles.featureIconContainer, {
         backgroundColor: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(224, 122, 95, 0.06)',
         borderColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(224, 122, 95, 0.12)'
       }]}>
@@ -129,19 +129,19 @@ export default function PremiumScreen() {
   return (
     <View style={styles.container}>
       <StatusBar style={isDark ? "light" : "dark"} />
-      
+
       {/* Background Gradient */}
       <LinearGradient
-        colors={isDark ? ['#241D1B', '#141110'] : ['#FFFDFB', '#F3EFEA']}
+        colors={isDark ? ['#291d35ff', '#3d2d29ff'] : ['#FFFDFB', '#F3EFEA']}
         style={StyleSheet.absoluteFillObject}
       />
 
       {/* Top Close Button */}
-      <TouchableOpacity 
-        onPress={() => router.back()} 
+      <TouchableOpacity
+        onPress={() => router.back()}
         style={[
-          styles.closeIconButton, 
-          { 
+          styles.closeIconButton,
+          {
             top: insets.top + spacing.sm,
             backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)',
           }
@@ -150,62 +150,62 @@ export default function PremiumScreen() {
         <Ionicons name="close" size={20} color={colors.onSurface} />
       </TouchableOpacity>
 
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={[
-          styles.scrollContent, 
-          { 
-            paddingTop: insets.top + 50, 
-            paddingBottom: Math.max(insets.bottom + spacing.xl, 40) 
+          styles.scrollContent,
+          {
+            paddingTop: insets.top + 50,
+            paddingBottom: Math.max(insets.bottom + spacing.xl, 40)
           }
         ]}
         showsVerticalScrollIndicator={false}
       >
         {/* Hero Icon Card */}
         <View style={styles.heroContainer}>
-          <View style={[styles.heroIconWrapper, { 
+          <View style={[styles.heroIconWrapper, {
             backgroundColor: isDark ? '#1F1B1A' : '#FFFFFF',
-            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.06)' 
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.06)'
           }]}>
-            <Image 
-              source={require('../assets/images/icon.png')} 
-              style={styles.heroImage} 
-              contentFit="contain" 
+            <Image
+              source={require('../assets/images/icon.png')}
+              style={styles.heroImage}
+              contentFit="contain"
             />
           </View>
         </View>
-        
+
         {renderTitle()}
         <Text style={[styles.subtitle, { color: colors.onSurfaceTertiary }]}>{t("premium.subtitle")}</Text>
 
         {/* Features list */}
         <View style={styles.featuresContainer}>
-          <FeatureItem 
-            icon="infinite-outline" 
-            title={t("premium.features.unlimited")} 
-            desc={t("premium.features.unlimitedDesc")} 
+          <FeatureItem
+            icon="infinite-outline"
+            title={t("premium.features.unlimited")}
+            desc={t("premium.features.unlimitedDesc")}
           />
-          <FeatureItem 
-            icon="notifications-outline" 
-            title={t("premium.features.notifications")} 
-            desc={t("premium.features.notificationsDesc")} 
+          <FeatureItem
+            icon="notifications-outline"
+            title={t("premium.features.notifications")}
+            desc={t("premium.features.notificationsDesc")}
           />
-          <FeatureItem 
-            icon="grid-outline" 
-            title={t("premium.features.categories")} 
-            desc={t("premium.features.categoriesDesc")} 
+          <FeatureItem
+            icon="grid-outline"
+            title={t("premium.features.categories")}
+            desc={t("premium.features.categoriesDesc")}
           />
-          <FeatureItem 
-            icon="ban-outline" 
-            title={t("premium.features.noAds")} 
-            desc={t("premium.features.noAdsDesc")} 
+          <FeatureItem
+            icon="ban-outline"
+            title={t("premium.features.noAds")}
+            desc={t("premium.features.noAdsDesc")}
           />
         </View>
 
         {/* Pricing Card */}
         {premiumPackage ? (
-          <View style={[styles.card, { 
-            backgroundColor: isDark ? '#231C1B' : '#FFFFFF', 
-            borderColor: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.05)' 
+          <View style={[styles.card, {
+            backgroundColor: isDark ? '#231C1B' : '#FFFFFF',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.05)'
           }]}>
             {/* Floating Badge */}
             <View style={styles.badgeContainer}>
@@ -218,19 +218,19 @@ export default function PremiumScreen() {
                 <Text style={styles.badgeText}>★ BEST VALUE</Text>
               </LinearGradient>
             </View>
-            
+
             <Text style={[styles.period, { color: colors.onSurfaceTertiary }]}>
               {t("premium.annualSubscription").toUpperCase()}
             </Text>
-            
+
             <Text style={[styles.price, { color: colors.onSurface }]}>
               {premiumPackage.product.priceString}
               <Text style={[styles.pricePeriod, { color: colors.onSurfaceTertiary }]}> {t("premium.perYear")}</Text>
-            </Text> 
-            
+            </Text>
+
             {/* CTA Buy Button with Arrow */}
-            <TouchableOpacity 
-              style={styles.buyButtonContainer} 
+            <TouchableOpacity
+              style={styles.buyButtonContainer}
               onPress={handlePurchase}
               disabled={purchasing}
             >
@@ -276,16 +276,16 @@ export default function PremiumScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { 
+  container: {
     flex: 1,
   },
-  center: { 
-    flex: 1, 
-    justifyContent: 'center', 
+  center: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  scrollContent: { 
-    paddingHorizontal: spacing.xl, 
+  scrollContent: {
+    paddingHorizontal: spacing.xl,
     alignItems: 'center',
   },
   closeIconButton: {
@@ -319,18 +319,18 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  title: { 
-    fontSize: 28, 
-    fontWeight: '800', 
+  title: {
+    fontSize: 28,
+    fontWeight: '800',
     fontFamily: fontFamilyForWeight('800'),
     textAlign: 'center',
     marginBottom: spacing.sm,
   },
-  subtitle: { 
-    fontSize: 15, 
+  subtitle: {
+    fontSize: 15,
     fontFamily: fontFamilyForWeight('500'),
-    textAlign: 'center', 
-    marginBottom: spacing.lg, 
+    textAlign: 'center',
+    marginBottom: spacing.lg,
     paddingHorizontal: spacing.md,
     lineHeight: 22,
   },
@@ -367,11 +367,11 @@ const styles = StyleSheet.create({
     marginTop: 2,
     lineHeight: 18,
   },
-  card: { 
-    width: '100%', 
-    padding: spacing.xl, 
-    borderRadius: 24, 
-    borderWidth: 1, 
+  card: {
+    width: '100%',
+    padding: spacing.xl,
+    borderRadius: 24,
+    borderWidth: 1,
     alignItems: 'center',
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 6 },
@@ -399,17 +399,17 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
     fontFamily: fontFamilyForWeight('900'),
   },
-  period: { 
-    fontSize: 13, 
+  period: {
+    fontSize: 13,
     fontFamily: fontFamilyForWeight('700'),
     fontWeight: '700',
     letterSpacing: 1.5,
     marginBottom: spacing.sm,
   },
-  price: { 
-    fontSize: 36, 
+  price: {
+    fontSize: 36,
     fontFamily: fontFamilyForWeight('800'),
-    fontWeight: '800', 
+    fontWeight: '800',
     marginBottom: spacing.xl,
     textAlign: 'center',
   },
@@ -438,16 +438,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buyButtonText: { 
+  buyButtonText: {
     color: '#FFFFFF',
-    fontSize: 18, 
+    fontSize: 18,
     fontFamily: fontFamilyForWeight('800'),
-    fontWeight: '800', 
+    fontWeight: '800',
   },
   buyButtonArrow: {
     marginLeft: spacing.sm,
   },
-  restoreButton: { 
+  restoreButton: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: spacing.xl,
@@ -456,7 +456,7 @@ const styles = StyleSheet.create({
   restoreIcon: {
     marginRight: 6,
   },
-  restoreText: { 
+  restoreText: {
     fontSize: 14,
     color: '#FF7E67',
     fontFamily: fontFamilyForWeight('600'),
