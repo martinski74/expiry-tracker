@@ -9,13 +9,22 @@ export type Urgency = {
 };
 
 /**
+ * Parse an ISO YYYY-MM-DD string into a local Date object.
+ * Prevents timezone bugs where UTC midnight falls into the previous day locally.
+ */
+export function parseLocalISODate(iso: string): Date {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+/**
  * Days between today (local midnight) and the expiry date (local midnight).
  * Positive = future, negative = past.
  */
 export function daysUntil(expiryISO: string): number {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const d = new Date(expiryISO);
+  const d = parseLocalISODate(expiryISO);
   d.setHours(0, 0, 0, 0);
   return Math.round((d.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 }
@@ -59,15 +68,15 @@ export function urgencyColors(
   }
 }
 
-export function formatExpiryDate(iso: string, locale: string): string {
+export function formatExpiryDate(dateInput: string | Date, locale: string): string {
   try {
-    const d = new Date(iso);
+    const d = typeof dateInput === "string" ? parseLocalISODate(dateInput) : dateInput;
     return d.toLocaleDateString(locale === "bg" ? "bg-BG" : "en-GB", {
       day: "2-digit",
       month: "short",
       year: "numeric",
     });
   } catch {
-    return iso;
+    return String(dateInput);
   }
 }

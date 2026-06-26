@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -19,6 +19,7 @@ SplashScreen.preventAutoHideAsync().catch(() => { });
 
 export default function RootLayout() {
   const fontsLoaded = useAppFonts();
+  const [rcConfigured, setRcConfigured] = useState(false);
 
   useEffect(() => {
     // Инициализиране на RevenueCat при стартиране на приложението
@@ -26,6 +27,7 @@ export default function RootLayout() {
       Purchases.setLogLevel(Purchases.LOG_LEVEL.DEBUG); // Помага да виждаш какво се случва в терминала
       Purchases.configure({ apiKey: API_KEY });
     }
+    setRcConfigured(true);
   }, []);
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export default function RootLayout() {
     }
   }, [fontsLoaded]);
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded || !rcConfigured) {
     return null;
   }
 

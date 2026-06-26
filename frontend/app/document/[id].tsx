@@ -31,7 +31,7 @@ import {
   ensurePermission,
 } from "../../src/notifications/scheduler";
 import { triggerHaptic } from "../../src/utils/haptics";
-import { formatExpiryDate } from "../../src/utils/urgency";
+import { formatExpiryDate, parseLocalISODate } from "../../src/utils/urgency";
 
 const REMINDER_OPTIONS: Array<{ days: number; key: string }> = [
   { days: 30, key: "30" },
@@ -84,7 +84,7 @@ export default function EditDocumentScreen() {
       }
       setTitle(doc.title);
       setCategoryId(doc.category_id);
-      setExpiryDate(new Date(doc.expiry_date));
+      setExpiryDate(parseLocalISODate(doc.expiry_date));
       setNotes(doc.notes ?? "");
       setImageUri(doc.image_uri ?? null);
       const reminders = parseNotifyDays(doc.notify_days_before);

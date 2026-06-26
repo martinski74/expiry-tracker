@@ -57,7 +57,7 @@ export function DateField({
             fontWeight: "500",
           }}
         >
-          {value ? formatExpiryDate(value.toISOString(), locale) : placeholder}
+          {value ? formatExpiryDate(value, locale) : placeholder}
         </Text>
       </Pressable>
       {value ? (

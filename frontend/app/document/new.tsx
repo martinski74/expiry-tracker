@@ -8,6 +8,7 @@ import {
   TextInput,
   Platform,
   KeyboardAvoidingView,
+  Alert,
 } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -107,8 +108,17 @@ export default function NewDocumentScreen() {
       const documentCount = (await getAllDocuments()).length;
       if (!isPremium && documentCount >= 3) {
         setSaving(false);
-        // Пренасочваме го към Paywall-а
-        router.push({ pathname: "/premium" });
+        Alert.alert(
+          t("premium.limitReachedTitle"),
+          t("premium.limitReachedMessage"),
+          [
+            { text: t("common.cancel"), style: "cancel" },
+            { 
+              text: t("common.goPremium"), 
+              onPress: () => router.push({ pathname: "/premium" }) 
+            }
+          ]
+        );
         return; // Спираме записа!
       }
       const newId = await addDocument({

@@ -9,6 +9,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "bundleIdentifier": "com.martinski74.expirytracker",
       "supportsTablet": true,
       "newArchEnabled": true,
       "infoPlist": {

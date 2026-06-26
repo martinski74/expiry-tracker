@@ -133,6 +133,8 @@ export const translations = {
       expiredDaysAgo: "Expired {n} days ago",
     },
     premium: {
+      limitReachedTitle: "Limit Reached",
+      limitReachedMessage: "You can only save up to 3 documents on the free tier. Upgrade to Premium for unlimited documents!",
       successTitle: "Success!",
       successMessage: "Thank you! Premium access is activated.",
       errorTitle: "Error",
@@ -300,6 +302,8 @@ export const translations = {
       expiredDaysAgo: "Изтекъл преди {n} дни",
     },
     premium: {
+      limitReachedTitle: "Достигнат лимит",
+      limitReachedMessage: "Можете да запазите до 3 документа с безплатната версия. Вземете Premium за неограничен брой!",
       successTitle: "Успех!",
       successMessage: "Благодарим ти! Premium достъпът е активиран.",
       errorTitle: "Грешка",
