@@ -34,7 +34,7 @@ const ICON_OPTIONS = [
   "medkit-outline",
   "musical-notes-outline",
   "paw-outline",
-  "pricetag-outline",
+  "tv-outline",
 ] as const;
 
 const COLOR_OPTIONS = [

@@ -48,7 +48,7 @@ export const PremiumProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     return () => {
       // Почистване на слушателя при затваряне
-      // За по-нови версии на SDK: Purchases.removeCustomerInfoUpdateListener(listener); 
+       Purchases.removeCustomerInfoUpdateListener(listener); 
     };
   }, []);
 

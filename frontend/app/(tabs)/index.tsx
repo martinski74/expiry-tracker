@@ -27,6 +27,8 @@ import {
 import { triggerHaptic } from "../../src/utils/haptics";
 import { fontFamilyForWeight } from "../../src/theme/fonts";
 import { usePremium } from "../../src/hooks/usePremium";
+const heroDark = require("../../assets/images/hero-img-dark.png");
+const  heroLight = require("../../assets/images/hero-img-light.png");
 
 type FilterKey = "all" | "soon" | "expired";
 
@@ -89,9 +91,7 @@ export default function HomeScreen() {
     return list;
   }, [docs, filter, searchQuery, t]);
 
-  const heroImg = isDark
-    ? "https://static.prod-images.emergentagent.com/jobs/db37db30-127b-414f-92c0-57b21f69a8b8/images/c5a63f21c0b8b28d6ec44802fef8d6f09ed6c1ea2c15b6043455f3480d729d4a.png"
-    : "https://static.prod-images.emergentagent.com/jobs/db37db30-127b-414f-92c0-57b21f69a8b8/images/0b3fd86df9a0d55cfa6641a05d1eb6c16da0ec45f4855adec61cf8d400e74a2f.png";
+  const heroImg = isDark ? heroDark : heroLight;
 
   const renderCard = (item: DocumentRow, index: number) => {
     const u = getUrgency(item.expiry_date, t);
@@ -227,7 +227,7 @@ export default function HomeScreen() {
     if (docs.length === 0) {
       return (
         <View style={[styles.emptyWrap, { paddingBottom: insets.bottom + 80 }]} testID="home-empty-state">
-          <Image source={{ uri: heroImg }} style={styles.emptyImg} resizeMode="contain" />
+          <Image source={ heroImg } style={styles.emptyImg} resizeMode="contain" />
           <Text style={[styles.emptyTitle, { color: colors.onSurface }]}>
             {t("home.emptyTitle")}
           </Text>

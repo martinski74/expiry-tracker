@@ -26,8 +26,8 @@ import {
 import { STORAGE_KEYS, useStoredValue } from "../../src/hooks/useStoredValue";
 import { triggerHaptic } from "../../src/utils/haptics";
 import { formatExpiryDate } from "../../src/utils/urgency";
-import { usePremium } from '../../src/hooks/usePremium';
-import { getAllDocuments } from '../../src/db/documents'
+import { usePremium } from "../../src/hooks/usePremium";
+import { getAllDocuments } from "../../src/db/documents"
 
 const DEFAULT_REMINDERS = [30, 7, 1];
 const REMINDER_OPTIONS: Array<{ days: number; key: string }> = [
