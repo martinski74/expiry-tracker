@@ -13,6 +13,7 @@ import {
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { File } from "expo-file-system";
 import { useTheme } from "../../src/theme/ThemeProvider";
 import { useI18n } from "../../src/i18n/I18nProvider";
 import { spacing, fontSize, radius } from "../../src/theme/colors";
@@ -161,6 +162,14 @@ export default function EditDocumentScreen() {
     try {
       await cancelForDocument(id, originalReminders);
       await deleteDocument(id);
+      if (imageUri && imageUri.startsWith("file://")) {
+        try {
+          const file = new File(imageUri);
+          if (file.exists) file.delete();
+        } catch {
+          // вече изтрит или недостъпен
+        }
+      }
       triggerHaptic("success");
       router.back();
     } catch (e) {

@@ -63,7 +63,7 @@ export default function NewDocumentScreen() {
   const [expiryDate, setExpiryDate] = useState<Date | null>(null);
   const [notes, setNotes] = useState("");
   const [imageUri, setImageUri] = useState<string | null>(null);
-  const [storedDefaults] = useStoredValue<number[]>(
+  const [storedDefaults, , defaultsReady] = useStoredValue<number[]>(
     STORAGE_KEYS.defaultReminders,
     DEFAULT_REMINDERS
   );
@@ -82,11 +82,11 @@ export default function NewDocumentScreen() {
 
   // Initialise reminder defaults from Settings the first time storedDefaults loads.
   useEffect(() => {
-    if (!reminderInitialised && storedDefaults) {
+    if (!reminderInitialised && defaultsReady) {
       setReminderDays(storedDefaults);
       setReminderInitialised(true);
     }
-  }, [storedDefaults, reminderInitialised]);
+  }, [storedDefaults, defaultsReady, reminderInitialised]);
 
   const labelForCategory = (c: Category) =>
     c.is_predefined && PREDEFINED_KEYS.includes(c.name)

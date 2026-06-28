@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import { File, Directory, Paths } from "expo-file-system";
 import { useTheme } from "../theme/ThemeProvider";
 import { useI18n } from "../i18n/I18nProvider";
 import { spacing, fontSize, radius } from "../theme/colors";
@@ -28,16 +29,37 @@ export function PhotoPicker({ value, onChange }: Props) {
   const { colors } = useTheme();
   const { t } = useI18n();
   const [showActions, setShowActions] = useState(false);
-  const [permIssue, setPermIssue] = useState<
-    null | { message: string; canAsk: boolean }
-  >(null);
+  const [permIssue, setPermIssue] = useState<null | {
+    message: string;
+    canAsk: boolean;
+  }>(null);
 
-  const toBase64DataUri = (asset: ImagePicker.ImagePickerAsset): string => {
-    if (asset.base64) {
-      const mime = asset.mimeType || "image/jpeg";
-      return `data:${mime};base64,${asset.base64}`;
+  const persistAsset = (asset: ImagePicker.ImagePickerAsset): string => {
+    const dir = new Directory(Paths.document, "documents");
+    if (!dir.exists) {
+      dir.create();
     }
-    return asset.uri; // fallback for environments where base64 isn't returned
+    const ext =
+      asset.uri.split(".").pop()?.split("?")[0]?.toLowerCase() || "jpg";
+    const filename = `photo_${Date.now()}_${Math.round(
+      Math.random() * 1e6,
+    )}.${ext}`;
+    const sourceFile = new File(asset.uri);
+    const destFile = new File(dir, filename);
+    sourceFile.copy(destFile);
+    return destFile.uri;
+  };
+
+  const deleteFileIfLocal = (uri: string | null): void => {
+    if (!uri || !uri.startsWith("file://")) return;
+    try {
+      const file = new File(uri);
+      if (file.exists) {
+        file.delete();
+      }
+    } catch {
+      // вече изтрит или недостъпен — игнорираме
+    }
   };
 
   const handleCamera = async () => {
@@ -54,11 +76,12 @@ export function PhotoPicker({ value, onChange }: Props) {
     const res = await ImagePicker.launchCameraAsync({
       mediaTypes: ["images"],
       quality: 0.7,
-      base64: true,
       allowsEditing: true,
     });
     if (!res.canceled && res.assets?.[0]) {
-      onChange(toBase64DataUri(res.assets[0]));
+      const newUri = persistAsset(res.assets[0]);
+      deleteFileIfLocal(value);
+      onChange(newUri);
     }
   };
 
@@ -76,16 +99,18 @@ export function PhotoPicker({ value, onChange }: Props) {
     const res = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       quality: 0.7,
-      base64: true,
       allowsEditing: true,
     });
     if (!res.canceled && res.assets?.[0]) {
-      onChange(toBase64DataUri(res.assets[0]));
+      const newUri = persistAsset(res.assets[0]);
+      deleteFileIfLocal(value);
+      onChange(newUri);
     }
   };
 
-  const handleRemove = () => {
+  const handleRemove = async () => {
     setShowActions(false);
+    deleteFileIfLocal(value);
     onChange(null);
   };
 
@@ -95,7 +120,10 @@ export function PhotoPicker({ value, onChange }: Props) {
         <View
           style={[
             styles.preview,
-            { borderColor: colors.border, backgroundColor: colors.surfaceSecondary },
+            {
+              borderColor: colors.border,
+              backgroundColor: colors.surfaceSecondary,
+            },
           ]}
           testID="photo-preview"
         >
@@ -112,7 +140,11 @@ export function PhotoPicker({ value, onChange }: Props) {
                 },
               ]}
             >
-              <Ionicons name="swap-horizontal" size={16} color={colors.onSurface} />
+              <Ionicons
+                name="swap-horizontal"
+                size={16}
+                color={colors.onSurface}
+              />
               <Text style={[styles.smallBtnText, { color: colors.onSurface }]}>
                 {t("form.replacePhoto")}
               </Text>
@@ -224,7 +256,10 @@ export function PhotoPicker({ value, onChange }: Props) {
             <Pressable
               testID="photo-open-settings"
               onPress={() => Linking.openSettings()}
-              style={[styles.settingsBtn, { backgroundColor: colors.brandPrimary }]}
+              style={[
+                styles.settingsBtn,
+                { backgroundColor: colors.brandPrimary },
+              ]}
             >
               <Text
                 style={{
