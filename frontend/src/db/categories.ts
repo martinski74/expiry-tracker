@@ -20,8 +20,8 @@ export async function getAllCategories(): Promise<Category[]> {
     `SELECT
        c.id, c.name, c.icon, c.color, c.is_predefined, c.created_at,
        (SELECT COUNT(*) FROM documents WHERE category_id = c.id) as document_count,
-       (SELECT COUNT(*) FROM documents WHERE category_id = c.id AND expiry_date < date('now')) as expired_count,
-       (SELECT COUNT(*) FROM documents WHERE category_id = c.id AND expiry_date >= date('now') AND expiry_date <= date('now', '+7 days')) as urgent_count
+       (SELECT COUNT(*) FROM documents WHERE category_id = c.id AND expiry_date < date('now', 'localtime')) as expired_count,
+       (SELECT COUNT(*) FROM documents WHERE category_id = c.id AND expiry_date >= date('now', 'localtime') AND expiry_date <= date('now', 'localtime', '+7 days')) as urgent_count
      FROM categories c
      ORDER BY c.is_predefined DESC, c.created_at ASC;`
   )) as Category[];

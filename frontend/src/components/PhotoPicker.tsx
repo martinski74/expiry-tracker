@@ -52,7 +52,7 @@ export function PhotoPicker({ value, onChange }: Props) {
       return;
     }
     const res = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images"],
       quality: 0.7,
       base64: true,
       allowsEditing: true,
@@ -74,7 +74,7 @@ export function PhotoPicker({ value, onChange }: Props) {
       return;
     }
     const res = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images"],
       quality: 0.7,
       base64: true,
       allowsEditing: true,

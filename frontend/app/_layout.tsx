@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
 import * as Notifications from "expo-notifications";
 import Purchases from 'react-native-purchases';
+import Constants from 'expo-constants';
 import { PremiumProvider } from '../src/hooks/usePremium';
 import { I18nProvider } from "../src/i18n/I18nProvider";
 import { ThemeProvider } from "../src/theme/ThemeProvider";
@@ -13,7 +14,8 @@ import { DbProvider } from "../src/db/DbProvider";
 import { applyDefaultFontFamily, useAppFonts } from "../src/theme/fonts";
 import { loadHapticsPreference } from "../src/preferences/hapticsPreference";
 
-const API_KEY = 'goog_bHrWkUdUFJREGvwwxOiLixjiXmo';
+const API_KEY: string | undefined =
+  Constants.expoConfig?.extra?.revenueCatApiKeyAndroid;
 
 SplashScreen.preventAutoHideAsync().catch(() => { });
 
@@ -26,6 +28,8 @@ export default function RootLayout() {
     if (API_KEY){
       Purchases.setLogLevel(Purchases.LOG_LEVEL.DEBUG); // Помага да виждаш какво се случва в терминала
       Purchases.configure({ apiKey: API_KEY });
+    } else {
+      console.warn("[RevenueCat] API key не е зададен в app.json -> extra.revenueCatApiKeyAndroid");
     }
     setRcConfigured(true);
   }, []);

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Expiry Tracker",
     "slug": "expiry-tracker",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "expiry-tracker",
@@ -67,7 +67,8 @@
       "router": {},
       "eas": {
         "projectId": "ac61e913-0c70-43b9-b21f-37372de0acac"
-      }
+      },
+      "revenueCatApiKeyAndroid": "goog_bHrWkUdUFJREGvwwxOiLixjiXmo"
     },
     "owner": "martinski"
   }
