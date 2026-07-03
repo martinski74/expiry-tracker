@@ -59,17 +59,17 @@ export default function TabsLayout() {
             paddingTop: 8,
             paddingBottom:
               Platform.OS === "ios" ? 28 : Math.max(insets.bottom, 8),
-            elevation: 0,
+            elevation: 0
           },
           tabBarLabelStyle: {
             fontSize: 12,
             fontWeight: "600",
-            fontFamily: fontFamilyForWeight("600"),
+            fontFamily: fontFamilyForWeight("600")
           },
           tabBarButton: TabBarButton,
           sceneStyle: {
-            backgroundColor: colors.surface,
-          },
+            backgroundColor: colors.surface
+          }
         }}
       >
         <Tabs.Screen
@@ -79,7 +79,7 @@ export default function TabsLayout() {
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="home-outline" size={size} color={color} />
             ),
-            tabBarButtonTestID: "tab-home",
+            tabBarButtonTestID: "tab-home"
           }}
         />
         <Tabs.Screen
@@ -89,7 +89,7 @@ export default function TabsLayout() {
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="grid-outline" size={size} color={color} />
             ),
-            tabBarButtonTestID: "tab-categories",
+            tabBarButtonTestID: "tab-categories"
           }}
         />
         <Tabs.Screen
@@ -99,7 +99,7 @@ export default function TabsLayout() {
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="settings-outline" size={size} color={color} />
             ),
-            tabBarButtonTestID: "tab-settings",
+            tabBarButtonTestID: "tab-settings"
           }}
         />
       </Tabs>
@@ -117,8 +117,8 @@ export default function TabsLayout() {
               backgroundColor: colors.brandPrimary,
               top: insets.top + spacing.lg,
               opacity: pressed ? 0.85 : 1,
-              shadowColor: colors.brandPrimary,
-            },
+              shadowColor: colors.brandPrimary
+            }
           ]}
         >
           <Ionicons name="star" size={12} color={colors.onBrandPrimary} />
@@ -146,11 +146,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.35,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
-    elevation: 6,
+    elevation: 6
   },
   premiumButtonText: {
     fontSize: 12,
     fontWeight: "700",
-    fontFamily: fontFamilyForWeight("700"),
-  },
+    fontFamily: fontFamilyForWeight("700")
+  }
 });
