@@ -47,8 +47,7 @@ export const translations = {
       permissionTitle: "Permission needed",
       permissionMessageCamera:
         "Allow camera access to take a photo of your document.",
-      permissionMessageLibrary:
-        "Allow photo library access to pick an image.",
+      permissionMessageLibrary: "Allow photo library access to pick an image.",
       openSettings: "Open Settings",
       fieldReminders: "Remind me",
       reminderDays_30: "30 days before",
@@ -109,6 +108,10 @@ export const translations = {
       statsExpiring: "Expiring soon",
       statsExpired: "Expired",
       madeWith: "Made for tracking what matters",
+      premiumStatus: "Subscription",
+      premiumActive: "Premium - Active",
+      premiumInactive: "Standard plan",
+      premiumUpgrade: "Get Premium",
     },
     common: {
       save: "Save",
@@ -134,18 +137,22 @@ export const translations = {
     },
     premium: {
       limitReachedTitle: "Limit Reached",
-      limitReachedMessage: "You can only save up to 3 documents on the free tier. Upgrade to Premium for unlimited documents!",
+      limitReachedMessage:
+        "You can only save up to 3 documents on the free tier. Upgrade to Premium for unlimited documents!",
       successTitle: "Success!",
       successMessage: "Thank you! Premium access is activated.",
       errorTitle: "Error",
-      paymentErrorMessage: "A problem occurred during payment. Please try again.",
+      paymentErrorMessage:
+        "A problem occurred during payment. Please try again.",
       restoreSuccessTitle: "Restored successfully!",
       restoreSuccessMessage: "Your Premium subscription has been restored.",
       noSubscriptionTitle: "No subscription found",
-      noSubscriptionMessage: "We couldn't find an active Premium subscription for this profile.",
+      noSubscriptionMessage:
+        "We couldn't find an active Premium subscription for this profile.",
       restoreErrorMessage: "Restore failed. Please try again.",
       title: "Unlock Premium Access 🚀",
-      subtitle: "Track an unlimited number of documents and receive timely notifications without limits.",
+      subtitle:
+        "Track an unlimited number of documents and receive timely notifications without limits.",
       annualSubscription: "Annual subscription",
       perYear: "/ year",
       activateNow: "Activate Now",
@@ -255,8 +262,7 @@ export const translations = {
       nameRequired: "Името е задължително",
       longPressHint: "Задръжте върху категория, за да я изтриете",
       deleteConfirm: "Изтриване на категория?",
-      deleteWarning:
-        "Документите от тази категория ще останат без категория.",
+      deleteWarning: "Документите от тази категория ще останат без категория.",
       deleteKeepDocs: "Запази документите (без категория)",
       deleteAllDocs: "Изтрий и документите",
     },
@@ -278,6 +284,10 @@ export const translations = {
       statsExpiring: "Изтичат скоро",
       statsExpired: "Изтекли",
       madeWith: "Направено, за да следите важното",
+      premiumStatus: "Абонамент",
+      premiumActive: "Premium - Активен",
+      premiumInactive: "Стандартен план",
+      premiumUpgrade: "Вземи Premium",
     },
     common: {
       save: "Запази",
@@ -303,7 +313,8 @@ export const translations = {
     },
     premium: {
       limitReachedTitle: "Достигнат лимит",
-      limitReachedMessage: "Можете да запазите до 3 документа с безплатната версия. Вземете Premium за неограничен брой!",
+      limitReachedMessage:
+        "Можете да запазите до 3 документа с безплатната версия. Вземете Premium за неограничен брой!",
       successTitle: "Успех!",
       successMessage: "Благодарим ти! Premium достъпът е активиран.",
       errorTitle: "Грешка",
@@ -311,10 +322,12 @@ export const translations = {
       restoreSuccessTitle: "Възстановено успешно!",
       restoreSuccessMessage: "Твоят Premium абонамент беше възстановен.",
       noSubscriptionTitle: "Не е намерен абонамент",
-      noSubscriptionMessage: "Не открихме активен Premium абонамент за този профил.",
+      noSubscriptionMessage:
+        "Не открихме активен Premium абонамент за този профил.",
       restoreErrorMessage: "Неуспешно възстановяване. Моля, опитайте отново.",
       title: "Отключи Premium 🚀",
-      subtitle: "Следете неограничен брой документи и получавайте навременни известия без лимити.",
+      subtitle:
+        "Следете неограничен брой документи и получавайте навременни известия без лимити.",
       annualSubscription: "Годишен абонамент",
       perYear: "/ година",
       activateNow: "Активирай Сега",

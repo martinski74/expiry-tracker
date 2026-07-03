@@ -6,7 +6,7 @@ import {
   Pressable,
   ScrollView,
   Switch,
-  Platform,
+  Platform
 } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -20,24 +20,28 @@ import { daysUntil } from "../../src/utils/urgency";
 import { STORAGE_KEYS, useStoredValue } from "../../src/hooks/useStoredValue";
 import {
   getDefaultHapticsEnabled,
-  syncHapticsCache,
+  syncHapticsCache
 } from "../../src/preferences/hapticsPreference";
 import { triggerHaptic } from "../../src/utils/haptics";
 import { fontFamilyForWeight } from "../../src/theme/fonts";
 import Constants from "expo-constants";
+import { useRouter } from "expo-router";
+import { usePremium } from "../../src/hooks/usePremium";
 
 const REMINDER_OPTIONS: Array<{ days: number; key: string }> = [
   { days: 30, key: "30" },
   { days: 14, key: "14" },
   { days: 7, key: "7" },
   { days: 1, key: "1" },
-  { days: 0, key: "0" },
+  { days: 0, key: "0" }
 ];
 
 export default function SettingsScreen() {
   const { colors } = useTheme();
   const { t, locale, setLocale } = useI18n();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const { isPremium } = usePremium();
   const [stats, setStats] = useState({ total: 0, expiring: 0, expired: 0 });
   const [defaults, setDefaults] = useStoredValue<number[]>(
     STORAGE_KEYS.defaultReminders,
@@ -88,17 +92,19 @@ export default function SettingsScreen() {
         style={({ pressed }) => [
           styles.langBtn,
           {
-            backgroundColor: active ? colors.brandPrimary : colors.surfaceSecondary,
+            backgroundColor: active
+              ? colors.brandPrimary
+              : colors.surfaceSecondary,
             borderColor: active ? colors.brandPrimary : colors.border,
-            opacity: pressed ? 0.85 : 1,
-          },
+            opacity: pressed ? 0.85 : 1
+          }
         ]}
       >
         <Text
           style={{
             color: active ? colors.onBrandPrimary : colors.onSurface,
             fontWeight: "700",
-            fontSize: fontSize.base,
+            fontSize: fontSize.base
           }}
         >
           {label}
@@ -111,7 +117,7 @@ export default function SettingsScreen() {
     value,
     label,
     color,
-    testID,
+    testID
   }: {
     value: number;
     label: string;
@@ -130,12 +136,18 @@ export default function SettingsScreen() {
     <View
       style={[
         styles.container,
-        { backgroundColor: colors.surface, paddingTop: insets.top + spacing.lg },
+        {
+          backgroundColor: colors.surface,
+          paddingTop: insets.top + spacing.lg
+        }
       ]}
       testID="settings-screen"
     >
       <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.onSurface }]} testID="settings-title">
+        <Text
+          style={[styles.title, { color: colors.onSurface }]}
+          testID="settings-title"
+        >
           {t("settings.title")}
         </Text>
         <Text style={[styles.subtitle, { color: colors.onSurfaceTertiary }]}>
@@ -146,21 +158,117 @@ export default function SettingsScreen() {
       <ScrollView
         contentContainerStyle={{
           padding: spacing.xl,
-          paddingBottom: insets.bottom + 120,
+          paddingBottom: insets.bottom + 120
         }}
         showsVerticalScrollIndicator={false}
       >
+        {/* Premium status */}
+        <Pressable
+          onPress={() => {
+            if (!isPremium) {
+              triggerHaptic("selection");
+              router.push("/premium");
+            }
+          }}
+          style={({ pressed }) => [
+            styles.card,
+            {
+              backgroundColor: isPremium
+                ? colors.success + "25"
+                : colors.surfaceSecondary,
+              borderColor: isPremium ? colors.brandPrimary : colors.border,
+              opacity: pressed && !isPremium ? 0.85 : 1
+            }
+          ]}
+        >
+          <View style={styles.cardHead}>
+            <View
+              style={[
+                styles.iconWrap,
+                {
+                  backgroundColor: isPremium
+                    ? colors.success
+                    : colors.surfaceSecondary
+                }
+              ]}
+            >
+              <Ionicons
+                name={isPremium ? "diamond" : "diamond-outline"}
+                size={20}
+                color={
+                  isPremium ? colors.onBrandPrimary : colors.onSurfaceTertiary
+                }
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.cardTitle, { color: colors.onSurface }]}>
+                {t("settings.premiumStatus")}
+              </Text>
+              <Text
+                style={{
+                  fontSize: fontSize.sm,
+                  color: isPremium ? colors.success : colors.onSurfaceTertiary,
+                  fontWeight: "600",
+                  marginTop: 2
+                }}
+              >
+                {isPremium
+                  ? t("settings.premiumActive")
+                  : t("settings.premiumInactive")}
+              </Text>
+            </View>
+            {!isPremium && (
+              <View
+                style={{
+                  backgroundColor: colors.brandPrimary,
+                  paddingHorizontal: spacing.md,
+                  paddingVertical: spacing.xs,
+                  borderRadius: radius.pill
+                }}
+              >
+                <Text
+                  style={{
+                    color: colors.onBrandPrimary,
+                    fontSize: fontSize.sm,
+                    fontWeight: "700"
+                  }}
+                >
+                  {t("settings.premiumUpgrade")}
+                </Text>
+              </View>
+            )}
+            {isPremium && (
+              <Ionicons
+                name="checkmark-circle"
+                size={22}
+                color={colors.success}
+              />
+            )}
+          </View>
+        </Pressable>
         {/* Stats card */}
         <View
           style={[
             styles.card,
-            { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+            {
+              backgroundColor: colors.surfaceSecondary,
+              borderColor: colors.border
+            }
           ]}
           testID="settings-stats"
         >
           <View style={styles.cardHead}>
-            <View style={[styles.iconWrap, { backgroundColor: colors.brandTertiary }]}>
-              <Ionicons name="stats-chart-outline" size={20} color={colors.brandPrimary} />
+            <View
+              style={[
+                styles.iconWrap,
+                { backgroundColor: colors.brandTertiary }
+              ]}
+            >
+              <Ionicons
+                name="stats-chart-outline"
+                size={20}
+                color={colors.brandPrimary}
+              />
             </View>
             <Text style={[styles.cardTitle, { color: colors.onSurface }]}>
               {t("settings.stats")}
@@ -173,14 +281,18 @@ export default function SettingsScreen() {
               color={colors.onSurface}
               testID="stat-total"
             />
-            <View style={[styles.statDivider, { backgroundColor: colors.divider }]} />
+            <View
+              style={[styles.statDivider, { backgroundColor: colors.divider }]}
+            />
             <StatCell
               value={stats.expiring}
               label={t("settings.statsExpiring")}
               color={colors.brandPrimary}
               testID="stat-expiring"
             />
-            <View style={[styles.statDivider, { backgroundColor: colors.divider }]} />
+            <View
+              style={[styles.statDivider, { backgroundColor: colors.divider }]}
+            />
             <StatCell
               value={stats.expired}
               label={t("settings.statsExpired")}
@@ -194,12 +306,24 @@ export default function SettingsScreen() {
         <View
           style={[
             styles.card,
-            { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+            {
+              backgroundColor: colors.surfaceSecondary,
+              borderColor: colors.border
+            }
           ]}
         >
           <View style={styles.cardHead}>
-            <View style={[styles.iconWrap, { backgroundColor: colors.brandTertiary }]}>
-              <Ionicons name="language-outline" size={20} color={colors.brandPrimary} />
+            <View
+              style={[
+                styles.iconWrap,
+                { backgroundColor: colors.brandTertiary }
+              ]}
+            >
+              <Ionicons
+                name="language-outline"
+                size={20}
+                color={colors.brandPrimary}
+              />
             </View>
             <Text style={[styles.cardTitle, { color: colors.onSurface }]}>
               {t("settings.language")}
@@ -215,13 +339,21 @@ export default function SettingsScreen() {
         <View
           style={[
             styles.card,
-            { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+            {
+              backgroundColor: colors.surfaceSecondary,
+              borderColor: colors.border
+            }
           ]}
           testID="settings-haptics"
         >
           <View style={styles.hapticsRow}>
             <View style={styles.hapticsLabel}>
-              <View style={[styles.iconWrap, { backgroundColor: colors.brandTertiary }]}>
+              <View
+                style={[
+                  styles.iconWrap,
+                  { backgroundColor: colors.brandTertiary }
+                ]}
+              >
                 <Ionicons
                   name="phone-portrait-outline"
                   size={20}
@@ -238,9 +370,11 @@ export default function SettingsScreen() {
               onValueChange={handleHapticsToggle}
               trackColor={{
                 false: colors.surfaceTertiary,
-                true: colors.brandPrimary,
+                true: colors.brandPrimary
               }}
-              thumbColor={Platform.OS === "android" ? colors.onBrandPrimary : undefined}
+              thumbColor={
+                Platform.OS === "android" ? colors.onBrandPrimary : undefined
+              }
             />
           </View>
         </View>
@@ -249,11 +383,19 @@ export default function SettingsScreen() {
         <View
           style={[
             styles.card,
-            { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+            {
+              backgroundColor: colors.surfaceSecondary,
+              borderColor: colors.border
+            }
           ]}
         >
           <View style={styles.cardHead}>
-            <View style={[styles.iconWrap, { backgroundColor: colors.brandTertiary }]}>
+            <View
+              style={[
+                styles.iconWrap,
+                { backgroundColor: colors.brandTertiary }
+              ]}
+            >
               <Ionicons
                 name="notifications-outline"
                 size={20}
@@ -290,20 +432,22 @@ export default function SettingsScreen() {
                         ? colors.brandPrimary
                         : colors.surfaceTertiary,
                       borderColor: active ? colors.brandPrimary : colors.border,
-                      opacity: pressed ? 0.85 : 1,
-                    },
+                      opacity: pressed ? 0.85 : 1
+                    }
                   ]}
                 >
                   <Ionicons
                     name={active ? "checkmark-circle" : "notifications-outline"}
                     size={16}
-                    color={active ? colors.onBrandPrimary : colors.onSurfaceTertiary}
+                    color={
+                      active ? colors.onBrandPrimary : colors.onSurfaceTertiary
+                    }
                   />
                   <Text
                     style={{
                       color: active ? colors.onBrandPrimary : colors.onSurface,
                       fontWeight: "700",
-                      fontSize: fontSize.sm,
+                      fontSize: fontSize.sm
                     }}
                   >
                     {t(`form.reminderDays_${opt.key}`)}
@@ -321,11 +465,19 @@ export default function SettingsScreen() {
         <View
           style={[
             styles.card,
-            { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+            {
+              backgroundColor: colors.surfaceSecondary,
+              borderColor: colors.border
+            }
           ]}
         >
           <View style={styles.cardHead}>
-            <View style={[styles.iconWrap, { backgroundColor: colors.brandTertiary }]}>
+            <View
+              style={[
+                styles.iconWrap,
+                { backgroundColor: colors.brandTertiary }
+              ]}
+            >
               <Ionicons
                 name="information-circle-outline"
                 size={20}
@@ -337,7 +489,9 @@ export default function SettingsScreen() {
             </Text>
           </View>
           <View style={styles.aboutRow}>
-            <Text style={[styles.aboutLabel, { color: colors.onSurfaceTertiary }]}>
+            <Text
+              style={[styles.aboutLabel, { color: colors.onSurfaceTertiary }]}
+            >
               {t("settings.version")}
             </Text>
             <Text style={[styles.aboutValue, { color: colors.onSurface }]}>
@@ -349,7 +503,7 @@ export default function SettingsScreen() {
               color: colors.onSurfaceTertiary,
               fontSize: fontSize.sm,
               fontStyle: "italic",
-              marginTop: spacing.sm,
+              marginTop: spacing.sm
             }}
           >
             {t("settings.madeWith")}
@@ -367,34 +521,34 @@ const styles = StyleSheet.create({
     fontSize: fontSize["2xl"],
     fontWeight: "800",
     fontFamily: fontFamilyForWeight("800"),
-    letterSpacing: -0.5,
+    letterSpacing: -0.5
   },
   subtitle: {
     fontSize: fontSize.base,
     marginTop: spacing.xs,
     fontWeight: "500",
-    fontFamily: fontFamilyForWeight("500"),
+    fontFamily: fontFamilyForWeight("500")
   },
   hapticsRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "space-between"
   },
   hapticsLabel: {
     flexDirection: "row",
     alignItems: "center",
-    flex: 1,
+    flex: 1
   },
   card: {
     borderRadius: radius.lg,
     borderWidth: 1,
     padding: spacing.md,
-    marginBottom: spacing.lg,
+    marginBottom: spacing.lg
   },
   cardHead: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: spacing.md,
+    marginBottom: spacing.md
   },
   iconWrap: {
     width: 36,
@@ -402,17 +556,17 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: spacing.md,
+    marginRight: spacing.md
   },
   cardTitle: {
     fontSize: fontSize.lg,
     fontWeight: "700",
-    fontFamily: fontFamilyForWeight("700"),
+    fontFamily: fontFamilyForWeight("700")
   },
   cardHint: {
     fontSize: fontSize.sm,
     fontWeight: "500",
-    marginTop: spacing.sm,
+    marginTop: spacing.sm
   },
   langRow: { flexDirection: "row", gap: spacing.md },
   langBtn: {
@@ -420,13 +574,13 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     borderRadius: radius.md,
     borderWidth: 1,
-    alignItems: "center",
+    alignItems: "center"
   },
   statsRow: {
     flexDirection: "row",
-    alignItems: "stretch",
+    alignItems: "stretch"
   },
-  statCell: { flex: 1, alignItems: "center", paddingVertical: spacing.xs },
+  statCell: { flex: 1, alignItems: "center", paddingVertical: spacing.xs - 3 },
   statValue: { fontSize: 26, fontWeight: "800", letterSpacing: -1 },
   statLabel: {
     fontSize: 10,
@@ -434,7 +588,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
     textAlign: "center",
     textTransform: "uppercase",
-    letterSpacing: 0.4,
+    letterSpacing: 0.4
   },
   statDivider: { width: 1, marginVertical: spacing.sm },
   chip: {
@@ -445,13 +599,13 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     borderRadius: radius.pill,
     borderWidth: 1,
-    height: 38,
+    height: 38
   },
   aboutRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "center"
   },
   aboutLabel: { fontSize: fontSize.base, fontWeight: "500" },
-  aboutValue: { fontSize: fontSize.base, fontWeight: "700" },
+  aboutValue: { fontSize: fontSize.base, fontWeight: "700" }
 });

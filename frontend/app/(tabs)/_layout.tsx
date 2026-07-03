@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs } from "expo-router";
+import { Tabs, usePathname } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Platform, Pressable, StyleSheet, View, Text } from "react-native";
 import { PlatformPressable } from "@react-navigation/elements";
@@ -11,7 +11,7 @@ import { useI18n } from "../../src/i18n/I18nProvider";
 import { GlassTabBarBackground } from "../../src/components/GlassTabBarBackground";
 import { fontFamilyForWeight } from "../../src/theme/fonts";
 import { triggerHaptic } from "../../src/utils/haptics";
-import { usePremium } from '../../src/hooks/usePremium'
+import { usePremium } from "../../src/hooks/usePremium";
 import { fontSize, radius, spacing } from "@/src/theme/colors";
 
 function TabBarButton(props: BottomTabBarButtonProps) {
@@ -31,76 +31,81 @@ export default function TabsLayout() {
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const pathname = usePathname();
   const { isPremium } = usePremium();
 
   const tabBarBg =
     Platform.OS === "ios" ? "transparent" : colors.surfaceSecondary + "F2";
 
   const tabBarHeight = Platform.OS === "ios" ? 88 : 64 + insets.bottom;
+  const isSettingsRoute = pathname.endsWith("/settings");
+  const isPremiumRoute = pathname.endsWith("/premium");
 
+  const showPremiumShortcut = !isPremium && !isSettingsRoute && !isPremiumRoute;
   return (
     <View style={{ flex: 1 }}>
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: colors.brandPrimary,
-        tabBarInactiveTintColor: colors.onSurfaceTertiary,
-        tabBarBackground: () => <GlassTabBarBackground />,
-        tabBarStyle: {
-          position: "absolute",
-          backgroundColor: tabBarBg,
-          borderTopColor: colors.border,
-          borderTopWidth: 1,
-          height: Platform.OS === "ios" ? 88 : 64 + insets.bottom,
-          paddingTop: 8,
-          paddingBottom: Platform.OS === "ios" ? 28 : Math.max(insets.bottom, 8),
-          elevation: 0,
-        },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: "600",
-          fontFamily: fontFamilyForWeight("600"),
-        },
-        tabBarButton: TabBarButton,
-        sceneStyle: {
-          backgroundColor: colors.surface,
-        },
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: t("tabs.home"),
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
-          ),
-          tabBarButtonTestID: "tab-home",
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: colors.brandPrimary,
+          tabBarInactiveTintColor: colors.onSurfaceTertiary,
+          tabBarBackground: () => <GlassTabBarBackground />,
+          tabBarStyle: {
+            position: "absolute",
+            backgroundColor: tabBarBg,
+            borderTopColor: colors.border,
+            borderTopWidth: 1,
+            height: tabBarHeight,
+            paddingTop: 8,
+            paddingBottom:
+              Platform.OS === "ios" ? 28 : Math.max(insets.bottom, 8),
+            elevation: 0,
+          },
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontWeight: "600",
+            fontFamily: fontFamilyForWeight("600"),
+          },
+          tabBarButton: TabBarButton,
+          sceneStyle: {
+            backgroundColor: colors.surface,
+          },
         }}
-      />
-      <Tabs.Screen
-        name="categories"
-        options={{
-          title: t("tabs.categories"),
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="grid-outline" size={size} color={color} />
-          ),
-          tabBarButtonTestID: "tab-categories",
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: t("tabs.settings"),
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings-outline" size={size} color={color} />
-          ),
-          tabBarButtonTestID: "tab-settings",
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: t("tabs.home"),
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="home-outline" size={size} color={color} />
+            ),
+            tabBarButtonTestID: "tab-home",
+          }}
+        />
+        <Tabs.Screen
+          name="categories"
+          options={{
+            title: t("tabs.categories"),
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="grid-outline" size={size} color={color} />
+            ),
+            tabBarButtonTestID: "tab-categories",
+          }}
+        />
+        <Tabs.Screen
+          name="settings"
+          options={{
+            title: t("tabs.settings"),
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="settings-outline" size={size} color={color} />
+            ),
+            tabBarButtonTestID: "tab-settings",
+          }}
+        />
+      </Tabs>
 
-    {/* Показва се само за non-premium потребители, над tab bar-а */}
-      {!isPremium && (
+      {/* Показва се само за non-premium потребители, над tab bar-а */}
+      {showPremiumShortcut && (
         <Pressable
           onPress={() => {
             triggerHaptic("medium");
@@ -117,7 +122,9 @@ export default function TabsLayout() {
           ]}
         >
           <Ionicons name="star" size={12} color={colors.onBrandPrimary} />
-          <Text style={[styles.premiumButtonText, { color: colors.onBrandPrimary }]}>
+          <Text
+            style={[styles.premiumButtonText, { color: colors.onBrandPrimary }]}
+          >
             {t("common.goPremium")}
           </Text>
         </Pressable>

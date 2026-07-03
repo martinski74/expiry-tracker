@@ -11,6 +11,7 @@ import {
   TextInput,
   Image,
 } from "react-native";
+import { useWindowDimensions } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -28,7 +29,7 @@ import { triggerHaptic } from "../../src/utils/haptics";
 import { fontFamilyForWeight } from "../../src/theme/fonts";
 import { usePremium } from "../../src/hooks/usePremium";
 const heroDark = require("../../assets/images/hero-img-dark.png");
-const  heroLight = require("../../assets/images/hero-img-light.png");
+const heroLight = require("../../assets/images/hero-img-light.png");
 
 type FilterKey = "all" | "soon" | "expired";
 
@@ -44,6 +45,8 @@ export default function HomeScreen() {
   const [filter, setFilter] = useState<FilterKey>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const { width, height } = useWindowDimensions();
+  const heroSize = Math.min(width * 0.58, height * 0.24, 240);
 
   const load = useCallback(async () => {
     const rows = await getAllDocuments();
@@ -60,7 +63,7 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       load();
-    }, [load])
+    }, [load]),
   );
 
   const filtered = useMemo(() => {
@@ -84,7 +87,7 @@ export default function HomeScreen() {
       list = list.filter(
         (d) =>
           d.title.toLowerCase().includes(q) ||
-          (d.notes && d.notes.toLowerCase().includes(q))
+          (d.notes && d.notes.toLowerCase().includes(q)),
       );
     }
 
@@ -99,7 +102,7 @@ export default function HomeScreen() {
     const catLabel =
       item.category_name && PREDEFINED_KEYS.includes(item.category_name)
         ? t(`categories.predefined.${item.category_name}`)
-        : item.category_name ?? t("common.uncategorized");
+        : (item.category_name ?? t("common.uncategorized"));
     return (
       <Animated.View
         key={item.id}
@@ -124,7 +127,10 @@ export default function HomeScreen() {
               source={{ uri: item.image_uri }}
               style={[
                 styles.cardThumb,
-                { borderColor: (item.category_color || colors.brandPrimary) + "55" },
+                {
+                  borderColor:
+                    (item.category_color || colors.brandPrimary) + "55",
+                },
               ]}
             />
           ) : (
@@ -159,7 +165,10 @@ export default function HomeScreen() {
             </Text>
           </View>
           <View style={[styles.badge, { backgroundColor: ub.bg }]}>
-            <Text style={[styles.badgeText, { color: ub.fg }]} numberOfLines={1}>
+            <Text
+              style={[styles.badgeText, { color: ub.fg }]}
+              numberOfLines={1}
+            >
               {u.label}
             </Text>
           </View>
@@ -226,8 +235,21 @@ export default function HomeScreen() {
     }
     if (docs.length === 0) {
       return (
-        <View style={[styles.emptyWrap, { paddingBottom: insets.bottom + 80 }]} testID="home-empty-state">
-          <Image source={ heroImg } style={styles.emptyImg} resizeMode="contain" />
+        <View
+          style={[styles.emptyWrap, { paddingBottom: insets.bottom + 80 }]}
+          testID="home-empty-state"
+        >
+          <Image
+            source={heroImg}
+            style={[
+              styles.emptyImg,
+              {
+                width: heroSize,
+                height: heroSize,
+              },
+            ]}
+            resizeMode="contain"
+          />
           <Text style={[styles.emptyTitle, { color: colors.onSurface }]}>
             {t("home.emptyTitle")}
           </Text>
@@ -267,7 +289,12 @@ export default function HomeScreen() {
             size={48}
             color={colors.onSurfaceTertiary}
           />
-          <Text style={[styles.emptyTitle, { color: colors.onSurface, marginTop: spacing.lg }]}>
+          <Text
+            style={[
+              styles.emptyTitle,
+              { color: colors.onSurface, marginTop: spacing.lg },
+            ]}
+          >
             {t("home.emptyFilteredTitle")}
           </Text>
           <Text style={[styles.emptyDesc, { color: colors.onSurfaceTertiary }]}>
@@ -303,7 +330,10 @@ export default function HomeScreen() {
     <View
       style={[
         styles.container,
-        { backgroundColor: colors.surface, paddingTop: insets.top + spacing.lg },
+        {
+          backgroundColor: colors.surface,
+          paddingTop: insets.top + spacing.lg,
+        },
       ]}
       testID="home-screen"
     >
@@ -318,8 +348,20 @@ export default function HomeScreen() {
           {t("home.subtitle")}
         </Text>
 
-        <View style={[styles.searchContainer, { backgroundColor: colors.surfaceSecondary, borderColor: colors.border }]}>
-          <Ionicons name="search-outline" size={20} color={colors.onSurfaceTertiary} />
+        <View
+          style={[
+            styles.searchContainer,
+            {
+              backgroundColor: colors.surfaceSecondary,
+              borderColor: colors.border,
+            },
+          ]}
+        >
+          <Ionicons
+            name="search-outline"
+            size={20}
+            color={colors.onSurfaceTertiary}
+          />
           <TextInput
             testID="home-search-input"
             value={searchQuery}
@@ -330,7 +372,11 @@ export default function HomeScreen() {
           />
           {searchQuery.length > 0 && (
             <Pressable onPress={() => setSearchQuery("")}>
-              <Ionicons name="close-circle" size={18} color={colors.onSurfaceTertiary} />
+              <Ionicons
+                name="close-circle"
+                size={18}
+                color={colors.onSurfaceTertiary}
+              />
             </Pressable>
           )}
         </View>
@@ -459,7 +505,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: spacing.xl,
   },
-  emptyImg: { width: 220, height: 220, marginBottom: spacing.lg },
+  emptyImg: { marginBottom: spacing.lg },
   emptyCta: {
     flexDirection: "row",
     alignItems: "center",
