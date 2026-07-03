@@ -1,17 +1,18 @@
 import React from "react";
-import { Tabs, usePathname, useRouter } from "expo-router";
+import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Platform, Pressable, StyleSheet, View, Text } from "react-native";
 import { PlatformPressable } from "@react-navigation/elements";
 import type { BottomTabBarButtonProps } from "@react-navigation/bottom-tabs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 import { useTheme } from "../../src/theme/ThemeProvider";
 import { useI18n } from "../../src/i18n/I18nProvider";
 import { GlassTabBarBackground } from "../../src/components/GlassTabBarBackground";
 import { fontFamilyForWeight } from "../../src/theme/fonts";
 import { triggerHaptic } from "../../src/utils/haptics";
 import { usePremium } from '../../src/hooks/usePremium'
-import { radius, spacing } from "@/src/theme/colors";
+import { fontSize, radius, spacing } from "@/src/theme/colors";
 
 function TabBarButton(props: BottomTabBarButtonProps) {
   return (
@@ -30,13 +31,12 @@ export default function TabsLayout() {
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const pathname = usePathname();
   const { isPremium } = usePremium();
 
   const tabBarBg =
     Platform.OS === "ios" ? "transparent" : colors.surfaceSecondary + "F2";
 
-  const showPremiumShortcut = !isPremium && !pathname.endsWith("/settings");
+  const tabBarHeight = Platform.OS === "ios" ? 88 : 64 + insets.bottom;
 
   return (
     <View style={{ flex: 1 }}>
@@ -99,8 +99,8 @@ export default function TabsLayout() {
       />
     </Tabs>
 
-    {/* Показва се само за non-premium потребители, без Settings таба */}
-      {showPremiumShortcut && (
+    {/* Показва се само за non-premium потребители, над tab bar-а */}
+      {!isPremium && (
         <Pressable
           onPress={() => {
             triggerHaptic("medium");
