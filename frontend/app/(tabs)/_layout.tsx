@@ -11,7 +11,7 @@ import { GlassTabBarBackground } from "../../src/components/GlassTabBarBackgroun
 import { fontFamilyForWeight } from "../../src/theme/fonts";
 import { triggerHaptic } from "../../src/utils/haptics";
 import { usePremium } from '../../src/hooks/usePremium'
-import { fontSize, radius, spacing } from "@/src/theme/colors";
+import { radius, spacing } from "@/src/theme/colors";
 
 function TabBarButton(props: BottomTabBarButtonProps) {
   return (
