@@ -8,7 +8,7 @@ import {
   TextInput,
   Platform,
   KeyboardAvoidingView,
-  ActivityIndicator,
+  ActivityIndicator
 } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -35,7 +35,7 @@ const ICON_OPTIONS = [
   "medkit-outline",
   "musical-notes-outline",
   "paw-outline",
-  "pricetag-outline",
+  "pricetag-outline"
 ] as const;
 
 const COLOR_OPTIONS = [
@@ -46,7 +46,7 @@ const COLOR_OPTIONS = [
   "#7CA1A6",
   "#A5523C",
   "#D46F6F",
-  "#9C7E6F",
+  "#9C7E6F"
 ];
 
 export default function EditCategoryScreen() {
@@ -109,8 +109,18 @@ export default function EditCategoryScreen() {
   if (notFound) {
     return (
       <View style={[styles.center, { backgroundColor: colors.surface }]}>
-        <Ionicons name="alert-circle-outline" size={48} color={colors.onSurfaceTertiary} />
-        <Text style={{ color: colors.onSurface, marginTop: spacing.md, fontWeight: "700" }}>
+        <Ionicons
+          name="alert-circle-outline"
+          size={48}
+          color={colors.onSurfaceTertiary}
+        />
+        <Text
+          style={{
+            color: colors.onSurface,
+            marginTop: spacing.md,
+            fontWeight: "700"
+          }}
+        >
           Category not found or cannot be edited
         </Text>
       </View>
@@ -129,14 +139,14 @@ export default function EditCategoryScreen() {
           headerTitle: t("common.edit"),
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.onSurface,
-          headerTitleStyle: { fontWeight: "800", fontSize: fontSize.lg },
+          headerTitleStyle: { fontWeight: "800", fontSize: fontSize.lg }
         }}
       />
 
       <ScrollView
         contentContainerStyle={{
           padding: spacing.xl,
-          paddingBottom: insets.bottom + 140,
+          paddingBottom: insets.bottom + 140
         }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
@@ -147,8 +157,8 @@ export default function EditCategoryScreen() {
             styles.preview,
             {
               backgroundColor: colors.surfaceSecondary,
-              borderColor: colors.border,
-            },
+              borderColor: colors.border
+            }
           ]}
         >
           <View style={[styles.previewIcon, { backgroundColor: color + "22" }]}>
@@ -158,7 +168,7 @@ export default function EditCategoryScreen() {
             style={{
               fontSize: fontSize.lg,
               fontWeight: "700",
-              color: colors.onSurface,
+              color: colors.onSurface
             }}
             numberOfLines={1}
           >
@@ -182,8 +192,8 @@ export default function EditCategoryScreen() {
               {
                 color: colors.onSurface,
                 backgroundColor: colors.surfaceSecondary,
-                borderColor: error ? colors.error : colors.border,
-              },
+                borderColor: error ? colors.error : colors.border
+              }
             ]}
           />
         </Field>
@@ -208,8 +218,8 @@ export default function EditCategoryScreen() {
                         : colors.surfaceSecondary,
                       borderColor: active ? color : colors.border,
                       borderWidth: active ? 2 : 1,
-                      opacity: pressed ? 0.7 : 1,
-                    },
+                      opacity: pressed ? 0.7 : 1
+                    }
                   ]}
                 >
                   <Ionicons
@@ -241,8 +251,8 @@ export default function EditCategoryScreen() {
                       backgroundColor: c,
                       borderColor: active ? colors.onSurface : "transparent",
                       borderWidth: active ? 3 : 0,
-                      opacity: pressed ? 0.8 : 1,
-                    },
+                      opacity: pressed ? 0.8 : 1
+                    }
                   ]}
                 />
               );
@@ -258,8 +268,8 @@ export default function EditCategoryScreen() {
           {
             backgroundColor: colors.surface,
             borderTopColor: colors.border,
-            paddingBottom: insets.bottom + spacing.md,
-          },
+            paddingBottom: insets.bottom + spacing.md
+          }
         ]}
       >
         <Pressable
@@ -270,8 +280,8 @@ export default function EditCategoryScreen() {
             styles.saveBtn,
             {
               backgroundColor: colors.brandPrimary,
-              opacity: pressed || saving ? 0.85 : 1,
-            },
+              opacity: pressed || saving ? 0.85 : 1
+            }
           ]}
         >
           <Ionicons name="checkmark" size={20} color={colors.onBrandPrimary} />
@@ -288,7 +298,7 @@ function Field({
   label,
   error,
   colors,
-  children,
+  children
 }: {
   label: string;
   error?: string;
@@ -302,7 +312,9 @@ function Field({
       </Text>
       {children}
       {error ? (
-        <Text style={[styles.fieldError, { color: colors.error }]}>{error}</Text>
+        <Text style={[styles.fieldError, { color: colors.error }]}>
+          {error}
+        </Text>
       ) : null}
     </View>
   );
@@ -318,55 +330,55 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     borderRadius: radius.lg,
     borderWidth: 1,
-    marginBottom: spacing.xl,
+    marginBottom: spacing.xl
   },
   previewIcon: {
     width: 52,
     height: 52,
     borderRadius: radius.md,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   fieldLabel: {
     fontSize: fontSize.sm,
     fontWeight: "700",
     marginBottom: spacing.sm,
     textTransform: "uppercase",
-    letterSpacing: 0.6,
+    letterSpacing: 0.6
   },
   fieldError: {
     fontSize: fontSize.sm,
     fontWeight: "600",
-    marginTop: spacing.xs,
+    marginTop: spacing.xs
   },
   input: {
     borderWidth: 1,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
-    fontSize: fontSize.base,
+    fontSize: fontSize.base
   },
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: spacing.sm,
+    gap: spacing.sm
   },
   iconCell: {
     width: 52,
     height: 52,
     borderRadius: radius.md,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   colorRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: spacing.md,
+    gap: spacing.md
   },
   colorDot: {
     width: 44,
     height: 44,
-    borderRadius: radius.pill,
+    borderRadius: radius.pill
   },
   saveBar: {
     position: "absolute",
@@ -375,7 +387,7 @@ const styles = StyleSheet.create({
     right: 0,
     borderTopWidth: 1,
     paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
+    paddingTop: spacing.md
   },
   saveBtn: {
     flexDirection: "row",
@@ -383,7 +395,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: spacing.sm,
     borderRadius: radius.lg,
-    paddingVertical: spacing.md + 2,
+    paddingVertical: spacing.md + 2
   },
-  saveTxt: { fontSize: fontSize.lg, fontWeight: "800" },
+  saveTxt: { fontSize: fontSize.lg, fontWeight: "800" }
 });

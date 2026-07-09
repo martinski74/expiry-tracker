@@ -8,7 +8,7 @@ import {
   TextInput,
   Platform,
   KeyboardAvoidingView,
-  ActivityIndicator,
+  ActivityIndicator
 } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -22,14 +22,14 @@ import {
   getDocumentById,
   updateDocument,
   deleteDocument,
-  parseNotifyDays,
+  parseNotifyDays
 } from "../../src/db/documents";
 import { PhotoPicker } from "../../src/components/PhotoPicker";
 import { DateField } from "../../src/components/DateField";
 import {
   rescheduleForDocument,
   cancelForDocument,
-  ensurePermission,
+  ensurePermission
 } from "../../src/notifications/scheduler";
 import { triggerHaptic } from "../../src/utils/haptics";
 import { formatExpiryDate, parseLocalISODate } from "../../src/utils/urgency";
@@ -134,8 +134,8 @@ export default function EditDocumentScreen() {
             bodyTemplates: {
               today: t("form.notifBodyToday"),
               tomorrow: t("form.notifBodyTomorrow"),
-              daysTemplate: t("form.notifBodyDays"),
-            },
+              daysTemplate: t("form.notifBodyDays")
+            }
           });
         }
       } else if (originalReminders.length > 0) {
@@ -189,7 +189,7 @@ export default function EditDocumentScreen() {
             headerShown: true,
             headerTitle: t("form.editTitle"),
             headerStyle: { backgroundColor: colors.surface },
-            headerTintColor: colors.onSurface,
+            headerTintColor: colors.onSurface
           }}
         />
         <ActivityIndicator size="large" color={colors.brandPrimary} />
@@ -208,7 +208,7 @@ export default function EditDocumentScreen() {
             headerShown: true,
             headerTitle: t("form.editTitle"),
             headerStyle: { backgroundColor: colors.surface },
-            headerTintColor: colors.onSurface,
+            headerTintColor: colors.onSurface
           }}
         />
         <Ionicons
@@ -221,7 +221,7 @@ export default function EditDocumentScreen() {
             color: colors.onSurface,
             marginTop: spacing.md,
             fontWeight: "700",
-            fontSize: fontSize.lg,
+            fontSize: fontSize.lg
           }}
         >
           {t("form.notFound")}
@@ -242,20 +242,24 @@ export default function EditDocumentScreen() {
           headerTitle: t("form.editTitle"),
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.onSurface,
-          headerTitleStyle: { fontWeight: "800", fontSize: fontSize.lg },
+          headerTitleStyle: { fontWeight: "800", fontSize: fontSize.lg }
         }}
       />
 
       <ScrollView
         contentContainerStyle={{
           padding: spacing.xl,
-          paddingBottom: insets.bottom + 200,
+          paddingBottom: insets.bottom + 200
         }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         {/* Title */}
-        <Field label={t("form.fieldTitle")} error={errors.title} colors={colors}>
+        <Field
+          label={t("form.fieldTitle")}
+          error={errors.title}
+          colors={colors}
+        >
           <TextInput
             testID="field-title"
             value={title}
@@ -270,8 +274,8 @@ export default function EditDocumentScreen() {
               {
                 color: colors.onSurface,
                 backgroundColor: colors.surfaceSecondary,
-                borderColor: errors.title ? colors.error : colors.border,
-              },
+                borderColor: errors.title ? colors.error : colors.border
+              }
             ]}
           />
         </Field>
@@ -344,8 +348,8 @@ export default function EditDocumentScreen() {
               {
                 color: colors.onSurface,
                 backgroundColor: colors.surfaceSecondary,
-                borderColor: colors.border,
-              },
+                borderColor: colors.border
+              }
             ]}
           />
         </Field>
@@ -382,23 +386,23 @@ export default function EditDocumentScreen() {
                       backgroundColor: active
                         ? colors.brandPrimary
                         : colors.surfaceSecondary,
-                      borderColor: active
-                        ? colors.brandPrimary
-                        : colors.border,
-                      opacity: pressed ? 0.85 : 1,
-                    },
+                      borderColor: active ? colors.brandPrimary : colors.border,
+                      opacity: pressed ? 0.85 : 1
+                    }
                   ]}
                 >
                   <Ionicons
                     name={active ? "checkmark-circle" : "notifications-outline"}
                     size={16}
-                    color={active ? colors.onBrandPrimary : colors.onSurfaceTertiary}
+                    color={
+                      active ? colors.onBrandPrimary : colors.onSurfaceTertiary
+                    }
                   />
                   <Text
                     style={{
                       color: active ? colors.onBrandPrimary : colors.onSurface,
                       fontWeight: "700",
-                      fontSize: fontSize.sm,
+                      fontSize: fontSize.sm
                     }}
                   >
                     {t(`form.reminderDays_${opt.key}`)}
@@ -412,7 +416,7 @@ export default function EditDocumentScreen() {
               color: colors.onSurfaceTertiary,
               fontSize: 12,
               marginTop: spacing.sm,
-              fontWeight: "500",
+              fontWeight: "500"
             }}
           >
             {t("form.reminderHint")}
@@ -426,12 +430,14 @@ export default function EditDocumentScreen() {
           style={({ pressed }) => [
             styles.deleteBtn,
             {
-              borderColor: confirmingDelete ? colors.error : colors.borderStrong,
+              borderColor: confirmingDelete
+                ? colors.error
+                : colors.borderStrong,
               backgroundColor: confirmingDelete
                 ? colors.error + "15"
                 : "transparent",
-              opacity: pressed ? 0.7 : 1,
-            },
+              opacity: pressed ? 0.7 : 1
+            }
           ]}
         >
           <Ionicons
@@ -441,9 +447,11 @@ export default function EditDocumentScreen() {
           />
           <Text
             style={{
-              color: confirmingDelete ? colors.error : colors.onSurfaceSecondary,
+              color: confirmingDelete
+                ? colors.error
+                : colors.onSurfaceSecondary,
               fontWeight: "700",
-              fontSize: fontSize.base,
+              fontSize: fontSize.base
             }}
           >
             {confirmingDelete ? t("form.deleteConfirm") : t("form.delete")}
@@ -458,8 +466,8 @@ export default function EditDocumentScreen() {
           {
             backgroundColor: colors.surface,
             borderTopColor: colors.border,
-            paddingBottom: insets.bottom + spacing.md,
-          },
+            paddingBottom: insets.bottom + spacing.md
+          }
         ]}
       >
         <Pressable
@@ -470,8 +478,8 @@ export default function EditDocumentScreen() {
             styles.saveBtn,
             {
               backgroundColor: colors.brandPrimary,
-              opacity: pressed || saving ? 0.85 : 1,
-            },
+              opacity: pressed || saving ? 0.85 : 1
+            }
           ]}
         >
           <Ionicons name="checkmark" size={20} color={colors.onBrandPrimary} />
@@ -488,7 +496,7 @@ function Field({
   label,
   error,
   colors,
-  children,
+  children
 }: {
   label: string;
   error?: string;
@@ -502,7 +510,9 @@ function Field({
       </Text>
       {children}
       {error ? (
-        <Text style={[styles.fieldError, { color: colors.error }]}>{error}</Text>
+        <Text style={[styles.fieldError, { color: colors.error }]}>
+          {error}
+        </Text>
       ) : null}
     </View>
   );
@@ -515,7 +525,7 @@ function CatChip({
   colors,
   icon,
   tint,
-  testID,
+  testID
 }: {
   label: string;
   active: boolean;
@@ -536,10 +546,12 @@ function CatChip({
       style={({ pressed }) => [
         styles.catChip,
         {
-          backgroundColor: active ? colors.brandPrimary : colors.surfaceSecondary,
+          backgroundColor: active
+            ? colors.brandPrimary
+            : colors.surfaceSecondary,
           borderColor: active ? colors.brandPrimary : colors.border,
-          opacity: pressed ? 0.85 : 1,
-        },
+          opacity: pressed ? 0.85 : 1
+        }
       ]}
     >
       <Ionicons
@@ -551,7 +563,7 @@ function CatChip({
         style={{
           color: active ? colors.onBrandPrimary : colors.onSurface,
           fontWeight: "700",
-          fontSize: fontSize.sm,
+          fontSize: fontSize.sm
         }}
       >
         {label}
@@ -568,19 +580,19 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: spacing.sm,
     textTransform: "uppercase",
-    letterSpacing: 0.6,
+    letterSpacing: 0.6
   },
   fieldError: {
     fontSize: fontSize.sm,
     fontWeight: "600",
-    marginTop: spacing.xs,
+    marginTop: spacing.xs
   },
   input: {
     borderWidth: 1,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
-    fontSize: fontSize.base,
+    fontSize: fontSize.base
   },
   textArea: { minHeight: 96, textAlignVertical: "top" },
   catChip: {
@@ -591,14 +603,14 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     borderRadius: radius.pill,
     borderWidth: 1,
-    height: 38,
+    height: 38
   },
   clearBtn: {
     paddingHorizontal: spacing.md,
     height: 44,
     borderRadius: radius.md,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   deleteBtn: {
     flexDirection: "row",
@@ -608,7 +620,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     paddingVertical: spacing.md,
     borderWidth: 1,
-    marginTop: spacing.sm,
+    marginTop: spacing.sm
   },
   saveBar: {
     position: "absolute",
@@ -617,7 +629,7 @@ const styles = StyleSheet.create({
     right: 0,
     borderTopWidth: 1,
     paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
+    paddingTop: spacing.md
   },
   saveBtn: {
     flexDirection: "row",
@@ -625,7 +637,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: spacing.sm,
     borderRadius: radius.lg,
-    paddingVertical: spacing.md + 2,
+    paddingVertical: spacing.md + 2
   },
-  saveTxt: { fontSize: fontSize.lg, fontWeight: "800" },
+  saveTxt: { fontSize: fontSize.lg, fontWeight: "800" }
 });

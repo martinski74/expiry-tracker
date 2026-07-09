@@ -7,9 +7,14 @@ import {
   FlatList,
   ActivityIndicator,
   RefreshControl,
-  Image,
+  Image
 } from "react-native";
-import { useLocalSearchParams, useRouter, Stack, useFocusEffect } from "expo-router";
+import {
+  useLocalSearchParams,
+  useRouter,
+  Stack,
+  useFocusEffect
+} from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInDown, FadeOut, Layout } from "react-native-reanimated";
@@ -21,7 +26,7 @@ import { getCategoryById, Category } from "../../../src/db/categories";
 import {
   getUrgency,
   urgencyColors,
-  formatExpiryDate,
+  formatExpiryDate
 } from "../../../src/utils/urgency";
 import { triggerHaptic } from "../../../src/utils/haptics";
 
@@ -42,7 +47,7 @@ export default function CategoryFilteredScreen() {
   const load = useCallback(async () => {
     const [d, c] = await Promise.all([
       getDocumentsByCategory(id),
-      getCategoryById(id),
+      getCategoryById(id)
     ]);
     setDocs(d);
     setCategory(c);
@@ -86,23 +91,20 @@ export default function CategoryFilteredScreen() {
             {
               backgroundColor: colors.surfaceSecondary,
               borderColor: colors.border,
-              opacity: pressed ? 0.85 : 1,
-            },
+              opacity: pressed ? 0.85 : 1
+            }
           ]}
         >
           {item.image_uri ? (
-            <Image
-              source={{ uri: item.image_uri }}
-              style={styles.cardThumb}
-            />
+            <Image source={{ uri: item.image_uri }} style={styles.cardThumb} />
           ) : (
             <View
               style={[
                 styles.cardIcon,
                 {
                   backgroundColor:
-                    (category?.color || colors.brandPrimary) + "22",
-                },
+                    (category?.color || colors.brandPrimary) + "22"
+                }
               ]}
             >
               <Ionicons
@@ -127,7 +129,10 @@ export default function CategoryFilteredScreen() {
             </Text>
           </View>
           <View style={[styles.badge, { backgroundColor: ub.bg }]}>
-            <Text style={[styles.badgeText, { color: ub.fg }]} numberOfLines={1}>
+            <Text
+              style={[styles.badgeText, { color: ub.fg }]}
+              numberOfLines={1}
+            >
               {u.label}
             </Text>
           </View>
@@ -146,24 +151,50 @@ export default function CategoryFilteredScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.surface }]}>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          headerTitle: categoryTitle,
-          headerStyle: { backgroundColor: colors.surface },
-          headerTintColor: colors.onSurface,
-          headerTitleStyle: { fontWeight: "800", fontSize: fontSize.lg },
-          headerRight: () =>
-            category && !category.is_predefined ? (
-              <Pressable
-                onPress={() => router.push(`/category/${category.id}`)}
-                style={{ marginRight: spacing.md }}
-              >
-                <Ionicons name="settings-outline" size={22} color={colors.onSurface} />
-              </Pressable>
-            ) : null,
-        }}
-      />
+      <Stack.Screen options={{ headerShown: false }} />
+
+      {/* Custom header */}
+      <View
+        style={[
+          styles.customHeader,
+          {
+            backgroundColor: colors.surface,
+            paddingTop: insets.top,
+            borderBottomColor: colors.border
+          }
+        ]}
+      >
+        <Pressable
+          onPress={() => router.back()}
+          style={styles.backButton}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="arrow-back" size={24} color={colors.onSurface} />
+        </Pressable>
+
+        <Text
+          numberOfLines={1}
+          style={[styles.headerTitle, { color: colors.onSurface }]}
+        >
+          {categoryTitle}
+        </Text>
+
+        {category && !category.is_predefined ? (
+          <Pressable
+            onPress={() => router.push(`/category/${category.id}`)}
+            style={styles.headerRight}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons
+              name="settings-outline"
+              size={22}
+              color={colors.onSurface}
+            />
+          </Pressable>
+        ) : (
+          <View style={styles.headerRight} />
+        )}
+      </View>
 
       {docs && docs.length === 0 ? (
         <View style={styles.emptyWrap}>
@@ -179,13 +210,18 @@ export default function CategoryFilteredScreen() {
             {t("home.emptyFilteredDescription")}
           </Text>
           <Pressable
-            onPress={() => router.push({ pathname: "/document/new", params: { categoryId: id } })}
+            onPress={() =>
+              router.push({
+                pathname: "/document/new",
+                params: { categoryId: id }
+              })
+            }
             style={({ pressed }) => [
               styles.emptyCta,
               {
                 backgroundColor: colors.brandPrimary,
-                opacity: pressed ? 0.9 : 1,
-              },
+                opacity: pressed ? 0.9 : 1
+              }
             ]}
           >
             <Ionicons name="add" size={18} color={colors.onBrandPrimary} />
@@ -193,7 +229,7 @@ export default function CategoryFilteredScreen() {
               style={{
                 color: colors.onBrandPrimary,
                 fontWeight: "800",
-                fontSize: fontSize.base,
+                fontSize: fontSize.base
               }}
             >
               {t("home.addButton")}
@@ -216,7 +252,7 @@ export default function CategoryFilteredScreen() {
           contentContainerStyle={{
             paddingHorizontal: spacing.xl,
             paddingBottom: insets.bottom + spacing.xl,
-            paddingTop: spacing.lg,
+            paddingTop: spacing.lg
           }}
           showsVerticalScrollIndicator={false}
         />
@@ -234,7 +270,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderRadius: radius.lg,
     borderWidth: 1,
-    marginBottom: spacing.md,
+    marginBottom: spacing.md
   },
   cardIcon: {
     width: 44,
@@ -242,51 +278,51 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: spacing.md,
+    marginRight: spacing.md
   },
   cardThumb: {
     width: 44,
     height: 44,
     borderRadius: radius.md,
-    marginRight: spacing.md,
+    marginRight: spacing.md
   },
   cardTitle: {
     fontSize: fontSize.lg,
-    fontWeight: "700",
+    fontWeight: "700"
   },
   cardMeta: {
     fontSize: fontSize.sm,
     marginTop: 2,
-    fontWeight: "500",
+    fontWeight: "500"
   },
   badge: {
     paddingHorizontal: spacing.md,
     paddingVertical: 6,
     borderRadius: radius.pill,
-    maxWidth: 130,
+    maxWidth: 130
   },
   badgeText: {
     fontSize: 12,
-    fontWeight: "700",
+    fontWeight: "700"
   },
   emptyWrap: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: spacing.xl,
+    paddingHorizontal: spacing.xl
   },
   emptyTitle: {
     fontSize: fontSize.xl,
     fontWeight: "700",
     textAlign: "center",
     marginTop: spacing.lg,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.sm
   },
   emptyDesc: {
     fontSize: fontSize.base,
     textAlign: "center",
     lineHeight: 22,
-    maxWidth: 320,
+    maxWidth: 320
   },
   emptyCta: {
     flexDirection: "row",
@@ -295,6 +331,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.md,
     borderRadius: radius.pill,
-    marginTop: spacing.xl,
+    marginTop: spacing.xl
   },
+  customHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  headerTitle: {
+    flex: 1,
+    fontSize: fontSize.lg,
+    fontWeight: "800",
+    textAlign: "center",
+    marginHorizontal: spacing.sm
+  },
+  headerRight: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center"
+  }
 });

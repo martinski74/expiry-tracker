@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   TextInput,
-  Image,
+  Image
 } from "react-native";
 import { useWindowDimensions } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -23,7 +23,7 @@ import { getAllDocuments, DocumentRow } from "../../src/db/documents";
 import {
   getUrgency,
   urgencyColors,
-  formatExpiryDate,
+  formatExpiryDate
 } from "../../src/utils/urgency";
 import { triggerHaptic } from "../../src/utils/haptics";
 import { fontFamilyForWeight } from "../../src/theme/fonts";
@@ -63,7 +63,7 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       load();
-    }, [load]),
+    }, [load])
   );
 
   const filtered = useMemo(() => {
@@ -87,7 +87,7 @@ export default function HomeScreen() {
       list = list.filter(
         (d) =>
           d.title.toLowerCase().includes(q) ||
-          (d.notes && d.notes.toLowerCase().includes(q)),
+          (d.notes && d.notes.toLowerCase().includes(q))
       );
     }
 
@@ -118,8 +118,8 @@ export default function HomeScreen() {
             {
               backgroundColor: colors.surfaceSecondary,
               borderColor: colors.border,
-              opacity: pressed ? 0.85 : 1,
-            },
+              opacity: pressed ? 0.85 : 1
+            }
           ]}
         >
           {item.image_uri ? (
@@ -129,8 +129,8 @@ export default function HomeScreen() {
                 styles.cardThumb,
                 {
                   borderColor:
-                    (item.category_color || colors.brandPrimary) + "55",
-                },
+                    (item.category_color || colors.brandPrimary) + "55"
+                }
               ]}
             />
           ) : (
@@ -139,8 +139,8 @@ export default function HomeScreen() {
                 styles.cardIcon,
                 {
                   backgroundColor:
-                    (item.category_color || colors.brandPrimary) + "22",
-                },
+                    (item.category_color || colors.brandPrimary) + "22"
+                }
               ]}
             >
               <Ionicons
@@ -187,7 +187,7 @@ export default function HomeScreen() {
         [
           { key: "all", label: t("home.filterAll") },
           { key: "soon", label: t("home.filterExpiringSoon") },
-          { key: "expired", label: t("home.filterExpired") },
+          { key: "expired", label: t("home.filterExpired") }
         ] as { key: FilterKey; label: string }[]
       ).map((c) => {
         const active = filter === c.key;
@@ -206,15 +206,15 @@ export default function HomeScreen() {
                   ? colors.brandPrimary
                   : colors.surfaceSecondary,
                 borderColor: active ? colors.brandPrimary : colors.border,
-                opacity: pressed ? 0.85 : 1,
-              },
+                opacity: pressed ? 0.85 : 1
+              }
             ]}
           >
             <Text
               style={{
                 color: active ? colors.onBrandPrimary : colors.onSurface,
                 fontWeight: "700",
-                fontSize: fontSize.sm,
+                fontSize: fontSize.sm
               }}
             >
               {c.label}
@@ -245,8 +245,8 @@ export default function HomeScreen() {
               styles.emptyImg,
               {
                 width: heroSize,
-                height: heroSize,
-              },
+                height: heroSize
+              }
             ]}
             resizeMode="contain"
           />
@@ -263,8 +263,8 @@ export default function HomeScreen() {
               styles.emptyCta,
               {
                 backgroundColor: colors.brandPrimary,
-                opacity: pressed ? 0.9 : 1,
-              },
+                opacity: pressed ? 0.9 : 1
+              }
             ]}
           >
             <Ionicons name="add" size={18} color={colors.onBrandPrimary} />
@@ -272,7 +272,7 @@ export default function HomeScreen() {
               style={{
                 color: colors.onBrandPrimary,
                 fontWeight: "800",
-                fontSize: fontSize.base,
+                fontSize: fontSize.base
               }}
             >
               {t("home.addButton")}
@@ -292,7 +292,7 @@ export default function HomeScreen() {
           <Text
             style={[
               styles.emptyTitle,
-              { color: colors.onSurface, marginTop: spacing.lg },
+              { color: colors.onSurface, marginTop: spacing.lg }
             ]}
           >
             {t("home.emptyFilteredTitle")}
@@ -319,7 +319,7 @@ export default function HomeScreen() {
         contentContainerStyle={{
           paddingHorizontal: spacing.xl,
           paddingBottom: insets.bottom + 140,
-          paddingTop: spacing.sm,
+          paddingTop: spacing.sm
         }}
         showsVerticalScrollIndicator={false}
       />
@@ -332,18 +332,20 @@ export default function HomeScreen() {
         styles.container,
         {
           backgroundColor: colors.surface,
-          paddingTop: insets.top + spacing.lg,
-        },
+          paddingTop: insets.top + spacing.lg
+        }
       ]}
       testID="home-screen"
     >
-      <View style={[styles.header, !isPremium && { paddingRight: 110 }]}>
-        <Text
-          style={[styles.title, { color: colors.onSurface }]}
-          testID="home-title"
-        >
-          {t("home.title")}
-        </Text>
+      <View style={styles.header}>
+        <View style={{ paddingRight: !isPremium ? 120 : 0 }}>
+          <Text
+            style={[styles.title, { color: colors.onSurface }]}
+            testID="home-title"
+          >
+            {t("home.title")}
+          </Text>
+        </View>
         <Text style={[styles.subtitle, { color: colors.onSurfaceTertiary }]}>
           {t("home.subtitle")}
         </Text>
@@ -353,8 +355,8 @@ export default function HomeScreen() {
             styles.searchContainer,
             {
               backgroundColor: colors.surfaceSecondary,
-              borderColor: colors.border,
-            },
+              borderColor: colors.border
+            }
           ]}
         >
           <Ionicons
@@ -401,8 +403,8 @@ export default function HomeScreen() {
               backgroundColor: colors.brandPrimary,
               bottom: insets.bottom + 96,
               opacity: pressed ? 0.9 : 1,
-              shadowColor: colors.onSurface,
-            },
+              shadowColor: colors.onSurface
+            }
           ]}
         >
           <Ionicons name="add" size={28} color={colors.onBrandPrimary} />
@@ -419,13 +421,13 @@ const styles = StyleSheet.create({
     fontSize: fontSize["2xl"],
     fontWeight: "800",
     fontFamily: fontFamilyForWeight("800"),
-    letterSpacing: -0.5,
+    letterSpacing: -0.5
   },
   subtitle: {
     fontSize: fontSize.base,
     marginTop: spacing.xs,
     fontWeight: "500",
-    fontFamily: fontFamilyForWeight("500"),
+    fontFamily: fontFamilyForWeight("500")
   },
   searchContainer: {
     flexDirection: "row",
@@ -435,18 +437,18 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     borderWidth: 1,
     marginTop: spacing.lg,
-    gap: spacing.sm,
+    gap: spacing.sm
   },
   searchInput: {
     flex: 1,
     fontSize: fontSize.base,
-    fontWeight: "500",
+    fontWeight: "500"
   },
   chipContainer: { height: 56, justifyContent: "center" },
   chipsRow: {
     paddingHorizontal: spacing.xl,
     gap: spacing.sm,
-    alignItems: "center",
+    alignItems: "center"
   },
   chip: {
     height: 36,
@@ -454,7 +456,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     borderWidth: 1,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   card: {
     flexDirection: "row",
@@ -462,7 +464,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderRadius: radius.lg,
     borderWidth: 1,
-    marginBottom: spacing.md,
+    marginBottom: spacing.md
   },
   cardIcon: {
     width: 44,
@@ -470,40 +472,40 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: spacing.md,
+    marginRight: spacing.md
   },
   cardThumb: {
     width: 44,
     height: 44,
     borderRadius: radius.md,
     marginRight: spacing.md,
-    borderWidth: 1,
+    borderWidth: 1
   },
   cardTitle: {
     fontSize: fontSize.lg,
-    fontWeight: "700",
+    fontWeight: "700"
   },
   cardMeta: {
     fontSize: fontSize.sm,
     marginTop: 2,
-    fontWeight: "500",
+    fontWeight: "500"
   },
   badge: {
     paddingHorizontal: spacing.md,
     paddingVertical: 6,
     borderRadius: radius.pill,
-    maxWidth: 130,
+    maxWidth: 130
   },
   badgeText: {
     fontSize: 12,
-    fontWeight: "700",
+    fontWeight: "700"
   },
   center: { flex: 1, alignItems: "center", justifyContent: "center" },
   emptyWrap: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: spacing.xl,
+    paddingHorizontal: spacing.xl
   },
   emptyImg: { marginBottom: spacing.lg },
   emptyCta: {
@@ -513,19 +515,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.md,
     borderRadius: radius.pill,
-    marginTop: spacing.xl,
+    marginTop: spacing.xl
   },
   emptyTitle: {
     fontSize: fontSize.xl,
     fontWeight: "700",
     textAlign: "center",
-    marginBottom: spacing.sm,
+    marginBottom: spacing.sm
   },
   emptyDesc: {
     fontSize: fontSize.base,
     textAlign: "center",
     lineHeight: 22,
-    maxWidth: 320,
+    maxWidth: 320
   },
   fab: {
     position: "absolute",
@@ -538,6 +540,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.18,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 6 },
-    elevation: 6,
-  },
+    elevation: 6
+  }
 });

@@ -115,7 +115,7 @@ export default function TabsLayout() {
             styles.premiumButton,
             {
               backgroundColor: colors.brandPrimary,
-              top: insets.top + spacing.lg,
+              top: insets.top + spacing.xl,
               opacity: pressed ? 0.85 : 1,
               shadowColor: colors.brandPrimary
             }
