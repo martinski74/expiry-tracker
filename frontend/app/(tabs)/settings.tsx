@@ -547,7 +547,9 @@ const styles = StyleSheet.create({
   hapticsLabel: {
     flexDirection: "row",
     alignItems: "center",
-    flex: 1
+    flex: 1,
+    flexShrink: 1,
+    marginRight: spacing.md
   },
   card: {
     borderRadius: radius.lg,
@@ -581,7 +583,7 @@ const styles = StyleSheet.create({
   langRow: { flexDirection: "row", gap: spacing.md },
   langBtn: {
     flex: 1,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.sm,
     borderRadius: radius.md,
     borderWidth: 1,
     alignItems: "center"

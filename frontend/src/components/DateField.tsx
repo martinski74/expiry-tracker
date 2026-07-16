@@ -25,7 +25,7 @@ export function DateField({
   locale,
   error,
   clearLabel,
-  testID,
+  testID
 }: DateFieldProps) {
   const { colors } = useTheme();
   const [show, setShow] = useState(false);
@@ -41,8 +41,8 @@ export function DateField({
             flex: 1,
             backgroundColor: colors.surfaceSecondary,
             borderColor: error ? colors.error : colors.border,
-            opacity: pressed ? 0.85 : 1,
-          },
+            opacity: pressed ? 0.85 : 1
+          }
         ]}
       >
         <Ionicons
@@ -54,7 +54,7 @@ export function DateField({
           style={{
             color: value ? colors.onSurface : colors.onSurfaceTertiary,
             fontSize: fontSize.base,
-            fontWeight: "500",
+            fontWeight: "500"
           }}
         >
           {value ? formatExpiryDate(value, locale) : placeholder}
@@ -70,7 +70,7 @@ export function DateField({
             style={{
               color: colors.onSurfaceSecondary,
               fontWeight: "700",
-              fontSize: 12,
+              fontSize: 12
             }}
           >
             {clearLabel}
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.sm,
+    gap: spacing.sm
   },
   input: {
     borderWidth: 1,
@@ -110,13 +110,13 @@ const styles = StyleSheet.create({
     fontSize: fontSize.base,
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.sm,
+    gap: spacing.sm
   },
   clearBtn: {
     paddingHorizontal: spacing.md,
-    height: 44,
+    minHeight: 44,
     borderRadius: radius.md,
     alignItems: "center",
-    justifyContent: "center",
-  },
+    justifyContent: "center"
+  }
 });

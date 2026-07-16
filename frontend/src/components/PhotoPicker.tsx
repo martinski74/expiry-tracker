@@ -5,7 +5,7 @@ import {
   StyleSheet,
   Pressable,
   Linking,
-  Image,
+  Image
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
@@ -42,7 +42,7 @@ export function PhotoPicker({ value, onChange }: Props) {
     const ext =
       asset.uri.split(".").pop()?.split("?")[0]?.toLowerCase() || "jpg";
     const filename = `photo_${Date.now()}_${Math.round(
-      Math.random() * 1e6,
+      Math.random() * 1e6
     )}.${ext}`;
     const sourceFile = new File(asset.uri);
     const destFile = new File(dir, filename);
@@ -69,14 +69,14 @@ export function PhotoPicker({ value, onChange }: Props) {
     if (!perm.granted) {
       setPermIssue({
         message: t("form.permissionMessageCamera"),
-        canAsk: perm.canAskAgain,
+        canAsk: perm.canAskAgain
       });
       return;
     }
     const res = await ImagePicker.launchCameraAsync({
       mediaTypes: ["images"],
       quality: 0.7,
-      allowsEditing: true,
+      allowsEditing: true
     });
     if (!res.canceled && res.assets?.[0]) {
       const newUri = persistAsset(res.assets[0]);
@@ -92,14 +92,14 @@ export function PhotoPicker({ value, onChange }: Props) {
     if (!perm.granted) {
       setPermIssue({
         message: t("form.permissionMessageLibrary"),
-        canAsk: perm.canAskAgain,
+        canAsk: perm.canAskAgain
       });
       return;
     }
     const res = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       quality: 0.7,
-      allowsEditing: true,
+      allowsEditing: true
     });
     if (!res.canceled && res.assets?.[0]) {
       const newUri = persistAsset(res.assets[0]);
@@ -122,8 +122,8 @@ export function PhotoPicker({ value, onChange }: Props) {
             styles.preview,
             {
               borderColor: colors.border,
-              backgroundColor: colors.surfaceSecondary,
-            },
+              backgroundColor: colors.surfaceSecondary
+            }
           ]}
           testID="photo-preview"
         >
@@ -136,8 +136,8 @@ export function PhotoPicker({ value, onChange }: Props) {
                 styles.smallBtn,
                 {
                   backgroundColor: colors.surfaceTertiary,
-                  opacity: pressed ? 0.8 : 1,
-                },
+                  opacity: pressed ? 0.8 : 1
+                }
               ]}
             >
               <Ionicons
@@ -156,8 +156,8 @@ export function PhotoPicker({ value, onChange }: Props) {
                 styles.smallBtn,
                 {
                   backgroundColor: colors.error + "22",
-                  opacity: pressed ? 0.8 : 1,
-                },
+                  opacity: pressed ? 0.8 : 1
+                }
               ]}
             >
               <Ionicons name="trash-outline" size={16} color={colors.error} />
@@ -176,8 +176,8 @@ export function PhotoPicker({ value, onChange }: Props) {
             {
               borderColor: colors.borderStrong,
               backgroundColor: colors.surfaceSecondary,
-              opacity: pressed ? 0.85 : 1,
-            },
+              opacity: pressed ? 0.85 : 1
+            }
           ]}
         >
           <Ionicons
@@ -189,7 +189,7 @@ export function PhotoPicker({ value, onChange }: Props) {
             style={{
               color: colors.onSurfaceSecondary,
               fontWeight: "700",
-              fontSize: fontSize.base,
+              fontSize: fontSize.base
             }}
           >
             {t("form.addPhoto")}
@@ -204,8 +204,8 @@ export function PhotoPicker({ value, onChange }: Props) {
             styles.actions,
             {
               backgroundColor: colors.surfaceSecondary,
-              borderColor: colors.border,
-            },
+              borderColor: colors.border
+            }
           ]}
         >
           <ActionRow
@@ -233,8 +233,8 @@ export function PhotoPicker({ value, onChange }: Props) {
             styles.permBox,
             {
               backgroundColor: colors.warning + "22",
-              borderColor: colors.warning,
-            },
+              borderColor: colors.warning
+            }
           ]}
         >
           <Ionicons
@@ -247,7 +247,7 @@ export function PhotoPicker({ value, onChange }: Props) {
               flex: 1,
               color: colors.onSurface,
               fontSize: fontSize.sm,
-              fontWeight: "500",
+              fontWeight: "500"
             }}
           >
             {permIssue.message}
@@ -258,14 +258,14 @@ export function PhotoPicker({ value, onChange }: Props) {
               onPress={() => Linking.openSettings()}
               style={[
                 styles.settingsBtn,
-                { backgroundColor: colors.brandPrimary },
+                { backgroundColor: colors.brandPrimary }
               ]}
             >
               <Text
                 style={{
                   color: colors.onBrandPrimary,
                   fontWeight: "700",
-                  fontSize: 12,
+                  fontSize: 12
                 }}
               >
                 {t("form.openSettings")}
@@ -283,7 +283,7 @@ function ActionRow({
   label,
   onPress,
   colors,
-  testID,
+  testID
 }: {
   icon: any;
   label: string;
@@ -297,7 +297,7 @@ function ActionRow({
       onPress={onPress}
       style={({ pressed }) => [
         styles.actionRow,
-        { opacity: pressed ? 0.6 : 1 },
+        { opacity: pressed ? 0.6 : 1 }
       ]}
     >
       <Ionicons name={icon} size={20} color={colors.brandPrimary} />
@@ -305,7 +305,7 @@ function ActionRow({
         style={{
           color: colors.onSurface,
           fontWeight: "700",
-          fontSize: fontSize.base,
+          fontSize: fontSize.base
         }}
       >
         {label}
@@ -318,17 +318,17 @@ const styles = StyleSheet.create({
   preview: {
     borderRadius: radius.lg,
     borderWidth: 1,
-    overflow: "hidden",
+    overflow: "hidden"
   },
   previewImg: {
     width: "100%",
     height: 200,
-    resizeMode: "cover",
+    resizeMode: "cover"
   },
   previewActions: {
     flexDirection: "row",
     gap: spacing.sm,
-    padding: spacing.sm,
+    padding: spacing.sm
   },
   smallBtn: {
     flexDirection: "row",
@@ -336,31 +336,31 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    borderRadius: radius.pill,
+    borderRadius: radius.pill
   },
   smallBtnText: { fontSize: 13, fontWeight: "700" },
   addBtn: {
-    height: 100,
+    minHeight: 100,
     borderRadius: radius.lg,
     borderWidth: 2,
     borderStyle: "dashed",
     alignItems: "center",
     justifyContent: "center",
     gap: spacing.sm,
-    flexDirection: "row",
+    flexDirection: "row"
   },
   actions: {
     borderRadius: radius.lg,
     borderWidth: 1,
     marginTop: spacing.sm,
-    overflow: "hidden",
+    overflow: "hidden"
   },
   actionRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.md,
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md + 2,
+    paddingVertical: spacing.md + 2
   },
   permBox: {
     flexDirection: "row",
@@ -369,11 +369,11 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderRadius: radius.md,
     borderWidth: 1,
-    marginTop: spacing.sm,
+    marginTop: spacing.sm
   },
   settingsBtn: {
     paddingHorizontal: spacing.md,
     paddingVertical: 6,
-    borderRadius: radius.pill,
-  },
+    borderRadius: radius.pill
+  }
 });
