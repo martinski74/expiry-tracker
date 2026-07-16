@@ -603,7 +603,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     borderRadius: radius.pill,
     borderWidth: 1,
-    height: 38
+    minHeight: 38
   },
   clearBtn: {
     paddingHorizontal: spacing.md,

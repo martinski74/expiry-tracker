@@ -201,7 +201,12 @@ export default function SettingsScreen() {
               />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.cardTitle, { color: colors.onSurface }]}>
+              <Text
+                style={[
+                  styles.cardTitle,
+                  { color: colors.onSurface, flexShrink: 1 }
+                ]}
+              >
                 {t("settings.premiumStatus")}
               </Text>
               <Text
@@ -360,7 +365,12 @@ export default function SettingsScreen() {
                   color={colors.brandPrimary}
                 />
               </View>
-              <Text style={[styles.cardTitle, { color: colors.onSurface }]}>
+              <Text
+                style={[
+                  styles.cardTitle,
+                  { color: colors.onSurface, flexShrink: 1 }
+                ]}
+              >
                 {t("settings.haptics")}
               </Text>
             </View>
@@ -599,7 +609,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     borderRadius: radius.pill,
     borderWidth: 1,
-    height: 38
+    minHeight: 38
   },
   aboutRow: {
     flexDirection: "row",

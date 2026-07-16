@@ -8,7 +8,7 @@ import {
   TextInput,
   Platform,
   KeyboardAvoidingView,
-  Alert,
+  Alert
 } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -22,13 +22,13 @@ import { PhotoPicker } from "../../src/components/PhotoPicker";
 import { DateField } from "../../src/components/DateField";
 import {
   ensurePermission,
-  scheduleForDocument,
+  scheduleForDocument
 } from "../../src/notifications/scheduler";
 import { STORAGE_KEYS, useStoredValue } from "../../src/hooks/useStoredValue";
 import { triggerHaptic } from "../../src/utils/haptics";
 import { formatExpiryDate } from "../../src/utils/urgency";
 import { usePremium } from "../../src/hooks/usePremium";
-import { getAllDocuments } from "../../src/db/documents"
+import { getAllDocuments } from "../../src/db/documents";
 
 const DEFAULT_REMINDERS = [30, 7, 1];
 const REMINDER_OPTIONS: Array<{ days: number; key: string }> = [
@@ -113,9 +113,9 @@ export default function NewDocumentScreen() {
           t("premium.limitReachedMessage"),
           [
             { text: t("common.cancel"), style: "cancel" },
-            { 
-              text: t("common.goPremium"), 
-              onPress: () => router.push({ pathname: "/premium" }) 
+            {
+              text: t("common.goPremium"),
+              onPress: () => router.push({ pathname: "/premium" })
             }
           ]
         );
@@ -127,7 +127,7 @@ export default function NewDocumentScreen() {
         expiry_date: toISODate(expiryDate!),
         notes: notes.trim() || null,
         image_uri: imageUri,
-        notify_days_before: reminderDays,
+        notify_days_before: reminderDays
       });
 
       if (reminderDays.length > 0) {
@@ -142,8 +142,8 @@ export default function NewDocumentScreen() {
             bodyTemplates: {
               today: t("form.notifBodyToday"),
               tomorrow: t("form.notifBodyTomorrow"),
-              daysTemplate: t("form.notifBodyDays"),
-            },
+              daysTemplate: t("form.notifBodyDays")
+            }
           });
         }
       }
@@ -169,14 +169,14 @@ export default function NewDocumentScreen() {
           headerTitle: t("form.newTitle"),
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.onSurface,
-          headerTitleStyle: { fontWeight: "800", fontSize: fontSize.lg },
+          headerTitleStyle: { fontWeight: "800", fontSize: fontSize.lg }
         }}
       />
 
       <ScrollView
         contentContainerStyle={{
           padding: spacing.xl,
-          paddingBottom: insets.bottom + 120,
+          paddingBottom: insets.bottom + 120
         }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
@@ -201,8 +201,8 @@ export default function NewDocumentScreen() {
               {
                 color: colors.onSurface,
                 backgroundColor: colors.surfaceSecondary,
-                borderColor: errors.title ? colors.error : colors.border,
-              },
+                borderColor: errors.title ? colors.error : colors.border
+              }
             ]}
           />
         </Field>
@@ -275,8 +275,8 @@ export default function NewDocumentScreen() {
               {
                 color: colors.onSurface,
                 backgroundColor: colors.surfaceSecondary,
-                borderColor: colors.border,
-              },
+                borderColor: colors.border
+              }
             ]}
           />
         </Field>
@@ -313,23 +313,23 @@ export default function NewDocumentScreen() {
                       backgroundColor: active
                         ? colors.brandPrimary
                         : colors.surfaceSecondary,
-                      borderColor: active
-                        ? colors.brandPrimary
-                        : colors.border,
-                      opacity: pressed ? 0.85 : 1,
-                    },
+                      borderColor: active ? colors.brandPrimary : colors.border,
+                      opacity: pressed ? 0.85 : 1
+                    }
                   ]}
                 >
                   <Ionicons
                     name={active ? "checkmark-circle" : "notifications-outline"}
                     size={16}
-                    color={active ? colors.onBrandPrimary : colors.onSurfaceTertiary}
+                    color={
+                      active ? colors.onBrandPrimary : colors.onSurfaceTertiary
+                    }
                   />
                   <Text
                     style={{
                       color: active ? colors.onBrandPrimary : colors.onSurface,
                       fontWeight: "700",
-                      fontSize: fontSize.sm,
+                      fontSize: fontSize.sm
                     }}
                   >
                     {t(`form.reminderDays_${opt.key}`)}
@@ -343,7 +343,7 @@ export default function NewDocumentScreen() {
               color: colors.onSurfaceTertiary,
               fontSize: 12,
               marginTop: spacing.sm,
-              fontWeight: "500",
+              fontWeight: "500"
             }}
           >
             {t("form.reminderHint")}
@@ -358,8 +358,8 @@ export default function NewDocumentScreen() {
           {
             backgroundColor: colors.surface,
             borderTopColor: colors.border,
-            paddingBottom: insets.bottom + spacing.md,
-          },
+            paddingBottom: insets.bottom + spacing.md
+          }
         ]}
       >
         <Pressable
@@ -370,15 +370,11 @@ export default function NewDocumentScreen() {
             styles.saveBtn,
             {
               backgroundColor: colors.brandPrimary,
-              opacity: pressed || saving ? 0.85 : 1,
-            },
+              opacity: pressed || saving ? 0.85 : 1
+            }
           ]}
         >
-          <Ionicons
-            name="checkmark"
-            size={20}
-            color={colors.onBrandPrimary}
-          />
+          <Ionicons name="checkmark" size={20} color={colors.onBrandPrimary} />
           <Text style={[styles.saveTxt, { color: colors.onBrandPrimary }]}>
             {t("common.save")}
           </Text>
@@ -392,7 +388,7 @@ function Field({
   label,
   error,
   colors,
-  children,
+  children
 }: {
   label: string;
   error?: string;
@@ -401,12 +397,7 @@ function Field({
 }) {
   return (
     <View style={{ marginBottom: spacing.xl }}>
-      <Text
-        style={[
-          styles.fieldLabel,
-          { color: colors.onSurfaceSecondary },
-        ]}
-      >
+      <Text style={[styles.fieldLabel, { color: colors.onSurfaceSecondary }]}>
         {label}
       </Text>
       {children}
@@ -426,7 +417,7 @@ function CatChip({
   colors,
   icon,
   tint,
-  testID,
+  testID
 }: {
   label: string;
   active: boolean;
@@ -447,10 +438,12 @@ function CatChip({
       style={({ pressed }) => [
         styles.catChip,
         {
-          backgroundColor: active ? colors.brandPrimary : colors.surfaceSecondary,
+          backgroundColor: active
+            ? colors.brandPrimary
+            : colors.surfaceSecondary,
           borderColor: active ? colors.brandPrimary : colors.border,
-          opacity: pressed ? 0.85 : 1,
-        },
+          opacity: pressed ? 0.85 : 1
+        }
       ]}
     >
       <Ionicons
@@ -462,7 +455,7 @@ function CatChip({
         style={{
           color: active ? colors.onBrandPrimary : colors.onSurface,
           fontWeight: "700",
-          fontSize: fontSize.sm,
+          fontSize: fontSize.sm
         }}
       >
         {label}
@@ -478,23 +471,23 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: spacing.sm,
     textTransform: "uppercase",
-    letterSpacing: 0.6,
+    letterSpacing: 0.6
   },
   fieldError: {
     fontSize: fontSize.sm,
     fontWeight: "600",
-    marginTop: spacing.xs,
+    marginTop: spacing.xs
   },
   input: {
     borderWidth: 1,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
-    fontSize: fontSize.base,
+    fontSize: fontSize.base
   },
   textArea: {
     minHeight: 96,
-    textAlignVertical: "top",
+    textAlignVertical: "top"
   },
   catChip: {
     flexDirection: "row",
@@ -504,14 +497,14 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     borderRadius: radius.pill,
     borderWidth: 1,
-    height: 38,
+    minHeight: 38
   },
   clearBtn: {
     paddingHorizontal: spacing.md,
     height: 44,
     borderRadius: radius.md,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   saveBar: {
     position: "absolute",
@@ -520,7 +513,7 @@ const styles = StyleSheet.create({
     right: 0,
     borderTopWidth: 1,
     paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
+    paddingTop: spacing.md
   },
   saveBtn: {
     flexDirection: "row",
@@ -528,7 +521,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: spacing.sm,
     borderRadius: radius.lg,
-    paddingVertical: spacing.md + 2,
+    paddingVertical: spacing.md + 2
   },
-  saveTxt: { fontSize: fontSize.lg, fontWeight: "800" },
+  saveTxt: { fontSize: fontSize.lg, fontWeight: "800" }
 });
