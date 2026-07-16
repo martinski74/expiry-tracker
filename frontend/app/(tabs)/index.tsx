@@ -46,7 +46,7 @@ export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const { width, height } = useWindowDimensions();
-  const heroSize = Math.min(width * 0.58, height * 0.24, 240);
+  const heroSize = Math.min(width * 0.56, height * 0.23, 230);
 
   const load = useCallback(async () => {
     const rows = await getAllDocuments();
