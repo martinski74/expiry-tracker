@@ -29,6 +29,7 @@ import { triggerHaptic } from "../../src/utils/haptics";
 import { formatExpiryDate } from "../../src/utils/urgency";
 import { usePremium } from "../../src/hooks/usePremium";
 import { getAllDocuments } from "../../src/db/documents";
+import { FREE_PLAN_LIMITS } from "../../src/config/limits";
 
 const DEFAULT_REMINDERS = [30, 7, 1];
 const REMINDER_OPTIONS: Array<{ days: number; key: string }> = [
@@ -106,7 +107,7 @@ export default function NewDocumentScreen() {
     setSaving(true);
     try {
       const documentCount = (await getAllDocuments()).length;
-      if (!isPremium && documentCount >= 3) {
+      if (!isPremium && documentCount >= FREE_PLAN_LIMITS.documents) {
         setSaving(false);
         Alert.alert(
           t("premium.limitReachedTitle"),

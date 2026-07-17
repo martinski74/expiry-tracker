@@ -5,7 +5,7 @@ export const translations = {
     tabs: {
       home: "Home",
       categories: "Categories",
-      settings: "Settings",
+      settings: "Settings"
     },
     home: {
       title: "My Documents",
@@ -18,7 +18,7 @@ export const translations = {
       filterExpiringSoon: "Expiring soon",
       filterExpired: "Expired",
       emptyFilteredTitle: "Nothing here",
-      emptyFilteredDescription: "No documents match this filter.",
+      emptyFilteredDescription: "No documents match this filter."
     },
     form: {
       newTitle: "New Document",
@@ -61,7 +61,7 @@ export const translations = {
       notifTitleSoon: "{title} expires soon",
       notifBodyDays: "Expires in {n} days · tap to view",
       notifBodyTomorrow: "Expires tomorrow · tap to view",
-      notifBodyToday: "Expires today · tap to view",
+      notifBodyToday: "Expires today · tap to view"
     },
     categories: {
       title: "Categories",
@@ -73,7 +73,7 @@ export const translations = {
         documents: "Documents",
         insurance: "Insurance",
         warranties: "Warranties",
-        other: "Other",
+        other: "Other"
       },
       customBadge: "Custom",
       docsCount: "{n} documents",
@@ -89,7 +89,7 @@ export const translations = {
       deleteConfirm: "Delete category?",
       deleteWarning: "Documents in this category will become uncategorized.",
       deleteKeepDocs: "Keep documents (uncategorized)",
-      deleteAllDocs: "Delete all documents too",
+      deleteAllDocs: "Delete all documents too"
     },
     settings: {
       title: "Settings",
@@ -111,7 +111,7 @@ export const translations = {
       premiumStatus: "Subscription",
       premiumActive: "Premium - Active",
       premiumInactive: "Standard plan",
-      premiumUpgrade: "Get Premium",
+      premiumUpgrade: "Get Premium"
     },
     common: {
       save: "Save",
@@ -122,7 +122,7 @@ export const translations = {
       comingSoon: "Coming soon",
       uncategorized: "Uncategorized",
       searchPlaceholder: "Search documents...",
-      goPremium: "Go Premium",
+      goPremium: "Go Premium"
     },
     urgency: {
       expired: "Expired",
@@ -133,9 +133,12 @@ export const translations = {
       expiresTomorrow: "Expires tomorrow",
       daysLeft: "{n} days left",
       expiredYesterday: "Expired yesterday",
-      expiredDaysAgo: "Expired {n} days ago",
+      expiredDaysAgo: "Expired {n} days ago"
     },
     premium: {
+      categoryLimitTitle: "Custom category limit reached",
+      categoryLimitMessage:
+        "The free plan includes 1 custom category. Upgrade to Premium to create unlimited custom categories.",
       limitReachedTitle: "Limit Reached",
       limitReachedMessage:
         "You can only save up to 3 documents on the free tier. Upgrade to Premium for unlimited documents!",
@@ -169,16 +172,16 @@ export const translations = {
         categories: "Custom categories",
         categoriesDesc: "Organize your documents your way.",
         noAds: "No ads",
-        noAdsDesc: "Enjoy a completely ad-free experience.",
-      },
-    },
+        noAdsDesc: "Enjoy a completely ad-free experience."
+      }
+    }
   },
   bg: {
     appName: "Изтичащи срокове",
     tabs: {
       home: "Начало",
       categories: "Категории",
-      settings: "Настройки",
+      settings: "Настройки"
     },
     home: {
       title: "Моите документи",
@@ -191,7 +194,7 @@ export const translations = {
       filterExpiringSoon: "Изтичат скоро",
       filterExpired: "Изтекли",
       emptyFilteredTitle: "Няма резултати",
-      emptyFilteredDescription: "Нито един документ не отговаря на филтъра.",
+      emptyFilteredDescription: "Нито един документ не отговаря на филтъра."
     },
     form: {
       newTitle: "Нов документ",
@@ -235,7 +238,7 @@ export const translations = {
       notifTitleSoon: "{title} изтича скоро",
       notifBodyDays: "Изтича след {n} дни · докоснете за преглед",
       notifBodyTomorrow: "Изтича утре · докоснете за преглед",
-      notifBodyToday: "Изтича днес · докоснете за преглед",
+      notifBodyToday: "Изтича днес · докоснете за преглед"
     },
     categories: {
       title: "Категории",
@@ -248,7 +251,7 @@ export const translations = {
         documents: "Документи",
         insurance: "Застраховки",
         warranties: "Гаранции",
-        other: "Други",
+        other: "Други"
       },
       customBadge: "Потребителска",
       docsCount: "{n} документа",
@@ -264,7 +267,7 @@ export const translations = {
       deleteConfirm: "Изтриване на категория?",
       deleteWarning: "Документите от тази категория ще останат без категория.",
       deleteKeepDocs: "Запази документите (без категория)",
-      deleteAllDocs: "Изтрий и документите",
+      deleteAllDocs: "Изтрий и документите"
     },
     settings: {
       title: "Настройки",
@@ -287,7 +290,7 @@ export const translations = {
       premiumStatus: "Абонамент",
       premiumActive: "Premium - Активен",
       premiumInactive: "Стандартен план",
-      premiumUpgrade: "Вземи Premium",
+      premiumUpgrade: "Вземи Premium"
     },
     common: {
       save: "Запази",
@@ -298,7 +301,7 @@ export const translations = {
       comingSoon: "Очаквайте скоро",
       uncategorized: "Без категория",
       searchPlaceholder: "Търсене на документи...",
-      goPremium: "Вземи Premium",
+      goPremium: "Вземи Premium"
     },
     urgency: {
       expired: "Изтекъл",
@@ -309,9 +312,12 @@ export const translations = {
       expiresTomorrow: "Изтича утре",
       daysLeft: "Остават {n} дни",
       expiredYesterday: "Изтекъл вчера",
-      expiredDaysAgo: "Изтекъл преди {n} дни",
+      expiredDaysAgo: "Изтекъл преди {n} дни"
     },
     premium: {
+      categoryLimitTitle: "Достигнат лимит за категории",
+      categoryLimitMessage:
+        "Безплатният план включва 1 персонализирана категория. Премини към Premium за неограничен брой категории.",
       limitReachedTitle: "Достигнат лимит",
       limitReachedMessage:
         "Можете да запазите до 3 документа с безплатната версия. Вземете Premium за неограничен брой!",
@@ -344,10 +350,10 @@ export const translations = {
         categories: "Персонализирани категории",
         categoriesDesc: "Организирайте документите по ваш начин.",
         noAds: "Без реклами",
-        noAdsDesc: "Насладете се на изживяване без никакви реклами.",
-      },
-    },
-  },
+        noAdsDesc: "Насладете се на изживяване без никакви реклами."
+      }
+    }
+  }
 };
 
 export type Locale = "en" | "bg";

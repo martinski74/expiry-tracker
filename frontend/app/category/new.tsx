@@ -7,15 +7,18 @@ import {
   ScrollView,
   TextInput,
   Platform,
-  KeyboardAvoidingView,
+  KeyboardAvoidingView
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { Alert } from "react-native";
+import { addCustomCategory, getAllCategories } from "../../src/db/categories";
+import { usePremium } from "../../src/hooks/usePremium";
 import { useTheme } from "../../src/theme/ThemeProvider";
 import { useI18n } from "../../src/i18n/I18nProvider";
 import { spacing, fontSize, radius } from "../../src/theme/colors";
-import { addCustomCategory } from "../../src/db/categories";
+import { FREE_PLAN_LIMITS } from "../../src/config/limits";
 
 // Curated icon + color palettes that fit the warm theme.
 const ICON_OPTIONS = [
@@ -34,7 +37,7 @@ const ICON_OPTIONS = [
   "medkit-outline",
   "musical-notes-outline",
   "paw-outline",
-  "tv-outline",
+  "tv-outline"
 ] as const;
 
 const COLOR_OPTIONS = [
@@ -45,7 +48,7 @@ const COLOR_OPTIONS = [
   "#7CA1A6", // muted teal
   "#A5523C", // brick
   "#D46F6F", // dusty red
-  "#9C7E6F", // taupe
+  "#9C7E6F" // taupe
 ];
 
 export default function NewCategoryScreen() {
@@ -53,6 +56,7 @@ export default function NewCategoryScreen() {
   const { t } = useI18n();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { isPremium } = usePremium();
 
   const [name, setName] = useState("");
   const [icon, setIcon] = useState<string>(ICON_OPTIONS[0]);
@@ -65,10 +69,48 @@ export default function NewCategoryScreen() {
       setError(t("categories.nameRequired"));
       return;
     }
+
     if (saving) return;
+
     setSaving(true);
+
     try {
-      await addCustomCategory({ name: name.trim(), icon, color });
+      const categories = await getAllCategories();
+
+      const customCategoryCount = categories.filter(
+        (category) => !category.is_predefined
+      ).length;
+
+      if (
+        !isPremium &&
+        customCategoryCount >= FREE_PLAN_LIMITS.customCategories
+      ) {
+        setSaving(false);
+
+        Alert.alert(
+          t("premium.categoryLimitTitle"),
+          t("premium.categoryLimitMessage"),
+          [
+            {
+              text: t("common.cancel"),
+              style: "cancel"
+            },
+            {
+              text: t("common.goPremium"),
+              onPress: () => router.push("/premium")
+            }
+          ]
+        );
+
+        return;
+      }
+
+      await addCustomCategory({
+        name: name.trim(),
+        icon,
+        color
+      });
+
       router.back();
     } catch (e) {
       console.error("[Save category] failed:", e);
@@ -88,14 +130,14 @@ export default function NewCategoryScreen() {
           headerTitle: t("categories.newTitle"),
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.onSurface,
-          headerTitleStyle: { fontWeight: "800", fontSize: fontSize.lg },
+          headerTitleStyle: { fontWeight: "800", fontSize: fontSize.lg }
         }}
       />
 
       <ScrollView
         contentContainerStyle={{
           padding: spacing.xl,
-          paddingBottom: insets.bottom + 140,
+          paddingBottom: insets.bottom + 140
         }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
@@ -106,24 +148,19 @@ export default function NewCategoryScreen() {
             styles.preview,
             {
               backgroundColor: colors.surfaceSecondary,
-              borderColor: colors.border,
-            },
+              borderColor: colors.border
+            }
           ]}
           testID="cat-preview"
         >
-          <View
-            style={[
-              styles.previewIcon,
-              { backgroundColor: color + "22" },
-            ]}
-          >
+          <View style={[styles.previewIcon, { backgroundColor: color + "22" }]}>
             <Ionicons name={icon as any} size={28} color={color} />
           </View>
           <Text
             style={{
               fontSize: fontSize.lg,
               fontWeight: "700",
-              color: colors.onSurface,
+              color: colors.onSurface
             }}
             numberOfLines={1}
           >
@@ -147,8 +184,8 @@ export default function NewCategoryScreen() {
               {
                 color: colors.onSurface,
                 backgroundColor: colors.surfaceSecondary,
-                borderColor: error ? colors.error : colors.border,
-              },
+                borderColor: error ? colors.error : colors.border
+              }
             ]}
           />
         </Field>
@@ -171,8 +208,8 @@ export default function NewCategoryScreen() {
                         : colors.surfaceSecondary,
                       borderColor: active ? color : colors.border,
                       borderWidth: active ? 2 : 1,
-                      opacity: pressed ? 0.7 : 1,
-                    },
+                      opacity: pressed ? 0.7 : 1
+                    }
                   ]}
                 >
                   <Ionicons
@@ -202,8 +239,8 @@ export default function NewCategoryScreen() {
                       backgroundColor: c,
                       borderColor: active ? colors.onSurface : "transparent",
                       borderWidth: active ? 3 : 0,
-                      opacity: pressed ? 0.8 : 1,
-                    },
+                      opacity: pressed ? 0.8 : 1
+                    }
                   ]}
                 />
               );
@@ -219,8 +256,8 @@ export default function NewCategoryScreen() {
           {
             backgroundColor: colors.surface,
             borderTopColor: colors.border,
-            paddingBottom: insets.bottom + spacing.md,
-          },
+            paddingBottom: insets.bottom + spacing.md
+          }
         ]}
       >
         <Pressable
@@ -231,8 +268,8 @@ export default function NewCategoryScreen() {
             styles.saveBtn,
             {
               backgroundColor: colors.brandPrimary,
-              opacity: pressed || saving ? 0.85 : 1,
-            },
+              opacity: pressed || saving ? 0.85 : 1
+            }
           ]}
         >
           <Ionicons name="checkmark" size={20} color={colors.onBrandPrimary} />
@@ -249,7 +286,7 @@ function Field({
   label,
   error,
   colors,
-  children,
+  children
 }: {
   label: string;
   error?: string;
@@ -263,7 +300,9 @@ function Field({
       </Text>
       {children}
       {error ? (
-        <Text style={[styles.fieldError, { color: colors.error }]}>{error}</Text>
+        <Text style={[styles.fieldError, { color: colors.error }]}>
+          {error}
+        </Text>
       ) : null}
     </View>
   );
@@ -278,55 +317,55 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     borderRadius: radius.lg,
     borderWidth: 1,
-    marginBottom: spacing.xl,
+    marginBottom: spacing.xl
   },
   previewIcon: {
     width: 52,
     height: 52,
     borderRadius: radius.md,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   fieldLabel: {
     fontSize: fontSize.sm,
     fontWeight: "700",
     marginBottom: spacing.sm,
     textTransform: "uppercase",
-    letterSpacing: 0.6,
+    letterSpacing: 0.6
   },
   fieldError: {
     fontSize: fontSize.sm,
     fontWeight: "600",
-    marginTop: spacing.xs,
+    marginTop: spacing.xs
   },
   input: {
     borderWidth: 1,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
-    fontSize: fontSize.base,
+    fontSize: fontSize.base
   },
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: spacing.sm,
+    gap: spacing.sm
   },
   iconCell: {
     width: 52,
     height: 52,
     borderRadius: radius.md,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   colorRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: spacing.md,
+    gap: spacing.md
   },
   colorDot: {
     width: 44,
     height: 44,
-    borderRadius: radius.pill,
+    borderRadius: radius.pill
   },
   saveBar: {
     position: "absolute",
@@ -335,7 +374,7 @@ const styles = StyleSheet.create({
     right: 0,
     borderTopWidth: 1,
     paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
+    paddingTop: spacing.md
   },
   saveBtn: {
     flexDirection: "row",
@@ -343,7 +382,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: spacing.sm,
     borderRadius: radius.lg,
-    paddingVertical: spacing.md + 2,
+    paddingVertical: spacing.md + 2
   },
-  saveTxt: { fontSize: fontSize.lg, fontWeight: "800" },
+  saveTxt: { fontSize: fontSize.lg, fontWeight: "800" }
 });

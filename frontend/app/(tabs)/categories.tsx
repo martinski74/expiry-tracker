@@ -6,7 +6,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Pressable,
-  Modal,
+  Modal
 } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -18,9 +18,15 @@ import {
   getAllCategories,
   deleteCategory,
   deleteCategoryAndDocuments,
-  Category,
+  Category
 } from "../../src/db/categories";
 import { triggerHaptic } from "../../src/utils/haptics";
+import { File } from "expo-file-system";
+import {
+  getDocumentsByCategory,
+  parseNotifyDays
+} from "../../src/db/documents";
+import { cancelForDocument } from "../../src/notifications/scheduler";
 
 const PREDEFINED_KEYS = ["documents", "insurance", "warranties", "other"];
 
@@ -93,6 +99,33 @@ export default function CategoriesScreen() {
   const handleDeleteAll = async () => {
     if (!dialogCat) return;
     triggerHaptic("error");
+
+    // Преди bulk delete-а в базата - почистваме "сираците":
+    // насрочените нотификации и снимките на всеки документ в категорията.
+    try {
+      const docs = await getDocumentsByCategory(dialogCat.id);
+      for (const doc of docs) {
+        try {
+          await cancelForDocument(
+            doc.id,
+            parseNotifyDays(doc.notify_days_before)
+          );
+        } catch {
+          // нотификацията може вече да не съществува — игнорираме
+        }
+        if (doc.image_uri && doc.image_uri.startsWith("file://")) {
+          try {
+            const file = new File(doc.image_uri);
+            if (file.exists) file.delete();
+          } catch {
+            // файлът може вече да е изтрит — игнорираме
+          }
+        }
+      }
+    } catch (e) {
+      console.error("[Category delete] cleanup failed:", e);
+    }
+
     await deleteCategoryAndDocuments(dialogCat.id);
     setDialogCat(null);
     await load();
@@ -120,8 +153,8 @@ export default function CategoriesScreen() {
           styles.emptyCta,
           {
             backgroundColor: colors.brandPrimary,
-            opacity: pressed ? 0.9 : 1,
-          },
+            opacity: pressed ? 0.9 : 1
+          }
         ]}
       >
         <Ionicons name="add" size={18} color={colors.onBrandPrimary} />
@@ -129,7 +162,7 @@ export default function CategoriesScreen() {
           style={{
             color: colors.onBrandPrimary,
             fontWeight: "800",
-            fontSize: fontSize.base,
+            fontSize: fontSize.base
           }}
         >
           {t("categories.addButton")}
@@ -142,7 +175,7 @@ export default function CategoriesScreen() {
     <View
       style={[
         styles.container,
-        { backgroundColor: colors.surface, paddingTop: insets.top + spacing.lg },
+        { backgroundColor: colors.surface, paddingTop: insets.top + spacing.lg }
       ]}
       testID="categories-screen"
     >
@@ -168,7 +201,7 @@ export default function CategoriesScreen() {
         <ScrollView
           contentContainerStyle={{
             padding: spacing.xl,
-            paddingBottom: insets.bottom + 140,
+            paddingBottom: insets.bottom + 140
           }}
           showsVerticalScrollIndicator={false}
         >
@@ -193,8 +226,8 @@ export default function CategoriesScreen() {
                       ? hexWithAlpha(colors.error, 0.1)
                       : colors.surfaceSecondary,
                     borderColor: isPending ? colors.error : colors.border,
-                    opacity: pressed ? 0.85 : 1,
-                  },
+                    opacity: pressed ? 0.85 : 1
+                  }
                 ]}
               >
                 <View
@@ -204,8 +237,8 @@ export default function CategoriesScreen() {
                       backgroundColor: hexWithAlpha(
                         cat.color,
                         isDark ? 0.22 : 0.14
-                      ),
-                    },
+                      )
+                    }
                   ]}
                 >
                   <Ionicons
@@ -225,7 +258,7 @@ export default function CategoriesScreen() {
                       <View
                         style={[
                           styles.statusBadge,
-                          { backgroundColor: colors.error },
+                          { backgroundColor: colors.error }
                         ]}
                       >
                         <Text style={styles.statusBadgeText}>
@@ -237,7 +270,7 @@ export default function CategoriesScreen() {
                       <View
                         style={[
                           styles.statusBadge,
-                          { backgroundColor: colors.brandPrimary },
+                          { backgroundColor: colors.brandPrimary }
                         ]}
                       >
                         <Text style={styles.statusBadgeText}>
@@ -249,14 +282,14 @@ export default function CategoriesScreen() {
                       <View
                         style={[
                           styles.customBadge,
-                          { backgroundColor: colors.brandTertiary },
+                          { backgroundColor: colors.brandTertiary }
                         ]}
                       >
                         <Text
                           style={{
                             fontSize: 10,
                             fontWeight: "700",
-                            color: colors.onBrandTertiary,
+                            color: colors.onBrandTertiary
                           }}
                         >
                           {t("categories.customBadge")}
@@ -267,7 +300,7 @@ export default function CategoriesScreen() {
                   <Text
                     style={[
                       styles.rowMeta,
-                      { color: colors.onSurfaceTertiary },
+                      { color: colors.onSurfaceTertiary }
                     ]}
                   >
                     {docsCountLabel(cat.document_count ?? 0)}
@@ -279,7 +312,7 @@ export default function CategoriesScreen() {
                     onPress={() => handleDeletePress(cat)}
                     style={[
                       styles.deletePill,
-                      { backgroundColor: colors.error },
+                      { backgroundColor: colors.error }
                     ]}
                   >
                     <Ionicons name="trash" size={14} color="#fff" />
@@ -321,12 +354,20 @@ export default function CategoriesScreen() {
           <Pressable
             style={[
               styles.modalCard,
-              { backgroundColor: colors.surfaceSecondary, borderColor: colors.border },
+              {
+                backgroundColor: colors.surfaceSecondary,
+                borderColor: colors.border
+              }
             ]}
             onPress={() => {}}
           >
             {/* Icon */}
-            <View style={[styles.modalIcon, { backgroundColor: hexWithAlpha(colors.error, 0.12) }]}>
+            <View
+              style={[
+                styles.modalIcon,
+                { backgroundColor: hexWithAlpha(colors.error, 0.12) }
+              ]}
+            >
               <Ionicons name="trash-outline" size={28} color={colors.error} />
             </View>
 
@@ -336,7 +377,9 @@ export default function CategoriesScreen() {
             </Text>
 
             {/* Subtitle */}
-            <Text style={[styles.modalDesc, { color: colors.onSurfaceTertiary }]}>
+            <Text
+              style={[styles.modalDesc, { color: colors.onSurfaceTertiary }]}
+            >
               {t("categories.deleteWarning")}
             </Text>
 
@@ -346,10 +389,18 @@ export default function CategoriesScreen() {
               onPress={handleKeepDocs}
               style={({ pressed }) => [
                 styles.modalBtn,
-                { backgroundColor: colors.surface, borderColor: colors.border, opacity: pressed ? 0.8 : 1 },
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                  opacity: pressed ? 0.8 : 1
+                }
               ]}
             >
-              <Ionicons name="folder-open-outline" size={18} color={colors.onSurface} />
+              <Ionicons
+                name="folder-open-outline"
+                size={18}
+                color={colors.onSurface}
+              />
               <Text style={[styles.modalBtnText, { color: colors.onSurface }]}>
                 {t("categories.deleteKeepDocs")}
               </Text>
@@ -360,7 +411,11 @@ export default function CategoriesScreen() {
               onPress={handleDeleteAll}
               style={({ pressed }) => [
                 styles.modalBtn,
-                { backgroundColor: hexWithAlpha(colors.error, 0.1), borderColor: colors.error, opacity: pressed ? 0.8 : 1 },
+                {
+                  backgroundColor: hexWithAlpha(colors.error, 0.1),
+                  borderColor: colors.error,
+                  opacity: pressed ? 0.8 : 1
+                }
               ]}
             >
               <Ionicons name="trash" size={18} color={colors.error} />
@@ -373,9 +428,17 @@ export default function CategoriesScreen() {
             <Pressable
               testID="modal-cancel"
               onPress={() => setDialogCat(null)}
-              style={({ pressed }) => [styles.modalCancel, { opacity: pressed ? 0.7 : 1 }]}
+              style={({ pressed }) => [
+                styles.modalCancel,
+                { opacity: pressed ? 0.7 : 1 }
+              ]}
             >
-              <Text style={[styles.modalCancelText, { color: colors.onSurfaceTertiary }]}>
+              <Text
+                style={[
+                  styles.modalCancelText,
+                  { color: colors.onSurfaceTertiary }
+                ]}
+              >
                 {t("common.cancel")}
               </Text>
             </Pressable>
@@ -397,8 +460,8 @@ export default function CategoriesScreen() {
             backgroundColor: colors.brandPrimary,
             bottom: insets.bottom + 96,
             opacity: pressed ? 0.9 : 1,
-            shadowColor: colors.onSurface,
-          },
+            shadowColor: colors.onSurface
+          }
         ]}
       >
         <Ionicons name="add" size={28} color={colors.onBrandPrimary} />
@@ -416,12 +479,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize["2xl"],
     fontWeight: "800",
-    letterSpacing: -0.5,
+    letterSpacing: -0.5
   },
   subtitle: {
     fontSize: fontSize.base,
     marginTop: spacing.xs,
-    fontWeight: "500",
+    fontWeight: "500"
   },
   loadingWrap: { flex: 1, alignItems: "center", justifyContent: "center" },
   row: {
@@ -430,7 +493,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderRadius: radius.lg,
     borderWidth: 1,
-    marginBottom: spacing.md,
+    marginBottom: spacing.md
   },
   iconWrap: {
     width: 44,
@@ -438,22 +501,22 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: spacing.md,
+    marginRight: spacing.md
   },
   titleRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.sm,
-    flexWrap: "wrap",
+    flexWrap: "wrap"
   },
   rowTitle: {
     fontSize: fontSize.lg,
-    fontWeight: "700",
+    fontWeight: "700"
   },
   rowMeta: {
     fontSize: fontSize.sm,
     marginTop: 2,
-    fontWeight: "500",
+    fontWeight: "500"
   },
   statusBadge: {
     paddingHorizontal: 6,
@@ -461,17 +524,17 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     minWidth: 20,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   statusBadgeText: {
     fontSize: 10,
     fontWeight: "800",
-    color: "#fff",
+    color: "#fff"
   },
   customBadge: {
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
-    borderRadius: radius.pill,
+    borderRadius: radius.pill
   },
   deletePill: {
     flexDirection: "row",
@@ -479,14 +542,14 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    borderRadius: radius.pill,
+    borderRadius: radius.pill
   },
   deletePillText: { fontSize: 12, fontWeight: "700", color: "#fff" },
   hint: {
     textAlign: "center",
     fontSize: fontSize.sm,
     marginTop: spacing.xl,
-    fontWeight: "500",
+    fontWeight: "500"
   },
   fab: {
     position: "absolute",
@@ -501,30 +564,30 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.18,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 6 },
-    elevation: 6,
+    elevation: 6
   },
-    fabLabel: {
+  fabLabel: {
     fontSize: fontSize.base,
-    fontWeight: "700",
+    fontWeight: "700"
   },
   emptyWrap: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: spacing.xl,
+    paddingHorizontal: spacing.xl
   },
   emptyTitle: {
     fontSize: fontSize.xl,
     fontWeight: "700",
     textAlign: "center",
     marginTop: spacing.lg,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.sm
   },
   emptyDesc: {
     fontSize: fontSize.base,
     textAlign: "center",
     lineHeight: 22,
-    maxWidth: 320,
+    maxWidth: 320
   },
   emptyCta: {
     flexDirection: "row",
@@ -533,21 +596,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.md,
     borderRadius: radius.pill,
-    marginTop: spacing.xl,
+    marginTop: spacing.xl
   },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.55)",
     alignItems: "center",
     justifyContent: "center",
-    padding: spacing.xl,
+    padding: spacing.xl
   },
   modalCard: {
     width: "100%",
     borderRadius: radius.lg,
     borderWidth: 1,
     padding: spacing.xl,
-    alignItems: "center",
+    alignItems: "center"
   },
   modalIcon: {
     width: 60,
@@ -555,19 +618,19 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: spacing.lg,
+    marginBottom: spacing.lg
   },
   modalTitle: {
     fontSize: fontSize.xl,
     fontWeight: "800",
     textAlign: "center",
-    marginBottom: spacing.sm,
+    marginBottom: spacing.sm
   },
   modalDesc: {
     fontSize: fontSize.base,
     textAlign: "center",
     lineHeight: 22,
-    marginBottom: spacing.xl,
+    marginBottom: spacing.xl
   },
   modalBtn: {
     flexDirection: "row",
@@ -577,20 +640,20 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderRadius: radius.lg,
     borderWidth: 1,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.sm
   },
   modalBtnText: {
     fontSize: fontSize.base,
     fontWeight: "700",
-    flex: 1,
+    flex: 1
   },
   modalCancel: {
     marginTop: spacing.sm,
-    padding: spacing.md,
+    padding: spacing.md
   },
   modalCancelText: {
     fontSize: fontSize.base,
     fontWeight: "600",
-    textAlign: "center",
-  },
+    textAlign: "center"
+  }
 });
