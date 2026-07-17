@@ -136,9 +136,6 @@ export const translations = {
       expiredDaysAgo: "Expired {n} days ago"
     },
     premium: {
-      categoryLimitTitle: "Custom category limit reached",
-      categoryLimitMessage:
-        "The free plan includes 1 custom category. Upgrade to Premium to create unlimited custom categories.",
       limitReachedTitle: "Limit Reached",
       limitReachedMessage:
         "You can only save up to 3 documents on the free tier. Upgrade to Premium for unlimited documents!",
@@ -315,9 +312,6 @@ export const translations = {
       expiredDaysAgo: "Изтекъл преди {n} дни"
     },
     premium: {
-      categoryLimitTitle: "Достигнат лимит за категории",
-      categoryLimitMessage:
-        "Безплатният план включва 1 персонализирана категория. Премини към Premium за неограничен брой категории.",
       limitReachedTitle: "Достигнат лимит",
       limitReachedMessage:
         "Можете да запазите до 3 документа с безплатната версия. Вземете Premium за неограничен брой!",

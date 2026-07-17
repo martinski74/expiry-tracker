@@ -12,13 +12,10 @@ import {
 import { Stack, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { Alert } from "react-native";
 import { addCustomCategory, getAllCategories } from "../../src/db/categories";
-import { usePremium } from "../../src/hooks/usePremium";
 import { useTheme } from "../../src/theme/ThemeProvider";
 import { useI18n } from "../../src/i18n/I18nProvider";
 import { spacing, fontSize, radius } from "../../src/theme/colors";
-import { FREE_PLAN_LIMITS } from "../../src/config/limits";
 
 // Curated icon + color palettes that fit the warm theme.
 const ICON_OPTIONS = [
@@ -56,7 +53,6 @@ export default function NewCategoryScreen() {
   const { t } = useI18n();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { isPremium } = usePremium();
 
   const [name, setName] = useState("");
   const [icon, setIcon] = useState<string>(ICON_OPTIONS[0]);
@@ -75,36 +71,6 @@ export default function NewCategoryScreen() {
     setSaving(true);
 
     try {
-      const categories = await getAllCategories();
-
-      const customCategoryCount = categories.filter(
-        (category) => !category.is_predefined
-      ).length;
-
-      if (
-        !isPremium &&
-        customCategoryCount >= FREE_PLAN_LIMITS.customCategories
-      ) {
-        setSaving(false);
-
-        Alert.alert(
-          t("premium.categoryLimitTitle"),
-          t("premium.categoryLimitMessage"),
-          [
-            {
-              text: t("common.cancel"),
-              style: "cancel"
-            },
-            {
-              text: t("common.goPremium"),
-              onPress: () => router.push("/premium")
-            }
-          ]
-        );
-
-        return;
-      }
-
       await addCustomCategory({
         name: name.trim(),
         icon,
