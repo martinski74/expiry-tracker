@@ -166,8 +166,6 @@ export const translations = {
         unlimitedDesc: "Add as many documents as you want.",
         notifications: "Advanced notifications",
         notificationsDesc: "Never miss an important deadline.",
-        categories: "Custom categories",
-        categoriesDesc: "Organize your documents your way.",
         noAds: "No ads",
         noAdsDesc: "Enjoy a completely ad-free experience."
       }
@@ -341,8 +339,6 @@ export const translations = {
         unlimitedDesc: "Добавяйте колкото документи искате.",
         notifications: "Разширени известия",
         notificationsDesc: "Никога не пропускайте важен срок.",
-        categories: "Персонализирани категории",
-        categoriesDesc: "Организирайте документите по ваш начин.",
         noAds: "Без реклами",
         noAdsDesc: "Насладете се на изживяване без никакви реклами."
       }

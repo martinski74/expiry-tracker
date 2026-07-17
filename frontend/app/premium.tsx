@@ -240,11 +240,6 @@ export default function PremiumScreen() {
             desc={t("premium.features.notificationsDesc")}
           />
           <FeatureItem
-            icon="grid-outline"
-            title={t("premium.features.categories")}
-            desc={t("premium.features.categoriesDesc")}
-          />
-          <FeatureItem
             icon="ban-outline"
             title={t("premium.features.noAds")}
             desc={t("premium.features.noAdsDesc")}
