@@ -122,7 +122,8 @@ export const translations = {
       comingSoon: "Coming soon",
       uncategorized: "Uncategorized",
       searchPlaceholder: "Search documents...",
-      goPremium: "Go Premium"
+      goPremium: "Go Premium",
+      loading: "Loading..."
     },
     urgency: {
       expired: "Expired",
@@ -296,7 +297,8 @@ export const translations = {
       comingSoon: "Очаквайте скоро",
       uncategorized: "Без категория",
       searchPlaceholder: "Търсене на документи...",
-      goPremium: "Вземи Premium"
+      goPremium: "Вземи Premium",
+      loading: "Зареждане..."
     },
     urgency: {
       expired: "Изтекъл",

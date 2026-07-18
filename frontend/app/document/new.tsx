@@ -8,7 +8,8 @@ import {
   TextInput,
   Platform,
   KeyboardAvoidingView,
-  Alert
+  Alert,
+  ActivityIndicator
 } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -71,13 +72,16 @@ export default function NewDocumentScreen() {
   const [reminderDays, setReminderDays] = useState<number[]>(DEFAULT_REMINDERS);
   const [reminderInitialised, setReminderInitialised] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [errors, setErrors] = useState<{ title?: string; expiry?: string }>({});
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     (async () => {
+      setCategoriesLoading(true);
       const rows = await getAllCategories();
       setCategories(rows);
+      setCategoriesLoading(false);
     })();
   }, []);
 
@@ -210,33 +214,47 @@ export default function NewDocumentScreen() {
 
         {/* Category */}
         <Field label={t("form.fieldCategory")} colors={colors}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: spacing.sm, paddingVertical: 2 }}
-          >
-            <CatChip
-              label={t("form.noCategory")}
-              active={categoryId === null}
-              onPress={() => setCategoryId(null)}
-              colors={colors}
-              icon="remove-outline"
-              tint={colors.onSurfaceTertiary}
-              testID="cat-chip-none"
-            />
-            {categories.map((c) => (
+          {categoriesLoading ? (
+            <View style={styles.categoriesLoading}>
+              <ActivityIndicator size="small" color={colors.brandPrimary} />
+              <Text
+                style={[
+                  styles.categoriesLoadingText,
+                  { color: colors.onSurfaceTertiary }
+                ]}
+              >
+                {t("common.loading")}
+              </Text>
+            </View>
+          ) : (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: spacing.sm, paddingVertical: 2 }}
+            >
               <CatChip
-                key={c.id}
-                label={labelForCategory(c)}
-                active={categoryId === c.id}
-                onPress={() => setCategoryId(c.id)}
+                label={t("form.noCategory")}
+                active={categoryId === null}
+                onPress={() => setCategoryId(null)}
                 colors={colors}
-                icon={c.icon as any}
-                tint={c.color}
-                testID={`cat-chip-${c.id}`}
+                icon="remove-outline"
+                tint={colors.onSurfaceTertiary}
+                testID="cat-chip-none"
               />
-            ))}
-          </ScrollView>
+              {categories.map((c) => (
+                <CatChip
+                  key={c.id}
+                  label={labelForCategory(c)}
+                  active={categoryId === c.id}
+                  onPress={() => setCategoryId(c.id)}
+                  colors={colors}
+                  icon={c.icon as any}
+                  tint={c.color}
+                  testID={`cat-chip-${c.id}`}
+                />
+              ))}
+            </ScrollView>
+          )}
         </Field>
 
         {/* Expiry date */}
@@ -499,6 +517,16 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     borderWidth: 1,
     minHeight: 38
+  },
+  categoriesLoading: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    paddingVertical: spacing.sm
+  },
+  categoriesLoadingText: {
+    fontSize: fontSize.sm,
+    fontWeight: "600"
   },
   clearBtn: {
     paddingHorizontal: spacing.md,
