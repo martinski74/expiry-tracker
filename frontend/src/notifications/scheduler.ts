@@ -7,9 +7,9 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldShowBanner: true,
     shouldShowList: true,
-    shouldPlaySound: false,
-    shouldSetBadge: true, // Позволява бадж, когато приложението е отворено
-  }),
+    shouldPlaySound: true,
+    shouldSetBadge: true // Позволява бадж, когато приложението е отворено
+  })
 });
 
 const ID_PREFIX = "expirytracker:doc";
@@ -28,7 +28,7 @@ async function configureAndroidChannel() {
       name: "Expiry Notification",
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
-      showBadge: true, // КРИТИЧНО: Казва на Android да показва точка/цифра на иконката
+      showBadge: true // КРИТИЧНО: Казва на Android да показва точка/цифра на иконката
     });
   }
 }
@@ -57,8 +57,8 @@ export async function ensurePermission(): Promise<{
     ios: {
       allowAlert: true,
       allowBadge: true, // Смених го на true за iOS, в случай че реша да го пускам и там
-      allowSound: false,
-    },
+      allowSound: false
+    }
   });
 
   if (req.granted) {
@@ -68,7 +68,7 @@ export async function ensurePermission(): Promise<{
 
   return {
     granted: req.granted,
-    canAskAgain: req.canAskAgain ?? true,
+    canAskAgain: req.canAskAgain ?? true
   };
 }
 
@@ -122,20 +122,20 @@ export async function scheduleForDocument(input: ScheduleInput): Promise<void> {
           title: input.notifTitleTemplate.replace("{title}", input.title),
           body,
           data: { docId: input.docId },
-          // Задаваме бадж за конкретното известие. 
+          // Задаваме бадж за конкретното известие.
           // Когато известието се задейства, баджът ще стане 1.
           badge: 1,
           // Свързваме известието с нашия Android канал
           ...Platform.select({
             android: {
-              channelId: "default",
-            },
-          }),
+              channelId: "default"
+            }
+          })
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DATE,
-          date: fireAt,
-        },
+          date: fireAt
+        }
       });
     } catch (e) {
       console.warn("[Notif] schedule failed:", e);
