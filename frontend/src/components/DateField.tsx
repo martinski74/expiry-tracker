@@ -81,14 +81,10 @@ export function DateField({
         <DateTimePicker
           value={value ?? new Date()}
           mode="date"
+          display={Platform.OS === "ios" ? "compact" : "default"}
           onChange={(_, d) => {
-            if (Platform.OS !== "ios") setShow(false);
-            if (d) {
-              onChange(d);
-              if (Platform.OS === "ios") setShow(false);
-            } else {
-              setShow(false);
-            }
+            setShow(false);
+            if (d) onChange(d);
           }}
         />
       ) : null}
