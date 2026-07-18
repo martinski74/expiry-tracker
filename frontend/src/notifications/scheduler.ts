@@ -57,7 +57,7 @@ export async function ensurePermission(): Promise<{
     ios: {
       allowAlert: true,
       allowBadge: true, // Смених го на true за iOS, в случай че реша да го пускам и там
-      allowSound: false
+      allowSound: true
     }
   });
 
