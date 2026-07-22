@@ -140,35 +140,31 @@ export const translations = {
       limitReachedTitle: "Limit Reached",
       limitReachedMessage:
         "You can only save up to 3 documents on the free tier. Upgrade to Premium for unlimited documents!",
+      title: "Unlock Premium Access🚀",
+      subtitle: "Unlock the full potential of the app with a single purchase.",
+      oneTimePayment: "One-time payment",
+      activateNow: "Unlock Now",
+      noOffers: "No offers available at the moment.",
       successTitle: "Success!",
-      successMessage: "Thank you! Premium access is activated.",
+      successMessage: "Thank you! You now have Premium access.",
       errorTitle: "Error",
       paymentErrorMessage:
-        "A problem occurred during payment. Please try again.",
-      restoreSuccessTitle: "Restored successfully!",
-      restoreSuccessMessage: "Your Premium subscription has been restored.",
-      noSubscriptionTitle: "No subscription found",
-      noSubscriptionMessage:
-        "We couldn't find an active Premium subscription for this profile.",
-      restoreErrorMessage: "Restore failed. Please try again.",
-      title: "Unlock Premium Access 🚀",
-      subtitle:
-        "Track an unlimited number of documents and receive timely notifications without limits.",
-      annualSubscription: "Annual subscription",
-      perYear: "/ year",
-      activateNow: "Activate Now",
-      noOffers: "No offers available at the moment.",
-      restorePurchases: "Restore purchases",
-      close: "Close",
-      securePayment: "Secure payment",
-      cancelAnytime: "Cancel at any time",
+        "There was an issue processing your payment. Please try again.",
+      restorePurchases: "Restore Purchase",
+      restoreSuccessTitle: "Restore Successful",
+      restoreSuccessMessage: "Your Premium purchase was found and restored.",
+      noSubscriptionTitle: "No Purchase Found",
+      noSubscriptionMessage: "No previous purchase was found for this account.",
+      restoreErrorMessage: "Failed to restore purchases. Please try again.",
+      securePayment: "Secure payment via App Store / Google Play",
       features: {
-        unlimited: "Unlimited documents",
-        unlimitedDesc: "Add as many documents as you want.",
-        notifications: "Advanced notifications",
-        notificationsDesc: "Never miss an important deadline.",
-        noAds: "No ads",
-        noAdsDesc: "Enjoy a completely ad-free experience."
+        unlimited: "Unlimited Documents",
+        unlimitedDesc:
+          "Remove the 3-document limit and add as many as you need.",
+        lifetimeAccess: "Pay Once, Use Forever",
+        lifetimeAccessDesc: "No recurring subscriptions or hidden fees.",
+        supportDev: "Support Development",
+        supportDevDesc: "Help us improve the app and build new features."
       }
     }
   },
@@ -315,34 +311,36 @@ export const translations = {
       limitReachedTitle: "Достигнат лимит",
       limitReachedMessage:
         "Можете да запазите до 3 документа с безплатната версия. Вземете Premium за неограничен брой!",
-      successTitle: "Успех!",
-      successMessage: "Благодарим ти! Premium достъпът е активиран.",
-      errorTitle: "Грешка",
-      paymentErrorMessage: "Възникна проблем при плащането. Моля опитай пак.",
-      restoreSuccessTitle: "Възстановено успешно!",
-      restoreSuccessMessage: "Твоят Premium абонамент беше възстановен.",
-      noSubscriptionTitle: "Не е намерен абонамент",
-      noSubscriptionMessage:
-        "Не открихме активен Premium абонамент за този профил.",
-      restoreErrorMessage: "Неуспешно възстановяване. Моля, опитайте отново.",
       title: "Отключи Premium 🚀",
       subtitle:
-        "Следете неограничен брой документи и получавайте навременни известия без лимити.",
-      annualSubscription: "Годишен абонамент",
-      perYear: "/ година",
-      activateNow: "Активирай Сега",
-      noOffers: "Няма налична оферта в момента.",
-      restorePurchases: "Възстанови покупките (Restore)",
-      close: "Затвори",
-      securePayment: "Сигурно плащане",
-      cancelAnytime: "Можеш да анулираш по всяко време",
+        "Отключете пълния потенциал на приложението с еднократно плащане.",
+      oneTimePayment: "Еднократно плащане",
+      activateNow: "Отключи сега",
+      noOffers: "В момента няма налични оферти.",
+      successTitle: "Успех!",
+      successMessage: "Благодарим ви! Вече имате Premium достъп.",
+      errorTitle: "Грешка",
+      paymentErrorMessage:
+        "Възникна проблем при обработката на плащането. Моля, опитайте отново.",
+      restorePurchases: "Възстанови покупка",
+      restoreSuccessTitle: "Успешно възстановяване",
+      restoreSuccessMessage:
+        "Вашата Premium покупка беше намерена и активирана.",
+      noSubscriptionTitle: "Няма намерена покупка",
+      noSubscriptionMessage:
+        "Не открихме предишна покупка, свързана с този акаунт.",
+      restoreErrorMessage:
+        "Не успяхме да възстановим покупките. Моля, опитайте отново.",
+      securePayment: "Защитено плащане през App Store / Google Play",
       features: {
-        unlimited: "Неограничен брой документи",
-        unlimitedDesc: "Добавяйте колкото документи искате.",
-        notifications: "Разширени известия",
-        notificationsDesc: "Никога не пропускайте важен срок.",
-        noAds: "Без реклами",
-        noAdsDesc: "Насладете се на изживяване без никакви реклами."
+        unlimited: "Неограничени документи",
+        unlimitedDesc:
+          "Премахнете лимита от 3 документа и добавяйте колкото искате.",
+        lifetimeAccess: "Плащате веднъж, ползвате завинаги",
+        lifetimeAccessDesc: "Без месечни абонаменти или скрити такси.",
+        supportDev: "Подкрепете проекта",
+        supportDevDesc:
+          "Помагате ни да подобряваме приложението и да добавяме нови екстри."
       }
     }
   }

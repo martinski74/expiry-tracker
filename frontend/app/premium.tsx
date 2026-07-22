@@ -9,7 +9,10 @@ import {
   ScrollView
 } from "react-native";
 import { useRouter } from "expo-router";
-import Purchases, { PurchasesPackage } from "react-native-purchases";
+import Purchases, {
+  PurchasesPackage,
+  PURCHASES_ERROR_CODE
+} from "react-native-purchases";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -40,8 +43,9 @@ export default function PremiumScreen() {
         const offerings = await Purchases.getOfferings();
 
         if (offerings.current !== null) {
-          if (offerings.current.annual !== null) {
-            setPremiumPackage(offerings.current.annual);
+          // Търсим lifetime пакет от RevenueCat
+          if (offerings.current.lifetime !== null) {
+            setPremiumPackage(offerings.current.lifetime);
           } else if (offerings.current.availablePackages.length > 0) {
             setPremiumPackage(offerings.current.availablePackages[0]);
           }
@@ -69,7 +73,32 @@ export default function PremiumScreen() {
         router.back();
       }
     } catch (e: any) {
-      if (!e.userCancelled) {
+      if (e.userCancelled) {
+        // Потребителят сам е затворил диалога — не е грешка.
+      } else if (
+        e.code === PURCHASES_ERROR_CODE.PRODUCT_ALREADY_PURCHASED_ERROR
+      ) {
+        // Продуктът вече е притежаван от този акаунт (напр. license tester,
+        // или предишна покупка) — синхронизираме реалния статус вместо
+        // да показваме грешка на потребител, който вече е платил.
+        try {
+          const customerInfo = await Purchases.restorePurchases();
+          if (customerInfo.entitlements.active["premium"] !== undefined) {
+            Alert.alert(t("premium.successTitle"), t("premium.successMessage"));
+            router.back();
+          } else {
+            Alert.alert(
+              t("premium.errorTitle"),
+              t("premium.paymentErrorMessage")
+            );
+          }
+        } catch {
+          Alert.alert(
+            t("premium.errorTitle"),
+            t("premium.paymentErrorMessage")
+          );
+        }
+      } else {
         Alert.alert(t("premium.errorTitle"), t("premium.paymentErrorMessage"));
       }
     } finally {
@@ -98,7 +127,14 @@ export default function PremiumScreen() {
       }
     } catch (error: any) {
       console.error("Restore Purchases error:", error);
-      Alert.alert(t("premium.errorTitle"), t("premium.restoreErrorMessage"));
+      if (error.code === Purchases.PURCHASES_ERROR_CODE.PAYMENT_PENDING_ERROR) {
+        Alert.alert(
+          "Плащането се обработва",
+          "Вашата покупка все още е в статус 'чакаща' в Google Play. Премиум достъпът ще се активира автоматично след потвърждение."
+        );
+      } else {
+        Alert.alert(t("premium.errorTitle"), t("premium.restoreErrorMessage"));
+      }
     } finally {
       setPurchasing(false);
     }
@@ -235,14 +271,14 @@ export default function PremiumScreen() {
             desc={t("premium.features.unlimitedDesc")}
           />
           <FeatureItem
-            icon="notifications-outline"
-            title={t("premium.features.notifications")}
-            desc={t("premium.features.notificationsDesc")}
+            icon="checkmark-circle-outline"
+            title={t("premium.features.lifetimeAccess")}
+            desc={t("premium.features.lifetimeAccessDesc")}
           />
           <FeatureItem
-            icon="ban-outline"
-            title={t("premium.features.noAds")}
-            desc={t("premium.features.noAdsDesc")}
+            icon="heart-outline"
+            title={t("premium.features.supportDev")}
+            desc={t("premium.features.supportDevDesc")}
           />
         </View>
 
@@ -267,12 +303,12 @@ export default function PremiumScreen() {
                 end={{ x: 1, y: 0 }}
                 style={styles.badgeGradient}
               >
-                <Text style={styles.badgeText}>★ BEST VALUE</Text>
+                <Text style={styles.badgeText}>★ LIFETIME</Text>
               </LinearGradient>
             </View>
 
             <Text style={[styles.period, { color: colors.onSurfaceTertiary }]}>
-              {t("premium.annualSubscription").toUpperCase()}
+              {t("premium.oneTimePayment").toUpperCase()}
             </Text>
 
             <Text
@@ -282,15 +318,6 @@ export default function PremiumScreen() {
               minimumFontScale={0.6}
             >
               {premiumPackage.product.priceString}
-              <Text
-                style={[
-                  styles.pricePeriod,
-                  { color: colors.onSurfaceTertiary }
-                ]}
-              >
-                {" "}
-                {t("premium.perYear")}
-              </Text>
             </Text>
 
             {/* CTA Buy Button with Arrow */}
@@ -359,7 +386,7 @@ export default function PremiumScreen() {
           <Text
             style={[styles.footerText, { color: colors.onSurfaceTertiary }]}
           >
-            {t("premium.securePayment")} • {t("premium.cancelAnytime")}
+            {t("premium.securePayment")}
           </Text>
         </View>
       </ScrollView>
@@ -505,11 +532,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
     textAlign: "center",
     paddingHorizontal: spacing.sm
-  },
-  pricePeriod: {
-    fontSize: 18,
-    fontWeight: "500",
-    fontFamily: fontFamilyForWeight("500")
   },
   buyButtonContainer: {
     width: "100%",
