@@ -164,89 +164,132 @@ export default function SettingsScreen() {
       >
         {/* Premium status */}
         <Pressable
-          disabled={isPremium || isPremiumLoading}
           onPress={() => {
-            triggerHaptic("selection");
-            router.push("/premium");
+            if (!isPremium) {
+              triggerHaptic("selection");
+              router.push("/premium");
+            }
           }}
           style={({ pressed }) => [
             styles.card,
-            styles.premiumCard,
+            { position: "relative" },
             {
               backgroundColor: isPremium
-                ? colors.success + "14"
+                ? colors.brandPrimary + "10"
                 : colors.surfaceSecondary,
-              borderColor: isPremium ? colors.success + "55" : colors.border,
-              opacity: pressed ? 0.85 : 1
+              borderColor: isPremium ? colors.success : colors.border,
+              borderWidth: isPremium ? 1.5 : 1,
+              opacity: pressed && !isPremium ? 0.85 : 1
             }
           ]}
         >
-          <View style={[styles.cardHead, styles.premiumCardHead]}>
+          {isPremium && !isPremiumLoading && (
+            <View
+              style={[
+                styles.lifetimeBadge,
+                { backgroundColor: colors.brandTertiary }
+              ]}
+            >
+              <Text
+                style={[
+                  styles.lifetimeBadgeText,
+                  { color: colors.onBrandTertiary }
+                ]}
+              >
+                LIFETIME
+              </Text>
+            </View>
+          )}
+          <View style={styles.cardHead}>
+            {/* Иконка */}
             <View
               style={[
                 styles.iconWrap,
                 {
                   backgroundColor: isPremium
-                    ? colors.success + "22"
-                    : colors.brandTertiary
+                    ? colors.success + "25"
+                    : colors.surfaceTertiary
                 }
               ]}
             >
               <Ionicons
-                name={isPremium ? "diamond" : "diamond-outline"}
+                name={isPremium ? "sparkles" : "diamond-outline"}
                 size={20}
-                color={isPremium ? colors.success : colors.brandPrimary}
+                color={isPremium ? colors.success : colors.onSurfaceTertiary}
               />
             </View>
-            <View style={{ flex: 1 }}>
+
+            {/* Текстова част */}
+            <View style={{ flex: 1, paddingRight: spacing.xs - 3 }}>
               <Text
                 style={[
                   styles.cardTitle,
-                  { color: colors.onSurface, flexShrink: 1 }
+                  { color: colors.onSurface, fontSize: fontSize.base }
                 ]}
+                numberOfLines={1}
               >
-                {t("settings.premiumStatus")}
+                {isPremium
+                  ? t("settings.premiumLifetimeTitle")
+                  : t("settings.freePlanTitle")}
               </Text>
               <Text
                 style={{
                   fontSize: fontSize.sm,
-                  color: isPremium ? colors.success : colors.onSurfaceTertiary,
-                  fontWeight: "600",
+                  color: colors.onSurfaceTertiary,
+                  fontWeight: "500",
                   marginTop: 2
                 }}
               >
-                {isPremiumLoading
-                  ? t("common.loading")
-                  : isPremium
-                    ? t("settings.premiumActive")
-                    : t("settings.premiumInactive")}
+                {isPremium
+                  ? t("settings.premiumLifetimeSubtitle")
+                  : t("settings.freePlanSubtitle")}
               </Text>
-              {isPremium && !isPremiumLoading && (
-                <Text
-                  style={[
-                    styles.premiumLifetime,
-                    { color: colors.onSurfaceTertiary }
-                  ]}
-                >
-                  {t("settings.premiumLifetime")}
-                </Text>
-              )}
             </View>
+
+            {/* Десен елемент (Бутон за покупка ИЛИ Бадж за активен достъп) */}
             {isPremium && (
-              <Ionicons
-                name="checkmark-circle"
-                size={24}
-                color={colors.success}
-              />
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 3,
+                  backgroundColor: colors.brandPrimary + "20",
+                  paddingHorizontal: spacing.md - 2,
+                  paddingVertical: spacing.xs,
+                  borderRadius: radius.pill
+                }}
+              >
+                <Ionicons
+                  name="checkmark-sharp"
+                  size={14}
+                  color={colors.success}
+                />
+                <Text
+                  style={{
+                    color: colors.success,
+                    fontSize: fontSize.sm + 1,
+                    fontWeight: "700"
+                  }}
+                >
+                  {t("settings.statusActive")}
+                </Text>
+              </View>
             )}
           </View>
-          {!isPremium && !isPremiumLoading && (
+
+          {/* CTA бутон за безплатен план — на отделен ред, за да не притиска заглавието */}
+          {!isPremium && (
             <View
               style={[
                 styles.premiumAction,
-                { backgroundColor: colors.brandPrimary }
+                { backgroundColor: colors.brandPrimary, alignSelf: "stretch" }
               ]}
             >
+              <Ionicons
+                name="sparkles"
+                size={16}
+                color={colors.onBrandPrimary}
+              />
               <Text
                 style={[
                   styles.premiumActionText,
@@ -263,6 +306,7 @@ export default function SettingsScreen() {
             </View>
           )}
         </Pressable>
+        {/* ============================================================================== */}
         {/* Stats card */}
         <View
           style={[
@@ -568,6 +612,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: spacing.md,
     marginBottom: spacing.lg
+  },
+  lifetimeBadge: {
+    position: "absolute",
+    top: -9,
+    right: spacing.lg,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 3,
+    borderRadius: radius.pill,
+    zIndex: 1
+  },
+  lifetimeBadgeText: {
+    fontSize: 10,
+    fontWeight: "700",
+    letterSpacing: 0.5
   },
   premiumCard: {
     padding: spacing.lg

@@ -112,7 +112,12 @@ export const translations = {
       premiumActive: "Premium is active",
       premiumInactive: "Unlock all features forever",
       premiumLifetime: "One-time purchase - no expiration",
-      premiumUpgrade: "Unlock Premium"
+      premiumUpgrade: "Unlock Premium",
+      freePlanTitle: "Free Plan",
+      freePlanSubtitle: "Limit: up to 3 documents",
+      premiumLifetimeTitle: "Lifetime Premium",
+      premiumLifetimeSubtitle: "Unlimited access · No subscription",
+      statusActive: "Active"
     },
     common: {
       save: "Save",
@@ -284,7 +289,12 @@ export const translations = {
       premiumActive: "Premium е активен",
       premiumInactive: "Отключи всички функции завинаги",
       premiumLifetime: "Еднократна покупка - без изтичане",
-      premiumUpgrade: "Отключи Premium"
+      premiumUpgrade: "Вземи Premium",
+      freePlanTitle: "Безплатен план",
+      freePlanSubtitle: "Ограничение: до 3 документа",
+      premiumLifetimeTitle: "Premium",
+      premiumLifetimeSubtitle: "Неограничен достъп · Без абонамент",
+      statusActive: "Активен"
     },
     common: {
       save: "Запази",
