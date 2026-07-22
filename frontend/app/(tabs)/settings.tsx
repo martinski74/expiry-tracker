@@ -41,7 +41,7 @@ export default function SettingsScreen() {
   const { t, locale, setLocale } = useI18n();
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { isPremium } = usePremium();
+  const { isPremium, isLoading: isPremiumLoading } = usePremium();
   const [stats, setStats] = useState({ total: 0, expiring: 0, expired: 0 });
   const [defaults, setDefaults] = useStoredValue<number[]>(
     STORAGE_KEYS.defaultReminders,
@@ -164,40 +164,38 @@ export default function SettingsScreen() {
       >
         {/* Premium status */}
         <Pressable
+          disabled={isPremium || isPremiumLoading}
           onPress={() => {
-            if (!isPremium) {
-              triggerHaptic("selection");
-              router.push("/premium");
-            }
+            triggerHaptic("selection");
+            router.push("/premium");
           }}
           style={({ pressed }) => [
             styles.card,
+            styles.premiumCard,
             {
               backgroundColor: isPremium
-                ? colors.success + "25"
+                ? colors.success + "14"
                 : colors.surfaceSecondary,
-              borderColor: isPremium ? colors.brandPrimary : colors.border,
-              opacity: pressed && !isPremium ? 0.85 : 1
+              borderColor: isPremium ? colors.success + "55" : colors.border,
+              opacity: pressed ? 0.85 : 1
             }
           ]}
         >
-          <View style={styles.cardHead}>
+          <View style={[styles.cardHead, styles.premiumCardHead]}>
             <View
               style={[
                 styles.iconWrap,
                 {
                   backgroundColor: isPremium
-                    ? colors.success
-                    : colors.surfaceSecondary
+                    ? colors.success + "22"
+                    : colors.brandTertiary
                 }
               ]}
             >
               <Ionicons
                 name={isPremium ? "diamond" : "diamond-outline"}
                 size={20}
-                color={
-                  isPremium ? colors.onBrandPrimary : colors.onSurfaceTertiary
-                }
+                color={isPremium ? colors.success : colors.brandPrimary}
               />
             </View>
             <View style={{ flex: 1 }}>
@@ -217,39 +215,53 @@ export default function SettingsScreen() {
                   marginTop: 2
                 }}
               >
-                {isPremium
-                  ? t("settings.premiumActive")
-                  : t("settings.premiumInactive")}
+                {isPremiumLoading
+                  ? t("common.loading")
+                  : isPremium
+                    ? t("settings.premiumActive")
+                    : t("settings.premiumInactive")}
               </Text>
-            </View>
-            {!isPremium && (
-              <View
-                style={{
-                  backgroundColor: colors.brandPrimary,
-                  paddingHorizontal: spacing.md,
-                  paddingVertical: spacing.xs,
-                  borderRadius: radius.pill
-                }}
-              >
+              {isPremium && !isPremiumLoading && (
                 <Text
-                  style={{
-                    color: colors.onBrandPrimary,
-                    fontSize: fontSize.sm,
-                    fontWeight: "700"
-                  }}
+                  style={[
+                    styles.premiumLifetime,
+                    { color: colors.onSurfaceTertiary }
+                  ]}
                 >
-                  {t("settings.premiumUpgrade")}
+                  {t("settings.premiumLifetime")}
                 </Text>
-              </View>
-            )}
+              )}
+            </View>
             {isPremium && (
               <Ionicons
                 name="checkmark-circle"
-                size={22}
+                size={24}
                 color={colors.success}
               />
             )}
           </View>
+          {!isPremium && !isPremiumLoading && (
+            <View
+              style={[
+                styles.premiumAction,
+                { backgroundColor: colors.brandPrimary }
+              ]}
+            >
+              <Text
+                style={[
+                  styles.premiumActionText,
+                  { color: colors.onBrandPrimary }
+                ]}
+              >
+                {t("settings.premiumUpgrade")}
+              </Text>
+              <Ionicons
+                name="arrow-forward"
+                size={18}
+                color={colors.onBrandPrimary}
+              />
+            </View>
+          )}
         </Pressable>
         {/* Stats card */}
         <View
@@ -556,6 +568,32 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: spacing.md,
     marginBottom: spacing.lg
+  },
+  premiumCard: {
+    padding: spacing.lg
+  },
+  premiumCardHead: {
+    marginBottom: 0
+  },
+  premiumLifetime: {
+    fontSize: fontSize.sm,
+    fontWeight: "500",
+    marginTop: spacing.xs
+  },
+  premiumAction: {
+    minHeight: 40,
+    alignSelf: "center",
+    borderRadius: radius.pill,
+    marginTop: spacing.lg,
+    paddingHorizontal: spacing.lg,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm
+  },
+  premiumActionText: {
+    fontSize: fontSize.base,
+    fontWeight: "700",
+    fontFamily: fontFamilyForWeight("700")
   },
   cardHead: {
     flexDirection: "row",

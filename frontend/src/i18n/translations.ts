@@ -108,10 +108,11 @@ export const translations = {
       statsExpiring: "Expiring soon",
       statsExpired: "Expired",
       madeWith: "Made for tracking what matters",
-      premiumStatus: "Subscription",
-      premiumActive: "Premium - Active",
-      premiumInactive: "Standard plan",
-      premiumUpgrade: "Get Premium"
+      premiumStatus: "Premium access",
+      premiumActive: "Premium is active",
+      premiumInactive: "Unlock all features forever",
+      premiumLifetime: "One-time purchase - no expiration",
+      premiumUpgrade: "Unlock Premium"
     },
     common: {
       save: "Save",
@@ -279,10 +280,11 @@ export const translations = {
       statsExpiring: "Изтичат скоро",
       statsExpired: "Изтекли",
       madeWith: "Направено, за да следите важното",
-      premiumStatus: "Абонамент",
-      premiumActive: "Premium - Активен",
-      premiumInactive: "Стандартен план",
-      premiumUpgrade: "Вземи Premium"
+      premiumStatus: "Premium достъп",
+      premiumActive: "Premium е активен",
+      premiumInactive: "Отключи всички функции завинаги",
+      premiumLifetime: "Еднократна покупка - без изтичане",
+      premiumUpgrade: "Отключи Premium"
     },
     common: {
       save: "Запази",
