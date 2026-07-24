@@ -127,10 +127,10 @@ export default function PremiumScreen() {
       }
     } catch (error: any) {
       console.error("Restore Purchases error:", error);
-      if (error.code === Purchases.PURCHASES_ERROR_CODE.PAYMENT_PENDING_ERROR) {
+      if (error.code === PURCHASES_ERROR_CODE.PAYMENT_PENDING_ERROR) {
         Alert.alert(
-          "Плащането се обработва",
-          "Вашата покупка все още е в статус 'чакаща' в Google Play. Премиум достъпът ще се активира автоматично след потвърждение."
+          t("premium.paymentPendingTitle"),
+          t("premium.paymentPendingMessage")
         );
       } else {
         Alert.alert(t("premium.errorTitle"), t("premium.restoreErrorMessage"));
